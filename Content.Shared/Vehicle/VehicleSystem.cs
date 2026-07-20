@@ -5,7 +5,6 @@ using Content.Shared.Damage;
 using Content.Shared.Movement.Components;
 using Content.Shared.Movement.Events;
 using Content.Shared.Movement.Systems;
-using Content.Shared._RMC14.Vehicle;
 using Content.Shared.Vehicle.Components;
 using Content.Shared.Whitelist;
 using JetBrains.Annotations;

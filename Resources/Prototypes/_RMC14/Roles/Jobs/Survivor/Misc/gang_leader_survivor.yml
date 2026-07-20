@@ -16,7 +16,13 @@
     - type: TacticalMapLayerTracked
       layers: [FactionSurvivor]
     - type: Skills
-      preset: RMCSkillPresetSurvivorGangLeader
+      skills:
+        RMCSkillConstruction: 1
+        RMCSkillEndurance: 2
+        RMCSkillFireman: 1
+        RMCSkillCqc: 2
+        RMCSkillFirearms: 1
+        RMCSkillLeadership: 1
     - type: EquipSurvivorPreset
       preset: RMCGearSurvivorPresetGangLeader
     - type: MarineOrders

@@ -116,9 +116,6 @@
   - type: Item
     size: Huge
   - type: MortarShell
-  - type: GuideHelp
-    guides:
-    - RMCGuideRoleMortar
 
 - type: entity
   parent: RMCMortarShellBase

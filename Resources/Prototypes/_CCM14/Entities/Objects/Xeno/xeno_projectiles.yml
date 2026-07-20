@@ -20,7 +20,7 @@
     impactEffect: XenoProjectileImpactEffect
     damage:
       types:
-        Heat: 15 # TODO RMC14 damage fall-off and higher at close range
+        Heat: 10 # TODO RMC14 damage fall-off and higher at close range
   - type: CMArmorPiercing
     amount: 10
 
@@ -47,56 +47,9 @@
     impactEffect: XenoProjectileImpactEffect
     damage:
       types:
-        Heat: 7 # TODO RMC14 damage fall-off and higher at close range
+        Heat: 5 # TODO RMC14 damage fall-off and higher at close range
   - type: CMArmorPiercing
     amount: 5
-
-- type: entity
-  id: CCMXenoSpitterScatterShotSpit
-  parent: XenoSpitProjectile
-  name: acidic scattered spit
-  categories: [ HideSpawnMenu ]
-  components:
-  - type: Sprite
-    sprite: _RMC14/Objects/Xeno/xeno_projectiles.rsi
-    layers:
-    - state: neurotoxin
-      shader: unshaded
-  - type: XenoProjectile
-    deleteOnFriendlyXeno: true
-  - type: ProjectileMaxRange
-    max: 3.79
-  - type: Projectile
-    impactEffect: XenoProjectileImpactEffect
-    damage:
-      types:
-        Heat: 17.5 # TODO RMC14 damage fall-off and higher at close range
-  - type: CMArmorPiercing
-    amount: 10
-
-- type: entity
-  id: CCMXenoSpitterScatterShotShrapnel
-  parent: XenoSpitProjectile
-  name: acidic shrapnel spit
-  categories: [ HideSpawnMenu ]
-  components:
-  - type: Sprite
-    sprite: _RMC14/Objects/Xeno/xeno_projectiles.rsi
-    layers:
-    - state: neurotoxin
-      shader: unshaded
-  - type: XenoProjectile
-    deleteOnFriendlyXeno: false
-  - type: ProjectileMaxRange
-    max: 8
-  - type: Projectile
-    impactEffect: XenoProjectileImpactEffect
-    damage:
-      types:
-        Heat: 20 # TODO RMC14 damage fall-off and higher at close range
-  - type: CMArmorPiercing
-    amount: 10
-  - type: AutoAssignHive
 
 - type: entity
   parent: [ XenoSpitImpactSounds, XenoBaseProjectile ]
@@ -114,11 +67,7 @@
     impactEffect: null
     damage:
       types:
-        Heat: 40
-  - type: XenoSlowingSpitProjectile
-    slow: 0
-    paralyze: 0.75
-    armorResistsKnockdown: false
+        Heat: 15
   - type: CMArmorPiercing
     amount: 25
   - type: XenoProjectile
@@ -137,9 +86,6 @@
         mask:
         - BarricadeImpassable
         - BarbedBarricade
-        - Impassable
-        - BulletImpassable
-        - XenoProjectileImpassable
   - type: TimedDespawn
     lifetime: 3
 
@@ -155,10 +101,9 @@
     - state: neurotoxin
       shader: unshaded
   - type: DrainOnHit
-    drainAmount: 20
   - type: XenoSlowingSpitProjectile
     armorResistsKnockdown: false
-    slow: 9
+    slow: 4
     paralyze: 0
   - type: Projectile
     impactEffect: null
@@ -168,7 +113,7 @@
   - type: XenoProjectile
     deleteOnFriendlyXeno: false
   - type: ProjectileMaxRange
-    max: 9
+    max: 6.666
   - type: RMCProjectileAccuracy
     accuracy: 999
   - type: TimedDespawn
@@ -190,7 +135,7 @@
     impactEffect: null
     damage:
       types:
-        Blunt: 15
+        Blunt: 10
         Structural: 60
   - type: CMArmorPiercing
     amount: 10
@@ -210,8 +155,5 @@
         mask:
         - BarricadeImpassable
         - BarbedBarricade
-        - Impassable
-        - BulletImpassable
-        - XenoProjectileImpassable
   - type: TimedDespawn
     lifetime: 3

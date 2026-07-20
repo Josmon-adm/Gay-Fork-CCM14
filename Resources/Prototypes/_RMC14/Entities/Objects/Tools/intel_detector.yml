@@ -27,7 +27,3 @@
   - type: Tag
     tags:
     - RMCDetector
-  - type: InteractedBlacklist
-    blacklist:
-      components:
-      - Xeno

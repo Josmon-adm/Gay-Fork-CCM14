@@ -1,11 +1,10 @@
-﻿using Content.Shared._RMC14.Dropship.Weapon;
-using Robust.Shared.GameStates;
+﻿using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared._RMC14.Camera;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(SharedRMCCameraSystem), typeof(SharedDropshipWeaponSystem))]
+[Access(typeof(SharedRMCCameraSystem))]
 public sealed partial class RMCCameraComponent : Component
 {
     [DataField(required: true), AutoNetworkedField]

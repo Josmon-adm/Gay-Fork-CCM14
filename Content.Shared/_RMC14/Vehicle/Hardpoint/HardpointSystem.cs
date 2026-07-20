@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.DoAfter;
 using Content.Shared.Whitelist;
+using Content.Shared.Vehicle;
 using Content.Shared.Vehicle.Components;
 using Content.Shared.Tools;
 using Content.Shared.Tools.Systems;
@@ -30,7 +31,6 @@ using Robust.Shared.Utility;
 using Content.Shared.Weapons.Ranged.Components;
 using Robust.Shared.Prototypes;
 using Content.Shared.FixedPoint;
-using Content.Shared._RMC14.Explosion;
 using Content.Shared.Explosion.EntitySystems;
 using Content.Shared._RMC14.Xenonids;
 using Content.Shared._RMC14.Marines.Skills;
@@ -40,37 +40,26 @@ namespace Content.Shared._RMC14.Vehicle;
 public sealed partial class HardpointSystem : EntitySystem
 {
     private static readonly EntProtoId<SkillDefinitionComponent> EngineerSkill = "RMCSkillEngineer";
-    private static readonly EntProtoId HardpointVehicleFamilyTank = "HardpointVehicleFamilyTank";
-    private static readonly ProtoId<DamageModifierSetPrototype> DamageModifierSetVehicleFrameTank = "VehicleFrameTank";
-
-    private const float IntegrityThresholdGreen = 0.9f;
-    private const float IntegrityThresholdYellow = 0.7f;
-    private const float IntegrityThresholdOrange = 0.4f;
-    private const float IntegrityThresholdRed = 0.15f;
-
-    private readonly List<(EntityUid Item, HardpointIntegrityComponent Integrity)> _topLevelHardpoints = new();
-    private readonly HashSet<EntityUid> _visitedHardpoints = new();
-
-    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
+    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
+    [Dependency] private readonly Content.Shared.Vehicle.VehicleSystem _vehicles = default!;
+    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private readonly SharedToolSystem _tool = default!;
+    [Dependency] private readonly VehicleWheelSystem _wheels = default!;
+    [Dependency] private readonly INetManager _net = default!;
+    [Dependency] private readonly RMCRepairableSystem _repairable = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedContainerSystem _containers = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly SharedExplosionSystem _explosion = default!;
-    [Dependency] private readonly SharedGunSystem _guns = default!;
-    [Dependency] private readonly SharedHandsSystem _hands = default!;
-    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly INetManager _net = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-    [Dependency] private readonly RMCRepairableSystem _repairable = default!;
-    [Dependency] private readonly SkillsSystem _skills = default!;
-    [Dependency] private readonly VehicleSpotlightSystem _spotlight = default!;
-    [Dependency] private readonly SharedToolSystem _tool = default!;
-    [Dependency] private readonly VehicleTopologySystem _topology = default!;
-    [Dependency] private readonly Content.Shared.Vehicle.VehicleSystem _vehicles = default!;
-    [Dependency] private readonly VehicleWeaponsSystem _weapons = default!;
-    [Dependency] private readonly VehicleWheelSystem _wheels = default!;
+    [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
+    [Dependency] private readonly SharedHandsSystem _hands = default!;
+    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelist = default!;
+    [Dependency] private readonly SharedGunSystem _guns = default!;
+    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
+    [Dependency] private readonly SharedExplosionSystem _explosion = default!;
+    [Dependency] private readonly VehicleTopologySystem _topology = default!;
+    [Dependency] private readonly SkillsSystem _skills = default!;
+    [Dependency] private readonly DamageableSystem _damageable = default!; // CCM14
 
     public override void Initialize()
     {
@@ -82,7 +71,6 @@ public sealed partial class HardpointSystem : EntitySystem
         SubscribeLocalEvent<HardpointSlotsComponent, EntRemovedFromContainerMessage>(OnRemoved);
         SubscribeLocalEvent<HardpointSlotsComponent, VehicleCanRunEvent>(OnVehicleCanRun);
         SubscribeLocalEvent<HardpointSlotsComponent, DamageModifyEvent>(OnVehicleDamageModify);
-        SubscribeLocalEvent<HardpointSlotsComponent, ExplosionReceivedEvent>(OnVehicleExplosionReceived);
         SubscribeLocalEvent<HardpointIntegrityComponent, ComponentInit>(OnHardpointIntegrityInit);
         SubscribeLocalEvent<HardpointIntegrityComponent, InteractUsingEvent>(
             OnHardpointRepair,
@@ -221,9 +209,6 @@ public sealed partial class HardpointSystem : EntitySystem
                 continue;
 
             var item = itemSlot.Item!.Value;
-            if (!IsFunctionalHardpoint(item))
-                continue;
-
             Accumulate(item);
 
             if (!TryComp(item, out HardpointSlotsComponent? turretSlots) ||
@@ -243,31 +228,10 @@ public sealed partial class HardpointSystem : EntitySystem
                     continue;
                 }
 
-                var turretItem = turretItemSlot.Item!.Value;
-                if (!IsFunctionalHardpoint(turretItem))
-                    continue;
-
-                Accumulate(turretItem);
+                Accumulate(turretItemSlot.Item!.Value);
             }
         }
 
-        ApplyAccumulatedSupportModifiers(
-            vehicle,
-            hasWeaponMods, accuracyMult, fireRateMult,
-            hasSpeedMods, speedMult,
-            hasAccelMods, accelMult,
-            hasViewMods, viewScale, cursorMaxOffset, cursorOffsetSpeed, cursorPvsIncrease);
-
-        RefreshVehicleGunModifiers(vehicle, hardpoints, itemSlots);
-    }
-
-    private void ApplyAccumulatedSupportModifiers(
-        EntityUid vehicle,
-        bool hasWeaponMods, FixedPoint2 accuracyMult, float fireRateMult,
-        bool hasSpeedMods, float speedMult,
-        bool hasAccelMods, float accelMult,
-        bool hasViewMods, float viewScale, float cursorMaxOffset, float cursorOffsetSpeed, float cursorPvsIncrease)
-    {
         if (hasWeaponMods)
         {
             var mods = EnsureComp<VehicleWeaponSupportModifierComponent>(vehicle);
@@ -315,6 +279,8 @@ public sealed partial class HardpointSystem : EntitySystem
         {
             RemCompDeferred<VehicleGunnerViewComponent>(vehicle);
         }
+
+        RefreshVehicleGunModifiers(vehicle, hardpoints, itemSlots);
     }
 
     private void RefreshVehicleGunModifiers(EntityUid vehicle, HardpointSlotsComponent hardpoints, ItemSlotsComponent itemSlots)
@@ -409,7 +375,7 @@ public sealed partial class HardpointSystem : EntitySystem
     private void RaiseHardpointSlotsChanged(EntityUid vehicle)
     {
         var ev = new HardpointSlotsChangedEvent(vehicle);
-        RaiseLocalEvent(vehicle, ref ev, broadcast: true);
+        RaiseLocalEvent(vehicle, ev, broadcast: true);
     }
 
     private void RaiseVehicleSlotsChanged(EntityUid owner)
@@ -441,8 +407,13 @@ public sealed partial class HardpointSystem : EntitySystem
             if (string.IsNullOrWhiteSpace(slot.Id))
                 continue;
 
-            if (_itemSlots.TryGetSlot(uid, slot.Id, out _, itemSlots))
+            if (_itemSlots.TryGetSlot(uid, slot.Id, out var existingSlot, itemSlots))
+            {
+                if (slot.DisableEject && !existingSlot.DisableEject)
+                    _itemSlots.SetDisableEject(uid, existingSlot, true, itemSlots);
+
                 continue;
+            }
 
             var whitelist = slot.Whitelist;
             if (whitelist == null)
@@ -470,6 +441,9 @@ public sealed partial class HardpointSystem : EntitySystem
             };
 
             _itemSlots.AddItemSlot(uid, slot.Id, itemSlot, itemSlots);
+
+            if (slot.DisableEject)
+                _itemSlots.SetDisableEject(uid, itemSlot, true, itemSlots);
         }
     }
 
@@ -515,13 +489,19 @@ public sealed partial class HardpointSystem : EntitySystem
                 return false;
         }
 
-        if (hardpoint.CompatibilityId != slot.CompatibilityId)
-            return false;
+        if (!string.IsNullOrWhiteSpace(slot.CompatibilityId))
+        {
+            if (string.IsNullOrWhiteSpace(hardpoint.CompatibilityId))
+                return false;
 
-        if (slot.HardpointType == default)
+            if (!string.Equals(hardpoint.CompatibilityId, slot.CompatibilityId, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(slot.HardpointType))
             return slot.Whitelist == null || _whitelist.IsValid(slot.Whitelist, item);
 
-        if (hardpoint.HardpointType != slot.HardpointType)
+        if (!string.Equals(hardpoint.HardpointType, slot.HardpointType, StringComparison.OrdinalIgnoreCase))
             return false;
 
         return slot.Whitelist == null || _whitelist.IsValid(slot.Whitelist, item);
@@ -563,10 +543,6 @@ public sealed partial class HardpointSystem : EntitySystem
         if (_net.IsClient)
             return;
 
-        // All xeno damage (brute) gets converted to slash damage
-        if (args.Origin != null && HasComp<VehicleDamageMultiplierComponent>(args.Origin.Value))
-            args.Damage = NormalizeBruteToSlash(args.Damage);
-
         var incomingMultiplier = GetVehicleIncomingDamageMultiplier(args.Origin, args.Tool);
         if (incomingMultiplier > 1f)
             args.Damage = ScaleDamage(args.Damage, incomingMultiplier);
@@ -578,17 +554,18 @@ public sealed partial class HardpointSystem : EntitySystem
         if (!TryComp(ent.Owner, out ItemSlotsComponent? itemSlots))
             return;
 
-        _topLevelHardpoints.Clear();
-        CollectTopLevelHardpoints(ent.Owner, ent.Comp, itemSlots, _topLevelHardpoints);
+        var topLevelHardpoints = new List<(EntityUid Item, HardpointIntegrityComponent Integrity)>();
+        CollectIntactTopLevelHardpoints(ent.Owner, ent.Comp, itemSlots, topLevelHardpoints);
 
-        var anyTopLevelIntact = false;
-        _visitedHardpoints.Clear();
-        foreach (var (item, integrity) in _topLevelHardpoints)
+        var anyTopLevelIntact = topLevelHardpoints.Count > 0;
+
+        if (anyTopLevelIntact)
         {
-            if (integrity.Integrity > 0f)
-                anyTopLevelIntact = true;
-
-            ApplyDamageToHardpointTree(ent.Owner, item, integrity, args.Damage, _visitedHardpoints);
+            var visited = new HashSet<EntityUid>();
+            foreach (var (item, integrity) in topLevelHardpoints)
+            {
+                ApplyDamageToHardpointTree(ent.Owner, item, integrity, args.Damage, visited);
+            }
         }
 
         var hullFraction = anyTopLevelIntact ? ent.Comp.FrameDamageFractionWhileIntact : 1f;
@@ -602,41 +579,35 @@ public sealed partial class HardpointSystem : EntitySystem
         }
 
         args.Damage = ScaleDamage(args.Damage, hullFraction);
+
+        // CCM14: After vehicle absorbs explosion damage, remaining damage passes to interior occupants.
+        // Only for explosions (origin has ExplosionVisualsComponent).
+        if (args.Origin != null && HasComp<ExplosionVisualsComponent>(args.Origin.Value))
+        {
+            DamageVehicleInteriorOccupants(ent.Owner, args.Damage);
+        }
     }
 
-    private void OnVehicleExplosionReceived(Entity<HardpointSlotsComponent> ent, ref ExplosionReceivedEvent args)
+    /// <summary>
+    /// CCM14: Applies remaining explosion damage to all occupants inside a vehicle's interior
+    /// after the vehicle's hardpoints and hull have absorbed their share.
+    /// </summary>
+    private void DamageVehicleInteriorOccupants(EntityUid vehicle, DamageSpecifier damage)
     {
-        if (_net.IsClient)
+        if (!TryComp(vehicle, out VehicleInteriorComponent? interior))
             return;
 
-        var totalDamage = args.Damage.GetTotal().Float();
-        if (totalDamage <= 0f)
+        var occupants = interior.Passengers.Count + interior.Xenos.Count;
+        if (occupants == 0)
             return;
 
-        if (!TryComp(ent.Owner, out ItemSlotsComponent? itemSlots))
-            return;
+        var toDamage = new List<EntityUid>(occupants);
+        toDamage.AddRange(interior.Passengers);
+        toDamage.AddRange(interior.Xenos);
 
-        _topLevelHardpoints.Clear();
-        CollectTopLevelHardpoints(ent.Owner, ent.Comp, itemSlots, _topLevelHardpoints);
-
-        var anyTopLevelIntact = false;
-        _visitedHardpoints.Clear();
-        foreach (var (item, integrity) in _topLevelHardpoints)
+        foreach (var occupant in toDamage)
         {
-            if (integrity.Integrity > 0f)
-                anyTopLevelIntact = true;
-
-            ApplyDamageToHardpointTree(ent.Owner, item, integrity, args.Damage, _visitedHardpoints);
-        }
-
-        var hullFraction = anyTopLevelIntact ? ent.Comp.FrameDamageFractionWhileIntact : 1f;
-        if (TryComp(ent.Owner, out HardpointIntegrityComponent? frameIntegrity))
-        {
-            var frameDamage = ScaleDamage(args.Damage, hullFraction);
-            var frameAmount = GetVehicleFrameDamageAmount(ent.Owner, frameDamage);
-
-            if (frameAmount > 0f)
-                DamageHardpoint(ent.Owner, ent.Owner, frameAmount, frameIntegrity);
+            _damageable.TryChangeDamage(occupant, damage * _damageable.UniversalExplosionDamageModifier, ignoreResistances: true);
         }
     }
 
@@ -664,11 +635,11 @@ public sealed partial class HardpointSystem : EntitySystem
         return multiplier > 0f;
     }
 
-    private void CollectTopLevelHardpoints(
+    private void CollectIntactTopLevelHardpoints(
         EntityUid owner,
         HardpointSlotsComponent slots,
         ItemSlotsComponent itemSlots,
-        List<(EntityUid Item, HardpointIntegrityComponent Integrity)> hardpoints)
+        List<(EntityUid Item, HardpointIntegrityComponent Integrity)> intactHardpoints)
     {
         foreach (var slot in slots.Slots)
         {
@@ -681,8 +652,8 @@ public sealed partial class HardpointSystem : EntitySystem
             if (itemSlot.Item is not { } item)
                 continue;
 
-            if (TryComp(item, out HardpointIntegrityComponent? integrity))
-                hardpoints.Add((item, integrity));
+            if (TryComp(item, out HardpointIntegrityComponent? integrity) && integrity.Integrity > 0f)
+                intactHardpoints.Add((item, integrity));
         }
     }
 
@@ -725,29 +696,6 @@ public sealed partial class HardpointSystem : EntitySystem
         }
     }
 
-    private static DamageSpecifier NormalizeBruteToSlash(DamageSpecifier source)
-    {
-        var slash = source.DamageDict.GetValueOrDefault("Slash");
-        var pierce = source.DamageDict.GetValueOrDefault("Piercing");
-        var blunt = source.DamageDict.GetValueOrDefault("Blunt");
-        var brute = slash + pierce + blunt;
-
-        if (brute <= FixedPoint2.Zero)
-            return source;
-
-        var normalized = new DamageSpecifier();
-        foreach (var (type, value) in source.DamageDict)
-        {
-            if (type is "Slash" or "Piercing" or "Blunt")
-                continue;
-
-            normalized.DamageDict[type] = value;
-        }
-
-        normalized.DamageDict["Slash"] = brute;
-        return normalized;
-    }
-
     private DamageSpecifier ScaleDamage(DamageSpecifier source, float fraction)
     {
         if (MathF.Abs(fraction - 1f) < 0.0001f)
@@ -764,7 +712,7 @@ public sealed partial class HardpointSystem : EntitySystem
 
     private void ApplyDamageToHardpoint(EntityUid vehicle, EntityUid hardpoint, HardpointIntegrityComponent integrity, DamageSpecifier damage)
     {
-        var amount = GetHardpointDamageAmount(vehicle, hardpoint, damage);
+        var amount = GetHardpointDamageAmount(hardpoint, damage);
 
         if (amount <= 0f)
             return;
@@ -772,14 +720,11 @@ public sealed partial class HardpointSystem : EntitySystem
         DamageHardpoint(vehicle, hardpoint, amount, integrity);
     }
 
-    private float GetHardpointDamageAmount(EntityUid vehicle, EntityUid hardpoint, DamageSpecifier damage)
+    private float GetHardpointDamageAmount(EntityUid hardpoint, DamageSpecifier damage)
     {
         var modifiedTotal = MathF.Max(damage.GetTotal().Float(), 0f);
         var modifierSets = new List<DamageModifierSet>();
         CollectHardpointDamageModifierSets(hardpoint, modifierSets);
-
-        if (!HasComp<VehicleArmorHardpointComponent>(hardpoint))
-            CollectVehicleArmorModifierSets(vehicle, modifierSets);
 
         if (modifierSets.Count > 0)
         {
@@ -796,15 +741,6 @@ public sealed partial class HardpointSystem : EntitySystem
         }
 
         return total;
-    }
-
-    private void CollectVehicleArmorModifierSets(EntityUid vehicle, List<DamageModifierSet> modifierSets)
-    {
-        if (!TryComp(vehicle, out DamageProtectionBuffComponent? protection) || protection.Modifiers.Count == 0)
-            return;
-
-        foreach (var modifier in protection.Modifiers.Values)
-            modifierSets.Add(modifier);
     }
 
     private void CollectHardpointDamageModifierSets(EntityUid hardpoint, List<DamageModifierSet> modifierSets)
@@ -848,18 +784,10 @@ public sealed partial class HardpointSystem : EntitySystem
 
     private void OnHardpointIntegrityInit(Entity<HardpointIntegrityComponent> ent, ref ComponentInit args)
     {
-        var changed = false;
         if (ent.Comp.Integrity <= 0f)
-        {
             ent.Comp.Integrity = ent.Comp.MaxIntegrity;
-            changed = true;
-        }
-
-        if (changed)
-            Dirty(ent.Owner, ent.Comp);
 
         UpdateFrameDamageAppearance(ent.Owner, ent.Comp);
-        RaiseIntegrityChanged(ent.Owner);
     }
 
     private void OnHardpointExamined(Entity<HardpointIntegrityComponent> ent, ref ExaminedEvent args)
@@ -877,19 +805,18 @@ public sealed partial class HardpointSystem : EntitySystem
 
         var percent = max > 0f ? current / max : 0f;
 
+        if (HasComp<XenoComponent>(args.Examiner))
+        {
+            args.PushMarkup(Loc.GetString(GetHardpointConditionString(percent)));
+            return;
+        }
+
         var color = GetHardpointIntegrityColor(percent);
         args.PushMarkup(Loc.GetString("rmc-hardpoint-integrity-examine",
             ("color", color),
             ("current", (int)MathF.Ceiling(current)),
             ("max", (int)MathF.Ceiling(max)),
             ("percent", (int)MathF.Round(percent * 100f))));
-
-        if (TryComp(ent.Owner, out BallisticAmmoProviderComponent? ammoProvider) &&
-            ammoProvider.Proto is { } ammoProto &&
-            _prototypeManager.TryIndex<EntityPrototype>(ammoProto, out var ammoPrototype))
-        {
-            args.PushMarkup(Loc.GetString("rmc-hardpoint-ammo-type-examine", ("type", ammoPrototype.Name)));
-        }
 
         if (TryGetArmorExamineModifiers(ent.Owner, out var acid, out var slash, out var bullet, out var explosive, out var blunt))
         {
@@ -920,8 +847,8 @@ public sealed partial class HardpointSystem : EntitySystem
             return false;
 
         if (TryComp(uid, out HardpointItemComponent? item) &&
-            item.VehicleFamily == HardpointVehicleFamilyTank &&
-            _prototypeManager.TryIndex(DamageModifierSetVehicleFrameTank, out var tankBase))
+            item.VehicleFamily == "Tank" &&
+            _prototypeManager.TryIndex<DamageModifierSetPrototype>("VehicleFrameTank", out var tankBase))
         {
             ApplyDamageModifierCoefficients(tankBase, ref acid, ref slash, ref bullet, ref explosive, ref blunt);
         }
@@ -1028,22 +955,39 @@ public sealed partial class HardpointSystem : EntitySystem
 
     private string GetHardpointIntegrityColor(float percent)
     {
-        if (percent >= IntegrityThresholdGreen)
+        if (percent >= 0.9f)
             return "green";
 
-        if (percent >= IntegrityThresholdYellow)
+        if (percent >= 0.7f)
             return "yellow";
 
-        if (percent >= IntegrityThresholdOrange)
+        if (percent >= 0.4f)
             return "orange";
 
-        if (percent >= IntegrityThresholdRed)
+        if (percent >= 0.15f)
             return "red";
 
         return "crimson";
     }
 
-    public bool DamageHardpoint(EntityUid vehicle, EntityUid hardpoint, float amount, HardpointIntegrityComponent? integrity = null, bool skipWheelUpdate = false)
+    private string GetHardpointConditionString(float percent)
+    {
+        if (percent >= 0.9f)
+            return "rmc-hardpoint-condition-pristine";
+
+        if (percent >= 0.7f)
+            return "rmc-hardpoint-condition-good";
+
+        if (percent >= 0.4f)
+            return "rmc-hardpoint-condition-worn";
+
+        if (percent >= 0.15f)
+            return "rmc-hardpoint-condition-bad";
+
+        return "rmc-hardpoint-condition-critical";
+    }
+
+    public bool DamageHardpoint(EntityUid vehicle, EntityUid hardpoint, float amount, HardpointIntegrityComponent? integrity = null)
     {
         if (_net.IsClient || amount <= 0f)
             return false;
@@ -1065,63 +1009,29 @@ public sealed partial class HardpointSystem : EntitySystem
 
         Dirty(hardpoint, integrity);
         UpdateFrameDamageAppearance(hardpoint, integrity);
-        RaiseIntegrityChanged(hardpoint);
-        RefreshSupportModifiers(hardpoint);
-        UpdateHardpointUi(vehicle);
-        _spotlight.RefreshVehicleSpotlight(vehicle);
-        _weapons.RefreshSeatGunnerViews(vehicle);
-        _weapons.RefreshVehicleWeaponsUi(vehicle);
 
-        if (!skipWheelUpdate && TryComp(hardpoint, out VehicleWheelItemComponent? _))
+        if (TryComp(hardpoint, out VehicleWheelItemComponent? _))
             _wheels.OnWheelDamaged(vehicle);
 
         if (previous > 0f && integrity.Integrity <= 0f)
-        {
             RefreshCanRun(vehicle);
 
-            if (hardpoint == vehicle)
-                RaiseFrameIntegrityChanged(vehicle, false);
-        }
-
+        UpdateHardpointUi(vehicle);
         return true;
-    }
-
-    private void RaiseFrameIntegrityChanged(EntityUid vehicle, bool intact)
-    {
-        var ev = new VehicleFrameIntegrityChangedEvent(vehicle, intact);
-        RaiseLocalEvent(vehicle, ref ev, broadcast: true);
-    }
-
-    private void RaiseIntegrityChanged(EntityUid hardpoint)
-    {
-        var ev = new HardpointIntegrityChangedEvent();
-        RaiseLocalEvent(hardpoint, ref ev, broadcast: true);
-    }
-
-    private bool IsFunctionalHardpoint(EntityUid uid)
-    {
-        return !TryComp(uid, out HardpointIntegrityComponent? integrity) || integrity.Integrity > 0f;
     }
 
     private void OnHardpointRepair(Entity<HardpointIntegrityComponent> ent, ref InteractUsingEvent args)
     {
-        if (args.Handled)
+        if (args.Handled || args.User == null)
             return;
 
         var used = args.Used;
-        var isFrame = HasComp<HardpointSlotsComponent>(ent.Owner) && !HasComp<HardpointItemComponent>(ent.Owner);
+        var isFrame = HasComp<HardpointSlotsComponent>(ent.Owner);
         var usedWelder = _tool.HasQuality(used, ent.Comp.RepairToolQuality) && HasComp<BlowtorchComponent>(used);
         var usedWrench = isFrame && _tool.HasQuality(used, ent.Comp.FrameFinishToolQuality);
 
         if (!usedWelder && !usedWrench)
             return;
-
-        if (IsDestroyedHardpointIrreparable(ent.Comp, isFrame))
-        {
-            _popup.PopupClient(Loc.GetString("rmc-repairable-too-damaged", ("target", ent.Owner)), ent.Owner, args.User, PopupType.SmallCaution);
-            args.Handled = true;
-            return;
-        }
 
         if (ent.Comp.Integrity >= ent.Comp.MaxIntegrity)
         {
@@ -1152,6 +1062,12 @@ public sealed partial class HardpointSystem : EntitySystem
             return;
         }
 
+        if (usedWelder && !_repairable.UseFuel(used, args.User, ent.Comp.RepairFuelCost, true))
+        {
+            args.Handled = true;
+            return;
+        }
+
         var repairAmount = GetRepairAmountForCurrentStep(ent.Owner, ent.Comp, usedWelder, usedWrench, isFrame);
         if (repairAmount <= 0f)
         {
@@ -1160,12 +1076,6 @@ public sealed partial class HardpointSystem : EntitySystem
         }
 
         var repairTime = GetRepairTimeForCurrentStep(ent.Owner, args.User, ent.Comp, repairAmount, isFrame);
-
-        if (usedWelder && !_repairable.UseFuel(used, args.User, GetFuelCostForChunk(ent.Owner, ent.Comp, repairAmount, isFrame), true))
-        {
-            args.Handled = true;
-            return;
-        }
 
         ent.Comp.Repairing = true;
 
@@ -1195,19 +1105,16 @@ public sealed partial class HardpointSystem : EntitySystem
         args.Handled = true;
 
         var used = args.Used;
-        var isFrame = HasComp<HardpointSlotsComponent>(ent.Owner) && !HasComp<HardpointItemComponent>(ent.Owner);
+        var isFrame = HasComp<HardpointSlotsComponent>(ent.Owner);
         var usedWelder = used != null && _tool.HasQuality(used.Value, ent.Comp.RepairToolQuality) && HasComp<BlowtorchComponent>(used);
         var usedWrench = isFrame && used != null && _tool.HasQuality(used.Value, ent.Comp.FrameFinishToolQuality);
 
         if (!usedWelder && !usedWrench)
             return;
 
-        if (IsDestroyedHardpointIrreparable(ent.Comp, isFrame))
-            return;
-
         if (usedWelder)
         {
-            if (used == null || !_repairable.UseFuel(used.Value, args.User, GetFuelCostForChunk(ent.Owner, ent.Comp, GetRepairAmountForCurrentStep(ent.Owner, ent.Comp, usedWelder, usedWrench, isFrame), isFrame)))
+            if (used == null || !_repairable.UseFuel(used.Value, args.User, ent.Comp.RepairFuelCost))
                 return;
         }
 
@@ -1215,24 +1122,20 @@ public sealed partial class HardpointSystem : EntitySystem
         if (repairAmount <= 0f)
             return;
 
-        var previousIntegrity = ent.Comp.Integrity;
         ent.Comp.Integrity = MathF.Min(ent.Comp.MaxIntegrity, ent.Comp.Integrity + repairAmount);
 
         Dirty(ent.Owner, ent.Comp);
         UpdateFrameDamageAppearance(ent.Owner, ent.Comp);
-        RaiseIntegrityChanged(ent.Owner);
-
-        if (isFrame && previousIntegrity <= 0f && ent.Comp.Integrity > 0f)
-            RaiseFrameIntegrityChanged(ent.Owner, true);
 
         if (ent.Comp.RepairSound != null)
             _audio.PlayPredicted(ent.Comp.RepairSound, ent.Owner, args.User);
 
         _popup.PopupClient(Loc.GetString("rmc-hardpoint-repaired"), ent.Owner, args.User);
 
-        var vehicle = HasComp<VehicleComponent>(ent.Owner) ? ent.Owner : (GetVehicleFromPart(ent.Owner) ?? ent.Owner);
+        var vehicle = ent.Owner;
         if (TryComp(ent.Owner, out VehicleWheelItemComponent? _))
         {
+            vehicle = GetVehicleFromPart(ent.Owner) ?? ent.Owner;
             _wheels.OnWheelDamaged(vehicle);
         }
         else
@@ -1243,19 +1146,10 @@ public sealed partial class HardpointSystem : EntitySystem
         if (ent.Comp.BypassEntryOnZero)
             RefreshCanRun(vehicle);
 
-        RefreshSupportModifiers(ent.Owner);
         UpdateHardpointUi(vehicle);
-        _spotlight.RefreshVehicleSpotlight(vehicle);
-        _weapons.RefreshSeatGunnerViews(vehicle);
-        _weapons.RefreshVehicleWeaponsUi(vehicle);
 
         if (ShouldRepeatRepair(ent.Owner, ent.Comp, usedWelder, usedWrench, isFrame))
             args.Repeat = true;
-    }
-
-    private static bool IsDestroyedHardpointIrreparable(HardpointIntegrityComponent integrity, bool isFrame)
-    {
-        return !isFrame && integrity.Integrity <= 0f;
     }
 
     private float GetRepairAmountForCurrentStep(
@@ -1296,53 +1190,19 @@ public sealed partial class HardpointSystem : EntitySystem
         var repairFraction = repairAmount / integrity.MaxIntegrity;
         var skillMultiplier = _skills.GetSkillDelayMultiplier(user, EngineerSkill);
 
-        float time;
         if (isFrame)
-            time = integrity.FrameRepairChunkSeconds * (repairFraction / integrity.RepairChunkFraction) * skillMultiplier;
-        else
-        {
-            var repairRate = GetHardpointRepairRate(uid);
-            time = (repairFraction / repairRate) * skillMultiplier;
-        }
+            return integrity.FrameRepairChunkSeconds * (repairFraction / integrity.RepairChunkFraction) * skillMultiplier;
 
-        return MathF.Max(1f, time);
+        var repairRate = GetHardpointRepairRate(uid);
+        return (repairFraction / repairRate) * skillMultiplier;
     }
 
     private float GetHardpointRepairRate(EntityUid uid)
     {
-        if (!TryComp(uid, out HardpointItemComponent? hardpoint))
-            return 0.05f;
+        if (TryComp(uid, out HardpointItemComponent? hardpoint))
+            return hardpoint.RepairRate > 0f ? hardpoint.RepairRate : 0.01f;
 
-        if (hardpoint.SlotType is { } slotTypeId &&
-            _prototypeManager.TryIndex<Robust.Shared.Prototypes.EntityPrototype>(slotTypeId, out var proto) &&
-            proto.Components.TryGetValue("HardpointSlotType", out var entry) &&
-            entry.Component is HardpointSlotTypeComponent slotTypeComp &&
-            slotTypeComp.RepairRate > 0f)
-        {
-            return slotTypeComp.RepairRate;
-        }
-
-        return hardpoint.RepairRate > 0f ? hardpoint.RepairRate : 0.05f;
-    }
-
-    private FixedPoint2 GetFuelCostForChunk(EntityUid uid, HardpointIntegrityComponent integrity, float repairAmount, bool isFrame)
-    {
-        if (integrity.MaxIntegrity <= 0f || repairAmount <= 0f)
-            return FixedPoint2.New(1);
-
-        var repairFraction = repairAmount / integrity.MaxIntegrity;
-
-        float baseSeconds;
-        if (isFrame)
-            baseSeconds = integrity.FrameRepairChunkSeconds * (repairFraction / integrity.RepairChunkFraction);
-        else
-        {
-            var repairRate = GetHardpointRepairRate(uid);
-            baseSeconds = repairFraction / repairRate;
-        }
-
-        var fuelAmount = (int)Math.Max(1, Math.Round(baseSeconds * (float)integrity.FuelPerSecond));
-        return FixedPoint2.New(fuelAmount);
+        return 0.01f;
     }
 
     private bool ShouldRepeatRepair(
@@ -1437,7 +1297,7 @@ public sealed partial class HardpointSystem : EntitySystem
 
             entries.Add(new HardpointUiEntry(
                 slot.Id,
-                slot.HardpointType.Id,
+                slot.HardpointType,
                 installedName,
                 installedEntity,
                 integrity,
@@ -1455,13 +1315,14 @@ public sealed partial class HardpointSystem : EntitySystem
             }
         }
 
-        component.Ui = new HardpointUiState(
-            entries,
-            frameIntegrity,
-            frameMaxIntegrity,
-            hasFrameIntegrity,
-            state.LastUiError);
-        Dirty(uid, component);
+        _ui.SetUiState(uid,
+            HardpointUiKey.Key,
+            new HardpointBoundUserInterfaceState(
+                entries,
+                frameIntegrity,
+                frameMaxIntegrity,
+                hasFrameIntegrity,
+                state.LastUiError));
     }
 
     internal bool HasAttachedHardpoints(EntityUid owner, HardpointSlotsComponent slots, ItemSlotsComponent itemSlots)
@@ -1516,7 +1377,7 @@ public sealed partial class HardpointSystem : EntitySystem
 
             entries.Add(new HardpointUiEntry(
                 compositeId,
-                turretSlot.HardpointType.Id,
+                turretSlot.HardpointType,
                 installedName,
                 installedEntity,
                 integrity,

@@ -1,6 +1,6 @@
 - type: alert
   id: CMUYautjaPower
-  category: Plasma
+  category: YautjaPower
   icons:
   - sprite: /Textures/_RMC14/Interface/Alerts/xeno_plasma.rsi
     state: power_display_full

@@ -1,6 +1,5 @@
 using Content.Shared.Roles;
 using Content.Shared.Whitelist;
-using Content.Shared._RMC14.Language.Prototypes;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
@@ -43,9 +42,6 @@ public sealed partial class SkillPamphletComponent : Component
 
     [DataField, AutoNetworkedField]
     public List<JobWhitelist> JobWhitelists = new();
-
-    [DataField, AutoNetworkedField]
-    public ProtoId<LanguagePrototype>? Language;
 
     [DataRecord]
     [Serializable, NetSerializable]

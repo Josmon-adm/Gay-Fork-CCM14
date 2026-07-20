@@ -11,7 +11,6 @@ namespace Content.Shared.Eye
         Ghost  = 1 << 1,
         Subfloor = 1 << 2,
         CMUMedicalInternals = 1 << 14,
-        ImaginaryFriend = 1 << 15,
-        Xeno = 1 << 16,
+        Xeno = 1 << 15,
     }
 }

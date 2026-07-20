@@ -152,13 +152,12 @@
   - type: StorageFill
     contents:
     - id: CMGrenadeHighExplosive
-      amount: 3
-    - id: RMC40MMGrenadeM74AGMF
-      amount: 2
+      amount: 5
+    - id: CMGrenadeFrag
+      amount: 1
     - id: RMCGrenadeIncendiary
       amount: 2
-    - id: RMC40MMGrenadeM74AGMI
-      amount: 1
+    # TODO Original is 3 HEDP, 2 HIDP incen, 2 airburst frag, 1 airburst incen
 
 - type: entity
   parent: RMCBeltGrenadeLarge
@@ -168,13 +167,12 @@
   - type: StorageFill
     contents:
     - id: CMGrenadeHighExplosive
-      amount: 6
-    - id: RMC40MMGrenadeM74AGMF
-      amount: 6
+      amount: 12
+    - id: CMGrenadeFrag
+      amount: 3
     - id: RMCGrenadeIncendiary
       amount: 3
-    - id: RMC40MMGrenadeM74AGMI
-      amount: 3
+    # TODO Original is 6 HEDP, 3 HIDP incen, 6 airburst frag, 3 airburst incen
 
 - type: entity
   parent: RMCBeltGrenadeLarge
@@ -447,28 +445,6 @@
     - id: RMCMK80
 
 - type: entity
-  parent: RMCBeltHolsterPistolWeYa
-  id: RMCBeltHolsterPistolWeYaM77Fill
-  suffix: Filled, M77
-  components:
-  - type: StorageFill
-    contents:
-    - id: CMMagazinePistolM77AP
-      amount: 6
-    - id: RMCWeaponPistolM77
-
-- type: entity
-  parent: RMCBeltHolsterPistolWeYa
-  id: RMCBeltHolsterPistolWeYaPK7Fill
-  suffix: Filled, PK7
-  components:
-  - type: StorageFill
-    contents:
-    - id: RMCMagazinePistolPK7
-      amount: 6
-    - id: RMCWeaponPistolPK7
-
-- type: entity
   parent: RMCM276ShotgunShellLoadingRig
   id: RMCM276ShotgunShellLoadingRigFill
   suffix: Filled
@@ -630,17 +606,6 @@
     - id: CMMagazinePistolM1984
       amount: 6
     - id: CMWeaponPistolM1984
-
-- type: entity
-  parent: RMCBeltHolsterPistol
-  id: RMCM1911BeltFilledNVCommander
-  suffix: Filled, NV Commander
-  components:
-  - type: StorageFill
-    contents:
-    - id: CMMagazinePistolM1911
-      amount: 6
-    - id: CMWeaponPistolM1911
 
 - type: entity
   parent: RMCBeltHolsterPistol
@@ -868,7 +833,7 @@
   components:
   - type: StorageFill
     contents:
-    - id: RMCMagazineRifleType77
+    - id: RMCMagazineRifleAK4047
       amount: 2
 
 - type: entity

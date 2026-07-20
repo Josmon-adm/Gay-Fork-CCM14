@@ -1,12 +1,8 @@
 - type: statusEffect
   id: Deaf
 
-- type: entity
-  parent: MobStatusEffectBase
+- type: statusEffect
   id: Dazed
-  name: Dazed
-  components:
-  - type: RMCDazed
 
 - type: statusEffect
   id: Blinded

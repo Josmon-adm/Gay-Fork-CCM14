@@ -11,19 +11,15 @@
   icon: RMCJobIconPMCEngineer
   greeting: rmc-job-greeting-solaris-pmc-engineer
   playTimeTracker: RMCJobSurvivorMilitary
-  spawnMenuRoleName: PMC Engineer (Solaris Special Survivor)
+  spawnMenuRoleName: Survivor — PMC Engineer (Solaris Ridge special survivor)
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Japanese
-      - English
-      understoodLanguages:
-      - Japanese
-      - English
-      currentLanguage: English
-      defaultLanguage: English
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivorWeYaPMCEngineer
     - type: RMCSurvivor

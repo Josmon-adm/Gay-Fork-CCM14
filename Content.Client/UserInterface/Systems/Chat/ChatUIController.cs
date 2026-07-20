@@ -145,8 +145,6 @@ public sealed partial class ChatUIController : UIController
     private readonly Dictionary<EntityUid, SpeechBubbleQueueData> _queuedSpeechBubbles
         = new();
 
-    private bool _speechBubblesSuppressed;
-
     private readonly HashSet<ChatBox> _chats = new();
     public IReadOnlySet<ChatBox> Chats => _chats;
 
@@ -489,20 +487,7 @@ public sealed partial class ChatUIController : UIController
         _speechBubbleRoot.Orphan();
         root.AddChild(_speechBubbleRoot);
         LayoutContainer.SetAnchorPreset(_speechBubbleRoot, LayoutContainer.LayoutPreset.Wide);
-        _speechBubbleRoot.Visible = !_speechBubblesSuppressed;
         _speechBubbleRoot.SetPositionLast();
-    }
-
-    public void SetSpeechBubblesSuppressed(bool suppressed)
-    {
-        if (_speechBubblesSuppressed == suppressed)
-            return;
-
-        _speechBubblesSuppressed = suppressed;
-        _speechBubbleRoot.Visible = !suppressed;
-
-        if (suppressed)
-            ClearSpeechBubbles();
     }
 
     private void OnAttachedChanged(EntityUid uid)
@@ -514,9 +499,6 @@ public sealed partial class ChatUIController : UIController
 
     private void AddSpeechBubble(ChatMessage msg, SpeechBubble.SpeechType speechType)
     {
-        if (_speechBubblesSuppressed)
-            return;
-
         var ent = EntityManager.GetEntity(msg.SenderEntity);
 
         if (!EntityManager.EntityExists(ent))
@@ -592,22 +574,6 @@ public sealed partial class ChatUIController : UIController
         {
             _activeSpeechBubbles.Remove(entityUid);
         }
-    }
-
-    private void ClearSpeechBubbles()
-    {
-        _queuedSpeechBubbles.Clear();
-
-        foreach (var bubbles in _activeSpeechBubbles.Values)
-        {
-            foreach (var bubble in bubbles)
-            {
-                bubble.OnDied -= SpeechBubbleDied;
-                bubble.Orphan();
-            }
-        }
-
-        _activeSpeechBubbles.Clear();
     }
 
     private void UpdateChannelPermissions()
@@ -736,9 +702,6 @@ public sealed partial class ChatUIController : UIController
 
     private void UpdateQueuedSpeechBubbles(FrameEventArgs delta)
     {
-        if (_speechBubblesSuppressed)
-            return;
-
         // Update queued speech bubbles.
         if (_queuedSpeechBubbles.Count == 0 || _examine == null)
         {
@@ -953,9 +916,7 @@ public sealed partial class ChatUIController : UIController
     private void OnChatMessage(MsgChatMessage message)
     {
         var msg = message.Message;
-        // RMC14
-        ProcessChatMessage(msg, !msg.HidePopup || msg.UseEmoteSpeechBubble);
-        // RMC14
+        ProcessChatMessage(msg, !msg.HidePopup);
 
         if ((msg.Channel & ChatChannel.AdminRelated) == 0 ||
             _config.GetCVar(CCVars.ReplayRecordAdminChat))
@@ -1034,15 +995,11 @@ public sealed partial class ChatUIController : UIController
         switch (msg.Channel)
         {
             case ChatChannel.Local:
-                // RMC14
-                AddSpeechBubble(msg, msg.UseEmoteSpeechBubble ? SpeechBubble.SpeechType.Emote : SpeechBubble.SpeechType.Say);
-                // RMC14
+                AddSpeechBubble(msg, SpeechBubble.SpeechType.Say);
                 break;
 
             case ChatChannel.Whisper:
-                // RMC14
-                AddSpeechBubble(msg, msg.UseEmoteSpeechBubble ? SpeechBubble.SpeechType.Emote : SpeechBubble.SpeechType.Whisper);
-                // RMC14
+                AddSpeechBubble(msg, SpeechBubble.SpeechType.Whisper);
                 break;
 
             case ChatChannel.Dead:

@@ -158,8 +158,6 @@ public sealed class AttachableHolderSystem : EntitySystem
             var attachableUid = Spawn(attachment, coords);
             if (!_container.Insert(attachableUid, container, containerXform: xform))
                 continue;
-
-            holder.Comp.StartingAttachments[slotId] = attachment.Value;
         }
 
         Dirty(holder);

@@ -5,7 +5,7 @@
   description: cm-job-description-survivor
   playTimeTracker: CMJobSurvivorChancesVehicleRepairman
   startingGear: RMCGearSurvivorChancesVehicleRepairman
-  spawnMenuRoleName: Vehicle Repairman (Chances Colonist)
+  spawnMenuRoleName: Vehicle Repairman (Chance's Colonist)
   greeting: rmc-job-greeting-chances-colonist
   special:
   - !type:AddComponentSpecial

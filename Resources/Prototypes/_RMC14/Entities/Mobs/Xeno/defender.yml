@@ -11,6 +11,8 @@
   name: Defender
   description: An alien with an armored crest.
   components:
+  - type: GhostRole
+    name: cm-job-name-xeno-defender
   - type: Sprite
     sprite: _RMC14/Mobs/Xenonids/Defender/defender.rsi
   - type: MobState
@@ -137,7 +139,6 @@
   - type: XenoEvolution
     strains:
     - CMXenoDefenderSteelcrest
-    - CCMXenoDefenderBodyguard #CCM14 Add
   - type: RMCActionOrder
     id: CMXenoDefender
 

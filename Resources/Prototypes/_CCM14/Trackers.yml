@@ -1,7 +1,3 @@
 - type: trackerMode
   id: LeaderREV
   job: CCMREVLeader
-
-- type: trackerMode
-  id: LeaderSerene
-  job: CCMSereneLeader

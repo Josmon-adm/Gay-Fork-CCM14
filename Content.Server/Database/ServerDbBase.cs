@@ -8,7 +8,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Content.Server._CCM.Database;
 using Content.Server._RMC14.LinkAccount;
-using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
 using Content.Server.IP;
@@ -35,6 +34,10 @@ using Robust.Shared.Utility;
 
 namespace Content.Server.Database
 {
+    public sealed record CCMStoredSponsorshipRecord(
+        CCMSponsorshipTier Tier,
+        long ExpirationUnixSeconds);
+
     public abstract class ServerDbBase
     {
         private readonly ISawmill _opsLog;
@@ -64,7 +67,6 @@ namespace Content.Server.Database
                     .ThenInclude(l => l.Groups)
                     .ThenInclude(group => group.Loadouts)
                 .Include(p => p.Profiles).ThenInclude(p => p.NamedItems)
-                .Include(p => p.Profiles).ThenInclude(h => h.Ranks)
                 .Include(p => p.Profiles).ThenInclude(p => p.SquadPreference)
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(p => p.UserId == userId.UserId, cancel);
@@ -81,7 +83,7 @@ namespace Content.Server.Database
                 // Validate species - only allow: Human, Avali, Arachnid, Moth, Felinid, Dwarf
                 if (convertedProfile is HumanoidCharacterProfile humanoidProfile)
                 {
-                    var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+                    var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
                     if (!allowedSpecies.Contains(humanoidProfile.Species.Id))
                     {
                         humanoidProfile.Species = "Human";
@@ -152,7 +154,6 @@ namespace Content.Server.Database
                 .Include(p => p.Loadouts)
                     .ThenInclude(l => l.Groups)
                     .ThenInclude(group => group.Loadouts)
-                .Include(p => p.Ranks)
                 .Include(p => p.NamedItems)
                 .Include(p => p.SquadPreference)
                 .AsSplitQuery()
@@ -263,9 +264,6 @@ namespace Content.Server.Database
             var jobs = profile.Jobs.ToDictionary(j => new ProtoId<JobPrototype>(j.JobName), j => (JobPriority) j.Priority);
             var antags = profile.Antags.Select(a => new ProtoId<AntagPrototype>(a.AntagName));
             var traits = profile.Traits.Select(t => new ProtoId<TraitPrototype>(t.TraitName));
-            var ranks = profile.Ranks.ToDictionary(
-                r => new ProtoId<JobPrototype>(r.JobName),
-                r => (ProtoId<RankPrototype>?) new ProtoId<RankPrototype>(r.RankName));
 
             var sex = Sex.Male;
             if (Enum.TryParse<Sex>(profile.Sex, true, out var sexVal))
@@ -341,10 +339,9 @@ namespace Content.Server.Database
                 ),
                 spawnPriority,
                 armorPreference,
-                ranks,
                 squadPreference,
                 jobs,
-                (PreferenceUnavailableMode)profile.PreferenceUnavailable,
+                (PreferenceUnavailableMode) profile.PreferenceUnavailable,
                 antags.ToHashSet(),
                 traits.ToHashSet(),
                 loadouts,
@@ -366,8 +363,7 @@ namespace Content.Server.Database
                   profile.CorporateRelationId,
                   profile.BarkVoice,
                   profile.BarkPitch,
-                  profile.BarkSpeed,
-                  profile.Voice
+                  profile.BarkSpeed
               );
         }
 
@@ -420,13 +416,6 @@ namespace Content.Server.Database
                         .Select(t => new Trait {TraitName = t})
             );
 
-            profile.Ranks.Clear();
-            profile.Ranks.AddRange(
-                humanoid.RankPreferences
-                    .Where(r => r.Value != null)
-                    .Select(r => new Rank { JobName = r.Key, RankName = r.Value!.Value.Id })
-            );
-
             profile.Loadouts.Clear();
 
             foreach (var (role, loadouts) in humanoid.Loadouts)
@@ -476,7 +465,6 @@ namespace Content.Server.Database
             profile.BarkVoice = humanoid.BarkVoice;
             profile.BarkPitch = humanoid.BarkPitch;
             profile.BarkSpeed = humanoid.BarkSpeed;
-            profile.Voice = humanoid.Voice;
 
             return profile;
         }
@@ -2525,6 +2513,45 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             return ToCCMCustomizationSnapshot(customization);
         }
 
+        public async Task<CCMStoredSponsorshipRecord?> GetCCMStoredSponsorship(Guid player)
+        {
+            await using var db = await GetDb();
+            await EnsureCCMSponsorshipStorage(db.DbContext);
+
+            var connection = db.DbContext.Database.GetDbConnection();
+            var shouldClose = connection.State != System.Data.ConnectionState.Open;
+            if (shouldClose)
+                await connection.OpenAsync();
+
+            try
+            {
+                await using var command = connection.CreateCommand();
+                command.CommandText = @"
+SELECT tier, expiration_unix_seconds
+FROM ccm_player_sponsorship
+WHERE player_id = @player
+LIMIT 1";
+
+                var playerParameter = command.CreateParameter();
+                playerParameter.ParameterName = "player";
+                playerParameter.Value = player.ToString();
+                command.Parameters.Add(playerParameter);
+
+                await using var reader = await command.ExecuteReaderAsync();
+                if (!await reader.ReadAsync())
+                    return null;
+
+                var tier = (CCMSponsorshipTier) Convert.ToInt32(reader.GetValue(0));
+                var expiration = Convert.ToInt64(reader.GetValue(1));
+                return new CCMStoredSponsorshipRecord(tier, expiration);
+            }
+            finally
+            {
+                if (shouldClose)
+                    await connection.CloseAsync();
+            }
+        }
+
         public async Task AdjustCCMPlayerAchievementStats(
             Guid player,
             int friendlyFireDamageDelta = 0,
@@ -2628,6 +2655,62 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             await db.DbContext.SaveChangesAsync();
         }
 
+        public async Task SaveCCMStoredSponsorship(Guid player, CCMSponsorshipTier tier, long expirationUnixSeconds)
+        {
+            await using var db = await GetDb();
+            await EnsureCCMSponsorshipStorage(db.DbContext);
+
+            var connection = db.DbContext.Database.GetDbConnection();
+            var shouldClose = connection.State != System.Data.ConnectionState.Open;
+            if (shouldClose)
+                await connection.OpenAsync();
+
+            try
+            {
+                await using var command = connection.CreateCommand();
+
+                if (tier == CCMSponsorshipTier.None || expirationUnixSeconds <= 0)
+                {
+                    command.CommandText = "DELETE FROM ccm_player_sponsorship WHERE player_id = @player";
+                    var deletePlayerParameter = command.CreateParameter();
+                    deletePlayerParameter.ParameterName = "player";
+                    deletePlayerParameter.Value = player.ToString();
+                    command.Parameters.Add(deletePlayerParameter);
+                    await command.ExecuteNonQueryAsync();
+                    return;
+                }
+
+                command.CommandText = @"
+INSERT INTO ccm_player_sponsorship (player_id, tier, expiration_unix_seconds)
+VALUES (@player, @tier, @expiration)
+ON CONFLICT(player_id) DO UPDATE SET
+    tier = excluded.tier,
+    expiration_unix_seconds = excluded.expiration_unix_seconds";
+
+                var playerParameter = command.CreateParameter();
+                playerParameter.ParameterName = "player";
+                playerParameter.Value = player.ToString();
+                command.Parameters.Add(playerParameter);
+
+                var tierParameter = command.CreateParameter();
+                tierParameter.ParameterName = "tier";
+                tierParameter.Value = (int) tier;
+                command.Parameters.Add(tierParameter);
+
+                var expirationParameter = command.CreateParameter();
+                expirationParameter.ParameterName = "expiration";
+                expirationParameter.Value = expirationUnixSeconds;
+                command.Parameters.Add(expirationParameter);
+
+                await command.ExecuteNonQueryAsync();
+            }
+            finally
+            {
+                if (shouldClose)
+                    await connection.CloseAsync();
+            }
+        }
+
         private static async Task EnsureCCMCustomizationCompatibility(DbContext dbContext)
         {
             const string addArmorVariantSqlite =
@@ -2700,6 +2783,26 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             }
             catch (Exception e) when (e.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
             {
+            }
+        }
+
+        private static async Task EnsureCCMSponsorshipStorage(DbContext dbContext)
+        {
+            const string createTable = @"
+CREATE TABLE IF NOT EXISTS ccm_player_sponsorship (
+    player_id TEXT PRIMARY KEY,
+    tier INTEGER NOT NULL,
+    expiration_unix_seconds BIGINT NOT NULL
+)";
+
+            try
+            {
+                await dbContext.Database.ExecuteSqlRawAsync(createTable);
+            }
+            catch (SqliteException e) when (e.Message.Contains("database is locked", StringComparison.OrdinalIgnoreCase))
+            {
+                await Task.Delay(200);
+                await dbContext.Database.ExecuteSqlRawAsync(createTable);
             }
         }
 

@@ -1,8 +1,6 @@
 using System.Numerics;
 using Content.Server.Atmos.Components;
 using Content.Server.Spreader;
-using Content.Shared._RMC14.Barricade;
-using Content.Shared._RMC14.CCVar;
 using Content.Shared._RMC14.Communications;
 using Content.Shared._RMC14.Map;
 using Content.Shared._RMC14.Xenonids.Construction.Nest;
@@ -15,7 +13,6 @@ using Content.Shared.Maps;
 using Content.Shared.Physics;
 using Content.Shared.Tag;
 using Robust.Server.GameObjects;
-using Robust.Shared.Configuration;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
@@ -24,7 +21,6 @@ namespace Content.Server._RMC14.Xenonids.Weeds;
 
 public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
 {
-    [Dependency] private readonly IConfigurationManager _config = default!;
     [Dependency] private readonly SharedXenoHiveSystem _hive = default!;
     [Dependency] private readonly MapSystem _map = default!;
     [Dependency] private readonly RMCMapSystem _rmcMap = default!;
@@ -33,7 +29,6 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
     [Dependency] private readonly TransformSystem _transform = default!;
     [Dependency] private readonly AppearanceSystem _appearance = default!;
     [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedDirectionalAttackBlockSystem _directionBlocker = default!;
     [Dependency] private readonly TurfSystem _turf = default!;
 
     private static readonly ProtoId<TagPrototype> IgnoredTag = "SpreaderIgnore";
@@ -48,8 +43,6 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
     private EntityQuery<XenoWeedableComponent> _xenoWeedableQuery;
     private EntityQuery<XenoWeedsComponent> _xenoWeedsQuery;
 
-    private TimeSpan _maxProcessTime;
-
     public override void Initialize()
     {
         base.Initialize();
@@ -60,28 +53,27 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
         _xenoNestSurfaceQuery = GetEntityQuery<XenoNestSurfaceComponent>();
         _xenoWeedableQuery = GetEntityQuery<XenoWeedableComponent>();
         _xenoWeedsQuery = GetEntityQuery<XenoWeedsComponent>();
-
-        Subs.CVar(
-            _config,
-            RMCCVars.RMCWeedSpreadMaxProcessTimeMilliseconds,
-            v => _maxProcessTime = TimeSpan.FromMilliseconds(v),
-            true
-        );
     }
 
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
 
+        _spread.Clear();
+
         var time = _timing.CurTime;
-        for (var i = _spread.Count - 1; i >= 0; i--)
+        var spreadingQuery = EntityQueryEnumerator<XenoWeedsSpreadingComponent, XenoWeedsComponent>();
+        while (spreadingQuery.MoveNext(out var uid, out var spreading, out var weeds))
         {
-            if (_timing.CurTime - time > _maxProcessTime)
-                return;
+            if (time < spreading.SpreadAt)
+                continue;
 
-            var (uid, weeds) = _spread[i];
-            _spread.RemoveAt(i);
+            RemCompDeferred<XenoWeedsSpreadingComponent>(uid);
+            _spread.Add((uid, weeds));
+        }
 
+        foreach (var (uid, weeds) in _spread)
+        {
             if (_transform.GetGrid(uid) is not { } gridId ||
                 !_mapGridQuery.TryComp(gridId, out var gridComp))
             {
@@ -124,9 +116,7 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
                     }
                 }
 
-                if (_directionBlocker.IsDirectionBlocked(uid,
-                        cardinal,
-                        collisionGroup: CollisionGroup.BarricadeImpassable))
+                if (DirectionBlocker.IsDirectionBlocked(uid, cardinal, collisionGroup: CollisionGroup.BarricadeImpassable)) // CCM14
                     blocked = true;
 
                 if (blocked)
@@ -159,7 +149,7 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
                     break;
                 }
 
-                if (!CanSpreadWeedsPopup(grid, neighbor, null, null, weeds.SpreadsOnSemiWeedable))
+                if (!CanSpreadWeedsPopup(grid, neighbor, null, uid, weeds.SpreadsOnSemiWeedable)) // CCM14
                     continue;
 
                 if (weedsToReplace != null)
@@ -173,9 +163,9 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
 
                 EnsureComp<ActiveEdgeSpreaderComponent>(neighborWeeds);
 
-                for (var j = 0; j < 4; j++)
+                for (var i = 0; i < 4; i++)
                 {
-                    var dir = (AtmosDirection)(1 << j);
+                    var dir = (AtmosDirection)(1 << i);
                     var pos = neighbor.Offset(dir);
                     if (!_map.TryGetTileRef(grid, grid, pos, out var adjacent))
                         continue;
@@ -221,19 +211,6 @@ public sealed class XenoWeedsSystem : SharedXenoWeedsSystem
                     }
                 }
             }
-        }
-
-        if (_spread.Count > 0)
-            return;
-
-        var spreadingQuery = EntityQueryEnumerator<XenoWeedsSpreadingComponent, XenoWeedsComponent>();
-        while (spreadingQuery.MoveNext(out var uid, out var spreading, out var weeds))
-        {
-            if (time < spreading.SpreadAt)
-                continue;
-
-            RemCompDeferred<XenoWeedsSpreadingComponent>(uid);
-            _spread.Add((uid, weeds));
         }
     }
 }

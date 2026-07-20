@@ -108,7 +108,6 @@ namespace Content.Server.Light.EntitySystems
                     //RMC14
                     case ExpendableLightState.PhaseThree:
                         component.CurrentState = ExpendableLightState.PhaseFour;
-                        component.StateExpiryTime = (float)component.PhaseFourDuration.TotalSeconds;
 
                         if (component.PhaseFourDuration.TotalSeconds != 0f)
                             UpdateVisualizer(ent);
@@ -116,7 +115,6 @@ namespace Content.Server.Light.EntitySystems
                     //RMC14
                     case ExpendableLightState.PhaseFour:
                         component.CurrentState = ExpendableLightState.PhaseFive;
-                        component.StateExpiryTime = (float)component.PhaseFiveDuration.TotalSeconds;
 
                         if (component.PhaseFiveDuration.TotalSeconds != 0f)
                             UpdateVisualizer(ent);

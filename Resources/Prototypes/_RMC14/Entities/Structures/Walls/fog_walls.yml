@@ -64,12 +64,12 @@
 
 - type: entity
   parent: RMCFogWallWeedPermanent
-  id: RMCFogWallWeed
+  id: RMCFogWallWeed30
   description: These weeds look much thicker than any other xenonid structure, it looks like it is slowly wilting.
-  suffix: 25 minutes, weed wall
+  suffix: 30 minutes, weed wall
   components:
   - type: TimedDespawn
-    lifetime: 1500
+    lifetime: 1800
 
 - type: entity
   parent: MarkerBase

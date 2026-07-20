@@ -88,6 +88,7 @@ namespace Content.IntegrationTests.Tests
             "Savannah",
             "Almayer",
             "RMCAdminFax",
+            "OCP-583",
             "Haurchefant",
             "Breakwater_Strand",
             "UNSEndeavour",

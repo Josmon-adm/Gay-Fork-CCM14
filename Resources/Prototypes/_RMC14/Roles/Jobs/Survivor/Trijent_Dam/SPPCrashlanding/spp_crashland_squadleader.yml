@@ -6,7 +6,7 @@
   ranks:
     RMCRankSPPStarshiySerzhant: []
   icon: "RMCJobIconSPPLeader"
-  spawnMenuRoleName: SPP Airborne Squad Leader (Trijent Special Survivor)
+  spawnMenuRoleName: SPP Airborne Squad Leader (Survivor)
   special:
   - !type:AddComponentSpecial
     components:
@@ -27,23 +27,12 @@
         RMCSkillSpecialistWeapons: 1
         RMCSkillMedical: 2
         RMCSkillOverwatch: 1
-    - type: Language
-      spokenLanguages:
-      - Russian
-      - English
-      - German
-      - Chinese
-      understoodLanguages:
-      - Russian
-      - English
-      - German
-      - Chinese
-      currentLanguage: Russian
-      defaultLanguage: Russian
     - type: MarineOrders
     - type: IntelRescueSurvivorObjective
     - type: AssignSquad
-      squad: SquadSPP
+      whitelist:
+        tags:
+        - RMCSquadSPP
     - type: JobPrefix
       prefix: rmc-job-prefix-crashland-sl
     - type: SquadLeader
@@ -58,16 +47,14 @@
     - type: ScoutWhitelist
     - type: SniperWhitelist
     - type: PyroWhitelist
-    - type: QYJWhitelist
     - type: RMCSurvivor
-    - type: RMCAllowSuitStorage
   hidden: true
 
 - type: startingGear
   parent: RMCGearSPPCrashlandBase
   id: RMCGearSPPCrashlandSL
   equipment:
-    back: RMCSatchelSPPSurvivor
+    back: RMCSatchelSPP
     belt: RMCBeltHolsterRevolverZHNK72Fill
     outerClothing: RMCCoatSPPSurvivorFill
     head: CMHeadCapSPPBeret

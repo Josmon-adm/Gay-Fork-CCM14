@@ -65,7 +65,7 @@
   id: RMCGearCorpseTSEPAConstableThree
   equipment:
     outerClothing: RMCArmorVestTSEPA
-    suitstorage: RMCWeaponShotgunM12
+    suitstorage: RMCWeaponShotgunHG3712
     pocket1: RMCPouchShotgunFilledPolicing
   storage:
     back:

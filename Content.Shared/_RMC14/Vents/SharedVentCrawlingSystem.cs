@@ -49,13 +49,12 @@ public abstract class SharedVentCrawlingSystem : EntitySystem
     public override void Initialize()
     {
         SubscribeLocalEvent<VentEntranceComponent, ExaminedEvent>(OnVentEntranceExamine);
-        SubscribeLocalEvent<VentEntranceComponent, ActivateInWorldEvent>(OnVentEntranceInteract);
+        SubscribeLocalEvent<VentEntranceComponent, InteractHandEvent>(OnVentEntranceInteract);
         SubscribeLocalEvent<VentEntranceComponent, VentEnterDoafterEvent>(OnVentEnterDoafter);
 
         SubscribeLocalEvent<VentExitComponent, VentExitDoafterEvent>(OnVentExitDoafter);
 
         SubscribeLocalEvent<VentCrawlableComponent, MapInitEvent>(OnVentDuctInit);
-        SubscribeLocalEvent<VentCrawlableComponent, ReAnchorEvent>(OnVentReanchor);
         SubscribeLocalEvent<VentCrawlableComponent, MoveEvent>(OnVentDuctMove);
         SubscribeLocalEvent<VentCrawlableComponent, AnchorStateChangedEvent>(OnVentAnchorChanged);
         SubscribeLocalEvent<VentCrawlableComponent, RMCContainerDestructionEmptyEvent>(OnVentContainerDeletionEmpty);
@@ -88,29 +87,12 @@ public abstract class SharedVentCrawlingSystem : EntitySystem
         if(ent.Comp.Enabled)
             args.VisibilityMask |= (int)VisibilityFlags.Subfloor;
     }
-
     private void OnVentDuctInit(Entity<VentCrawlableComponent> vent, ref MapInitEvent args)
     {
-        if (_net.IsClient)
-            return;
-
-        vent.Comp.OriginalTravelDirection = vent.Comp.TravelDirection;
         if (vent.Comp.TravelDirection == PipeDirection.Fourway)
             return;
 
         vent.Comp.TravelDirection = vent.Comp.TravelDirection.RotatePipeDirection(Transform(vent).LocalRotation);
-        Dirty(vent);
-    }
-
-    private void OnVentReanchor(Entity<VentCrawlableComponent> vent, ref ReAnchorEvent args)
-    {
-        if (_net.IsClient)
-            return;
-
-        if (vent.Comp.TravelDirection == PipeDirection.Fourway)
-            return;
-
-        vent.Comp.TravelDirection = vent.Comp.OriginalTravelDirection.RotatePipeDirection(Transform(vent).LocalRotation);
         Dirty(vent);
     }
 
@@ -161,7 +143,7 @@ public abstract class SharedVentCrawlingSystem : EntitySystem
         return true;
     }
 
-    private void OnVentEntranceInteract(Entity<VentEntranceComponent> vent, ref ActivateInWorldEvent args)
+    private void OnVentEntranceInteract(Entity<VentEntranceComponent> vent, ref InteractHandEvent args)
     {
         if (args.Handled)
             return;

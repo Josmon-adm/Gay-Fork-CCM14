@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Content.Shared._RMC14.Buckle;
 using Content.Shared._RMC14.CrashLand;
 using Content.Shared._RMC14.Mobs;
 using Content.Shared._RMC14.Sprite;
@@ -122,15 +121,7 @@ public sealed class RMCSpriteSystem : SharedRMCSpriteSystem
             {
                 if (TryComp(player, out BuckleComponent? buckle) && buckle.Buckled)
                 {
-                    if (buckle.BuckledTo is { } strapEnt &&
-                        TryComp(strapEnt, out RMCStrapDrawDepthComponent? strapDepth))
-                    {
-                        _sprite.SetDrawDepth((player, playerSprite), (int) strapDepth.StrappedDepth - 1);
-                    }
-                    else
-                    {
-                        UpdateDrawDepth(player);
-                    }
+                    UpdateDrawDepth(player);
                     return;
                 }
 

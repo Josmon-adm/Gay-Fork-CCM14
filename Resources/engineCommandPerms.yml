@@ -146,9 +146,3 @@
 - Commands:
   - "|"
   - oldhelp
-
-- Flags: RMCMAINTAINER
-  Commands:
-  - tp
-  - tpto
-  - respawn

@@ -36,6 +36,7 @@
     gloves: RMCHandsBlack
     eyes: RMCGogglesM1A1Ballistic
     mask: RMCMaskRebreather
+    # hand: Vehicle Wheels
 
 - type: entity
   parent: CMSpawnPointJobBase

@@ -115,7 +115,7 @@ public abstract class SharedWeaponMountSystem : EntitySystem
         SubscribeLocalEvent<WeaponMountComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<WeaponMountComponent, GetVerbsEvent<AlternativeVerb>>(OnAltVerb);
         SubscribeLocalEvent<WeaponMountComponent, BreakageEventArgs>(OnBreak);
-        SubscribeLocalEvent<WeaponMountComponent, BeforeDamageChangedEvent>(OnDamageModified);
+        SubscribeLocalEvent<WeaponMountComponent, DamageModifyEvent>(OnDamageModified);
         SubscribeLocalEvent<WeaponMountComponent, RMCCheckTileFreeEvent>(OnCheckTileFree);
         SubscribeLocalEvent<WeaponMountComponent, GetIFFGunUserEvent>(OnGetGunUser);
         SubscribeLocalEvent<WeaponMountComponent, InteractHandEvent>(OnInteractHand, before: new[] { typeof(SharedBuckleSystem) });
@@ -483,12 +483,6 @@ public abstract class SharedWeaponMountSystem : EntitySystem
         {
             var msg = Loc.GetString("emplacement-mount-deploy-broken", ("mount", ent));
             _popup.PopupClient(msg, user, user, PopupType.SmallCaution);
-            return false;
-        }
-
-        if (HasComp<VehicleInteriorOccupantComponent>(user))
-        {
-            _popup.PopupClient(Loc.GetString("emplacement-mount-deploy-vehicle"), user, user, PopupType.SmallCaution);
             return false;
         }
 
@@ -977,14 +971,11 @@ public abstract class SharedWeaponMountSystem : EntitySystem
         UpdateAppearance(ent);
     }
 
-    private void OnDamageModified(Entity<WeaponMountComponent> ent, ref BeforeDamageChangedEvent args)
+    private void OnDamageModified(Entity<WeaponMountComponent> ent, ref DamageModifyEvent args)
     {
-        if (args.Damage.GetTotal() < 0)
-            return;
-
-        // Receive no damage while folded.
+        // Set all damage received to 0 if the mount is folded.
         if (TryComp(ent, out FoldableComponent? foldable) && foldable.IsFolded)
-            args.Cancelled = true;
+            args.Damage = new DamageSpecifier();
     }
 
     private void OnCheckTileFree(Entity<WeaponMountComponent> ent, ref RMCCheckTileFreeEvent args)

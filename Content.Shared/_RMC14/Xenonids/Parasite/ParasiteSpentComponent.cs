@@ -4,8 +4,4 @@ namespace Content.Shared._RMC14.Xenonids.Parasite;
 
 [RegisterComponent, NetworkedComponent]
 [Access(typeof(SharedXenoParasiteSystem))]
-public sealed partial class ParasiteSpentComponent : Component
-{
-    [DataField]
-    public EntityUid? InfectedHost;
-}
+public sealed partial class ParasiteSpentComponent : Component;

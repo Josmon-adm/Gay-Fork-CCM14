@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Content.Shared._RMC14.Vehicle;
-using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._RMC14.Vehicle.Supply;
@@ -13,23 +12,12 @@ public enum VehicleSupplyUIKey
     Key
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleSupplyEntryState
+[Serializable, NetSerializable]
+public sealed class VehicleSupplyEntryState
 {
-    [DataField]
     public string Id;
-
-    [DataField]
     public string Name;
-
-    [DataField]
     public int Count;
-
-    public VehicleSupplyEntryState()
-    {
-        Id = string.Empty;
-        Name = string.Empty;
-    }
 
     public VehicleSupplyEntryState(string id, string name, int count)
     {
@@ -39,39 +27,23 @@ public sealed partial class VehicleSupplyEntryState
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleSupplyUiState
+[Serializable, NetSerializable]
+public sealed class VehicleSupplyBuiState : BoundUserInterfaceState
 {
-    [DataField]
     public VehicleSupplyLiftMode? LiftMode;
-
-    [DataField]
     public bool Busy;
-
-    [DataField]
     public string? ActiveVehicleId;
-
-    [DataField]
+    public string? ActiveVehicleName; // CCM14
     public string? SelectedVehicleId;
-
-    [DataField]
     public int SelectedCopyIndex;
-
-    [DataField]
     public VehicleSupplyPreviewState? Preview;
-
-    [DataField]
     public List<VehicleSupplyEntryState> Available;
 
-    public VehicleSupplyUiState()
-    {
-        Available = new List<VehicleSupplyEntryState>();
-    }
-
-    public VehicleSupplyUiState(
+    public VehicleSupplyBuiState(
         VehicleSupplyLiftMode? liftMode,
         bool busy,
         string? activeVehicleId,
+        string? activeVehicleName, // CCM14
         string? selectedVehicleId,
         int selectedCopyIndex,
         VehicleSupplyPreviewState? preview,
@@ -80,6 +52,7 @@ public sealed partial class VehicleSupplyUiState
         LiftMode = liftMode;
         Busy = busy;
         ActiveVehicleId = activeVehicleId;
+        ActiveVehicleName = activeVehicleName; // CCM14
         SelectedVehicleId = selectedVehicleId;
         SelectedCopyIndex = selectedCopyIndex;
         Preview = preview;
@@ -87,77 +60,42 @@ public sealed partial class VehicleSupplyUiState
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleSupplyPreviewState
+[Serializable, NetSerializable]
+public sealed class VehicleSupplyPreviewState
 {
-    [DataField]
     public string VehicleId;
-
-    [DataField]
     public string? VehicleName; // CCM14
-
-    [DataField]
+    public int CopyIndex;
     public List<VehicleHardpointLayerState> Layers;
-
-    [DataField]
     public List<VehicleSupplyPreviewOverlay> Overlays;
-
-    public VehicleSupplyPreviewState()
-    {
-        VehicleId = string.Empty;
-        VehicleName = string.Empty;
-        Layers = new List<VehicleHardpointLayerState>();
-        Overlays = new List<VehicleSupplyPreviewOverlay>();
-    }
 
     public VehicleSupplyPreviewState(
         string vehicleId,
         string? vehicleName, // CCM14
+        int copyIndex,
         List<VehicleHardpointLayerState> layers,
         List<VehicleSupplyPreviewOverlay> overlays)
     {
         VehicleId = vehicleId;
         VehicleName = vehicleName; // CCM14
+        CopyIndex = copyIndex;
         Layers = layers;
         Overlays = overlays;
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleSupplyPreviewOverlay
+[Serializable, NetSerializable]
+public sealed class VehicleSupplyPreviewOverlay
 {
-    [DataField]
     public string Rsi;
-
-    [DataField]
     public string State;
-
-    [DataField]
     public int Order;
-
-    [DataField]
     public Vector2 BaseOffset;
-
-    [DataField]
     public bool UseDirectional;
-
-    [DataField]
     public Vector2 North;
-
-    [DataField]
     public Vector2 East;
-
-    [DataField]
     public Vector2 South;
-
-    [DataField]
     public Vector2 West;
-
-    public VehicleSupplyPreviewOverlay()
-    {
-        Rsi = string.Empty;
-        State = string.Empty;
-    }
 
     public VehicleSupplyPreviewOverlay(
         string rsi,
@@ -205,12 +143,3 @@ public sealed class VehicleSupplyLiftMsg : BoundUserInterfaceMessage
         Raise = raise;
     }
 }
-
-//CCM14-start
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-public sealed partial class VehicleSupplyTechComponent : Component
-{
-    [DataField, AutoNetworkedField]
-    public List<string> Unlocked = new();
-}
-//CCM14-end

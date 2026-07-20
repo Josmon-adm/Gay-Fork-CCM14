@@ -68,7 +68,6 @@ public sealed partial class HardpointMenu : FancyWindow
     public HardpointMenu()
     {
         RobustXamlLoader.Load(this);
-        OnClose += ClearPreviewOverlays;
     }
 
     protected override void FrameUpdate(FrameEventArgs args)
@@ -147,7 +146,7 @@ public sealed partial class HardpointMenu : FancyWindow
             var panel = new PanelContainer
             {
                 HorizontalExpand = true,
-                MinSize = new Vector2(0, 40),
+                MinSize = new Vector2(0, 48),
                 MouseFilter = Control.MouseFilterMode.Stop
             };
 
@@ -177,8 +176,8 @@ public sealed partial class HardpointMenu : FancyWindow
             var root = new BoxContainer
             {
                 Orientation = BoxContainer.LayoutOrientation.Horizontal,
-                SeparationOverride = 6,
-                Margin = new Thickness(4),
+                SeparationOverride = 8,
+                Margin = new Thickness(6),
                 HorizontalExpand = true
             };
 
@@ -188,7 +187,7 @@ public sealed partial class HardpointMenu : FancyWindow
             {
                 Stretch = SpriteView.StretchMode.Fill,
                 VerticalAlignment = Control.VAlignment.Center,
-                MinSize = new Vector2(32, 32),
+                MinSize = new Vector2(40, 40),
                 OverrideDirection = Direction.South
             };
 
@@ -217,16 +216,35 @@ public sealed partial class HardpointMenu : FancyWindow
                 parentSlot = parentSlotId;
             }
 
+            var header = $"{displaySlot} ({hardpoint.HardpointType})";
             var nameText = hardpoint.HasItem
-                ? hardpoint.InstalledName ?? displaySlot
+                ? hardpoint.InstalledName ?? header
                 : Loc.GetString("rmc-hardpoint-ui-empty-slot");
+
+            centerColumn.AddChild(new Label
+            {
+                Text = nameText,
+                FontColorOverride = Color.FromHex("#E1EEFF")
+            });
+
+            // CCM14-start
+            var slotLine = hardpoint.HasItem ? header : $"{Loc.GetString("rmc-hardpoint-menu-slot-prefix")} {header}";
+            if (parentSlot != null)
+                slotLine += $" | {Loc.GetString("rmc-hardpoint-menu-turret-prefix")} {parentSlot}";
+            // CCM14-end
+
+            centerColumn.AddChild(new Label
+            {
+                Text = slotLine,
+                FontColorOverride = Color.FromHex("#8FA7C2")
+            });
 
             var rightColumn = new BoxContainer
             {
                 Orientation = BoxContainer.LayoutOrientation.Vertical,
-                SeparationOverride = 2,
+                SeparationOverride = 3,
                 VerticalAlignment = Control.VAlignment.Center,
-                MinSize = new Vector2(112, 0)
+                MinSize = new Vector2(170, 0)
             };
 
             if (isRemoving)
@@ -247,7 +265,7 @@ public sealed partial class HardpointMenu : FancyWindow
                 var barRow = new BoxContainer
                 {
                     Orientation = BoxContainer.LayoutOrientation.Horizontal,
-                    SeparationOverride = 6,
+                    SeparationOverride = 8,
                     HorizontalExpand = true
                 };
 
@@ -257,7 +275,7 @@ public sealed partial class HardpointMenu : FancyWindow
                     MaxValue = 1,
                     Value = percent,
                     HorizontalExpand = true,
-                    MinSize = new Vector2(96, 10)
+                    MinSize = new Vector2(120, 12)
                 };
 
                 bar.ForegroundStyleBoxOverride = CreateIntegrityStyle(percent);
@@ -278,22 +296,6 @@ public sealed partial class HardpointMenu : FancyWindow
 
             root.AddChild(centerColumn);
             root.AddChild(rightColumn);
-
-            centerColumn.AddChild(new Label
-            {
-                Text = nameText,
-                FontColorOverride = Color.FromHex("#E1EEFF")
-            });
-
-            var slotLine = hardpoint.HasItem ? displaySlot : $"Open: {displaySlot}";
-            if (parentSlot != null)
-                slotLine = $"{parentSlot} / {slotLine}";
-
-            centerColumn.AddChild(new Label
-            {
-                Text = slotLine,
-                FontColorOverride = Color.FromHex("#8FA7C2")
-            });
 
             HardpointList.AddChild(panel);
         }
@@ -518,7 +520,10 @@ public sealed partial class HardpointMenu : FancyWindow
         foreach (var overlay in _previewOverlays)
         {
             if (!overlay.View.Disposed)
+            {
                 overlay.View.Orphan();
+                overlay.View.Dispose();
+            }
 
             if (_entManager.EntityExists(overlay.Entity))
                 _entManager.DeleteEntity(overlay.Entity);
@@ -527,14 +532,20 @@ public sealed partial class HardpointMenu : FancyWindow
         _previewOverlays.Clear();
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        ClearPreviewOverlays();
+    }
+
     private void UpdateWindowSizing(bool hasFrameIntegrity, bool hasError)
     {
-        const float baseWidth = 520f;
-        const float baseHeight = 176f;
-        const float listPadding = 18f;
-        const float errorHeight = 20f;
-        const float frameHeight = 32f;
-        const float minHeight = 260f;
+        const float baseWidth = 580f;
+        const float baseHeight = 210f;
+        const float listPadding = 24f;
+        const float errorHeight = 24f;
+        const float frameHeight = 40f;
+        const float minHeight = 300f;
 
         HardpointList.InvalidateMeasure();
         HardpointList.Measure(Vector2Helpers.Infinity);

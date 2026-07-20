@@ -12,19 +12,15 @@
   icon: RMCJobIconPMCCommander
   greeting: rmc-job-greeting-solaris-pmc-commander
   playTimeTracker: RMCJobSurvivorCO
-  spawnMenuRoleName: PMC Field Operations Leader (Solaris Special Survivor)
+  spawnMenuRoleName: Survivor — PMC Field Operations Leader (Solaris Ridge special survivor)
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Japanese
-      - English
-      understoodLanguages:
-      - Japanese
-      - English
-      currentLanguage: English
-      defaultLanguage: English
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivorWeYaPMCCommander
     - type: MarineOrders

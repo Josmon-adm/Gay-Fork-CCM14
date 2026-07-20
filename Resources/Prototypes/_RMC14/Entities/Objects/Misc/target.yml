@@ -10,7 +10,6 @@
     state: target_h
     noRot: true
   - type: Appearance
-  - type: RMCTarget
   - type: Spottable
   - type: Repairable
   - type: DamagePopup

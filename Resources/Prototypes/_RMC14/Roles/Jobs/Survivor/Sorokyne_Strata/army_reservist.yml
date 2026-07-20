@@ -17,15 +17,11 @@
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Russian
-      - Chinese
-      understoodLanguages:
-      - Russian
-      - Chinese
-      currentLanguage: Russian
-      defaultLanguage: Russian
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivorSPPPrivate
     - type: EquipSurvivorPreset
@@ -46,7 +42,7 @@
   parent: RMCGearSurvivorBase
   id: RMCGearSurvivorArmyReservist
   equipment:
-    suitstorage: RMCWeaponRifleType77
+    suitstorage: RMCWeaponRifleAK4047
     jumpsuit: RMCJumpsuitSPPArmy
     shoes: CMBootsBlackFilled
     gloves: RMCHandsVeteran
@@ -80,7 +76,7 @@
   - type: EntityPreset
     randomGear:
     - [ RMCGrenadeMolotov ]
-    - [ RMCPackFlareR44 ]
+    - [ CMPackFlare ]
     - [ WeaponNailgun ]
     - [ RMCFireAxe ]
     - [ RMCWelderIndustrial ]

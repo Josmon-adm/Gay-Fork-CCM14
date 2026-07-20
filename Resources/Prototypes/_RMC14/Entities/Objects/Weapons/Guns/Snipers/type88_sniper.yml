@@ -167,7 +167,6 @@
     - range: 4
       falloff: 10
       buildup: true
-  - type: IgnoreSwiftSteps
 
 - type: Tag
   id: RMCType88SniperRifle

@@ -1,16 +1,12 @@
 - type: entity
   id: CMClosetBombFilled
   parent: CMClosetBomb
-  suffix: Filled, Security
+  suffix: Filled
   components:
   - type: StorageFill
     contents:
-      - id: RMCClothingHeadHelmetBombSuitSecurity
-      - id: RMCSuitBombSuitSecurity
-      - id: RMCShoesBrown
-        prob: 0.9
-      - id: RMCJumpsuitCivilianSecurity
-        prob: 0.9
+##      - id: ClothingHeadHelmetBombSuit
+##      - id: ClothingOuterSuitBomb
       - id: CMWirecutter
         prob: 0.9
       - id: CMScrewdriver

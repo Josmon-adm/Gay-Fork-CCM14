@@ -37,8 +37,7 @@
   parent: WallXenoResinThick
   id: WallXenoResinImpenetrable
   name: impenetrable resin wall
-  description: Completely invulnerable. It should degrade into a vulnerable state given enough time.
-  suffix: Invincible, 25 minutes
+  suffix: Invincible, 30 minutes
   components:
   - type: InvincibleHiveStructure
     replace: WallXenoResinThick
@@ -47,8 +46,7 @@
   parent: DoorXenoResinThick
   id: DoorXenoResinImpenetrable
   name: impenetrable resin door
-  description: Completely invulnerable. It should degrade into a vulnerable state given enough time.
-  suffix: Invincible, 25 minutes
+  suffix: Invincible, 30 minutes
   components:
   - type: InvincibleHiveStructure
     replace: DoorXenoResinThick

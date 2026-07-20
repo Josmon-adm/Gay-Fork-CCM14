@@ -1,6 +1,5 @@
 using Content.Client._RMC14.NightVision;
 using Content.Client.Movement.Systems;
-using Content.Shared._RMC14.Mentor.ImaginaryFriend;
 using Content.Shared.Actions;
 using Content.Shared.Ghost;
 using Robust.Client.Console;
@@ -41,7 +40,7 @@ namespace Content.Client.Ghost
                 var query = AllEntityQuery<GhostComponent, SpriteComponent>();
                 while (query.MoveNext(out var uid, out _, out var sprite))
                 {
-                    _sprite.SetVisible((uid, sprite), value || uid == _playerManager.LocalEntity || HasComp<ImaginaryFriendComponent>(uid)); //RMC14
+                    _sprite.SetVisible((uid, sprite), value || uid == _playerManager.LocalEntity);
                 }
             }
         }

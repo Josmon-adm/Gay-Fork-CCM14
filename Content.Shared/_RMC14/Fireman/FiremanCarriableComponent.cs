@@ -1,5 +1,4 @@
 using Content.Shared._RMC14.Marines.Skills;
-using Content.Shared.Whitelist;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 
@@ -23,10 +22,4 @@ public sealed partial class FiremanCarriableComponent : Component
 
     [DataField, AutoNetworkedField]
     public bool BreakingFree;
-
-    [DataField, AutoNetworkedField]
-    public EntityWhitelist? CarrierWhitelist;
-
-    [DataField, AutoNetworkedField]
-    public bool CanThrow = false;
 }

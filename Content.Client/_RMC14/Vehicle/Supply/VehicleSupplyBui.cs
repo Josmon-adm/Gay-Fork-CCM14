@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Content.Client._RMC14.Vehicle.Ui;
-using Content.Shared._RMC14.UserInterface;
 using Content.Shared._RMC14.Vehicle.Supply;
 using Robust.Client.Graphics;
 using Robust.Client.GameObjects;
@@ -13,10 +10,9 @@ using Robust.Shared.Maths;
 
 namespace Content.Client._RMC14.Vehicle.Supply;
 
-public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
+public sealed class VehicleSupplyBui : BoundUserInterface
 {
     private VehicleSupplyWindow? _window;
-    private VehicleSupplyWindowController? _windowController;
     private string? _selectedVehicleId;
     private bool _suppressEvents;
     private readonly List<string> _availableVehicleIds = new();
@@ -40,65 +36,54 @@ public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
         if (_window == null)
             return;
 
-        _window.OnClose += Close;
-        _windowController = new VehicleSupplyWindowController(_window);
         _window.Title = string.Empty;
         _window.RaiseButton.OnPressed += _ => SendMessage(new VehicleSupplyLiftMsg(true));
         _window.LowerButton.OnPressed += _ => SendMessage(new VehicleSupplyLiftMsg(false));
-        Refresh();
     }
 
-    protected override void Dispose(bool disposing)
+    protected override void UpdateState(BoundUserInterfaceState state)
     {
-        base.Dispose(disposing);
+        base.UpdateState(state);
 
-        if (!disposing)
+        if (state is not VehicleSupplyBuiState uiState || _window == null)
             return;
 
-        if (_window != null)
-            _window.OnClose -= Close;
-
-        _windowController?.Dispose();
-        _windowController = null;
-        _window?.Dispose();
-        _window = null;
-    }
-
-    public void Refresh()
-    {
-        if (_window == null)
-            return;
-
-        if (!EntMan.TryGetComponent(Owner, out VehicleSupplyConsoleComponent? console))
-            return;
-
-        var uiState = console.Ui;
         _suppressEvents = true;
         UpdateStatus(uiState);
         UpdateLists(uiState);
-        _windowController?.RefreshPreview(uiState.Preview, GetSelectedVehicleName(uiState));
+        _window.SetPreview(uiState.Preview);
         _suppressEvents = false;
     }
 
-    private void UpdateStatus(VehicleSupplyUiState state)
+    private void UpdateStatus(VehicleSupplyBuiState state)
     {
         if (_window == null)
             return;
 
-        var modeText = state.LiftMode?.ToString() ?? "No lift";
-        var activeText = string.IsNullOrWhiteSpace(state.ActiveVehicleId) ? "none" : state.ActiveVehicleId;
-        var busyText = state.Busy ? "busy" : "idle";
+        // CCM14-start
+        var modeText = state.LiftMode switch
+        {
+            VehicleSupplyLiftMode.Lowered => Loc.GetString("rmc-vehicle-lift-mode-lowered"),
+            VehicleSupplyLiftMode.Raised => Loc.GetString("rmc-vehicle-lift-mode-raised"),
+            VehicleSupplyLiftMode.Lowering => Loc.GetString("rmc-vehicle-lift-mode-lowering"),
+            VehicleSupplyLiftMode.Raising => Loc.GetString("rmc-vehicle-lift-mode-raising"),
+            VehicleSupplyLiftMode.Preparing => Loc.GetString("rmc-vehicle-lift-mode-preparing"),
+            _ => Loc.GetString("rmc-vehicle-supply-lift-none")
+        };
+        var activeText = string.IsNullOrWhiteSpace(state.ActiveVehicleName) ? Loc.GetString("rmc-vehicle-supply-vehicle-none") : state.ActiveVehicleName; // CCM14
+        var busyText = state.Busy ? Loc.GetString("rmc-vehicle-supply-status-busy") : Loc.GetString("rmc-vehicle-supply-status-idle");
 
-        _window.StatusLabel.Text = $"Lift: {modeText} | Status: {busyText} | Active: {activeText}";
+        _window.StatusLabel.Text = Loc.GetString("rmc-vehicle-supply-status", ("mode", modeText), ("status", busyText), ("active", activeText));
+        // CCM14-end
 
         var raising = state.LiftMode == VehicleSupplyLiftMode.Raising;
         var lowering = state.LiftMode == VehicleSupplyLiftMode.Lowering;
         _window.RaiseButton.Pulse = raising;
         _window.LowerButton.Pulse = lowering;
-        _windowController?.RefreshLiftActivity(state.LiftMode, state.Busy);
+        _window.SetLiftActivity(state.LiftMode, state.Busy);
     }
 
-    private void UpdateLists(VehicleSupplyUiState state)
+    private void UpdateLists(VehicleSupplyBuiState state)
     {
         if (_window == null)
             return;
@@ -171,7 +156,7 @@ public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
             {
                 var copyToggle = new HardpointButton
                 {
-                    LabelText = _copyExpanded.Contains(vehicleId) ? "Copies v" : "Copies >",
+                    LabelText = _copyExpanded.Contains(vehicleId) ? Loc.GetString("rmc-vehicle-supply-copies-expanded") : Loc.GetString("rmc-vehicle-supply-copies-collapsed"), // CCM14
                     MinSize = new Vector2(110, 0)
                 };
 
@@ -188,7 +173,7 @@ public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
                     var copyIndex = i;
                     var copyButton = new HardpointButton
                     {
-                        LabelText = $"    #{i + 1}",
+                        LabelText = Loc.GetString("rmc-vehicle-supply-copy-number", ("number", i + 1)), // CCM14
                         HorizontalExpand = true
                     };
 
@@ -306,7 +291,7 @@ public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
 
         var expanded = _copyExpanded.Contains(vehicleId);
         container.Visible = expanded;
-        toggle.LabelText = expanded ? "Copies v" : "Copies >";
+        toggle.LabelText = expanded ? Loc.GetString("rmc-vehicle-supply-copies-expanded") : Loc.GetString("rmc-vehicle-supply-copies-collapsed"); // CCM14
     }
 
     private static void ApplySelectionStyle(HardpointButton button, bool selected)
@@ -322,20 +307,5 @@ public sealed class VehicleSupplyBui : BoundUserInterface, IRefreshableBui
         button.DisabledTextColor = HardpointButton.DefaultDisabledTextColor;
 
         button.RefreshStyle();
-    }
-
-    private string? GetSelectedVehicleName(VehicleSupplyUiState state)
-    {
-        var selectedId = state.SelectedVehicleId;
-        if (string.IsNullOrWhiteSpace(selectedId))
-            return null;
-
-        foreach (var entry in state.Available)
-        {
-            if (entry.Id == selectedId)
-                return entry.Name;
-        }
-
-        return null;
     }
 }

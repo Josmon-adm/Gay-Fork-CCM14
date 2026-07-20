@@ -97,9 +97,9 @@
           - RMCAttachmentFlashlightGrip
           - RMCAttachmentGyroscopicStabilizer
           - RMCAttachmentU7UnderbarrelShotgun
-          - RMCAttachmentUnderbarrelExtinguisher
+          - RMCAttachmentExtinguisher
           - RMCAttachmentBurstFireAssembly
-          - RMCAttachmentMiniFlamethrower
+          - RMCAttachmentFlamer
         random:
           - RMCAttachmentU7UnderbarrelShotgun
           - RMCAttachmentGyroscopicStabilizer

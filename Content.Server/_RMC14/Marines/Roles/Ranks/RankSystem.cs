@@ -1,9 +1,7 @@
-using Content.Server.Players.PlayTimeTracking;
-using Content.Server.Preferences.Managers;
+﻿using Content.Server.Players.PlayTimeTracking;
 using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Shared.Chat;
 using Content.Shared.GameTicking;
-using Content.Shared.Preferences;
 using Content.Shared.Roles;
 using Robust.Shared.Prototypes;
 
@@ -13,7 +11,7 @@ public sealed class RankSystem : SharedRankSystem
 {
     [Dependency] private readonly PlayTimeTrackingManager _tracking = default!;
     [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly IServerPreferencesManager _preferences = default!;
+    [Dependency] private readonly IEntityManager _entityManager = default!;
 
     public override void Initialize()
     {
@@ -50,66 +48,27 @@ public sealed class RankSystem : SharedRankSystem
             playTimes ??= new Dictionary<string, TimeSpan>();
         }
 
-        var profile = ev.Player != null
-            ? _preferences.GetPreferences(ev.Player.UserId).SelectedCharacter as HumanoidCharacterProfile
-            : HumanoidCharacterProfile.RandomWithSpecies();
-
-        if (profile == null)
-            return;
-
-        profile.RankPreferences.TryGetValue(ev.JobId, out var preferredRankId);
-
-        // First pass: try to honour the player's explicit rank preference.
-        if (preferredRankId != null)
+        foreach (var rank in jobPrototype.Ranks)
         {
-            if (jobPrototype.Ranks.TryGetValue(preferredRankId.Value, out var preferredRequirements))
-            {
-                var requirementsMet = true;
-                if (preferredRequirements != null)
-                {
-                    foreach (var req in preferredRequirements)
-                    {
-                        if (!req.Check(EntityManager, _prototypes, ev.Profile, playTimes, out _))
-                        {
-                            requirementsMet = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (requirementsMet && _prototypes.TryIndex(preferredRankId.Value, out RankPrototype? preferred))
-                {
-                    SetRank(ev.Mob, preferred);
-                    return;
-                }
-            }
-        }
-
-        // Fallback / auto: iterate ranks in definition order & take the first one whose
-        // playtime requirements pass. Ranks are defined highest-to-lowest in YAML so this
-        // naturally gives the highest rank the player has earned.
-        foreach (var (rankProtoId, jobRequirements) in jobPrototype.Ranks)
-        {
-            if (!_prototypes.TryIndex(rankProtoId, out RankPrototype? rankPrototype))
-                continue;
-
             var failed = false;
-            if (jobRequirements != null)
+            var jobRequirements = rank.Value;
+
+            if (_prototypes.TryIndex<RankPrototype>(rank.Key, out var rankPrototype) && rankPrototype != null)
             {
-                foreach (var req in jobRequirements)
+                if (jobRequirements != null)
                 {
-                    if (!req.Check(EntityManager, _prototypes, ev.Profile, playTimes, out _))
+                    foreach (var req in jobRequirements)
                     {
-                        failed = true;
-                        break;
+                        if (!req.Check(_entityManager, _prototypes, ev.Profile, playTimes, out _))
+                            failed = true;
                     }
                 }
-            }
 
-            if (!failed)
-            {
-                SetRank(ev.Mob, rankPrototype);
-                return;
+                if (!failed)
+                {
+                    SetRank(ev.Mob, rankPrototype);
+                    break;
+                }
             }
         }
     }

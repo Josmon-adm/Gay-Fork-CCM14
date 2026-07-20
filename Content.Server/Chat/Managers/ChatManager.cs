@@ -7,7 +7,6 @@ using System;
 using System.Threading;
 using Content.Server._RMC14.Admin;
 using Content.Server._CCM.Sponsorship;
-using Content.Server._Forge.Sponsor;
 using Content.Server._RMC14.Discord;
 using Content.Server._RMC14.LinkAccount;
 using Content.Server._RMC14.Mentor;
@@ -64,7 +63,7 @@ internal sealed partial class ChatManager : IChatManager
     // RMC14
     [Dependency] private readonly LinkAccountManager _linkAccount = default!;
     [Dependency] private readonly CCMCustomizationManager _ccmCustomization = default!;
-    [Dependency] private readonly SponsorManager _ccmSponsorship = default!;
+    [Dependency] private readonly CCMSponsorshipManager _ccmSponsorship = default!;
     [Dependency] private readonly RMCDiscordManager _discord = default!;
     [Dependency] private readonly MentorManager _mentor = default!;
     [Dependency] private readonly RMCChatBansManager _rmcChatBans = default!;
@@ -598,20 +597,14 @@ internal sealed partial class ChatManager : IChatManager
         }
     }
 
-    // RMC14
-    public void ChatMessageToOne(ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat, INetChannel client, Color? colorOverride = null, bool recordReplay = false, string? audioPath = null, float audioVolume = 0, NetUserId? author = null, bool hidePopup = false,
-        bool useEmoteSpeechBubble = false,
-        string? languageIcon = null)
+    public void ChatMessageToOne(ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat, INetChannel client, Color? colorOverride = null, bool recordReplay = false, string? audioPath = null, float audioVolume = 0, NetUserId? author = null, bool hidePopup = false)
     {
         var user = author == null ? null : EnsurePlayer(author);
         var netSource = _entityManager.GetNetEntity(source);
         user?.AddEntity(netSource);
 
-        // RMC14
-        var msg = new ChatMessage(channel, message, wrappedMessage, netSource, user?.Key, hideChat, colorOverride, audioPath, audioVolume, hidePopup, useEmoteSpeechBubble, speechStyleClass: _entityManager.GetComponentOrNull<RMCSpeechBubbleSpecificStyleComponent>(source)?.SpeechStyleClass, repeatCheckSender: !_entityManager.HasComponent<ChatRepeatIgnoreSenderComponent>(source),
-            languageIcon: languageIcon);
-        // RMC14
-        _netManager.ServerSendMessage(new MsgChatMessage() { Message = msg }, client);
+        var msg = new ChatMessage(channel, message, wrappedMessage, netSource, user?.Key, hideChat, colorOverride, audioPath, audioVolume, hidePopup, speechStyleClass: _entityManager.GetComponentOrNull<RMCSpeechBubbleSpecificStyleComponent>(source)?.SpeechStyleClass, repeatCheckSender: !_entityManager.HasComponent<ChatRepeatIgnoreSenderComponent>(source));
+        ChatMessageToOne(msg, client, recordReplay);
     }
 
     public void ChatMessageToOne(ChatMessage message, INetChannel client, bool recordReplay = false)

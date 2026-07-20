@@ -7,9 +7,9 @@
   - type: Sprite
     state: warray
   - type: HardpointItem
-    hardpointType: HardpointTypeSupport
-    vehicleFamily: HardpointVehicleFamilyTank
-    slotType: HardpointSlotTypeSupportAttachment
+    hardpointType: Support
+    vehicleFamily: Tank
+    slotType: SupportAttachment
     damageMultiplier: 0.075
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -19,7 +19,6 @@
     fireRateMultiplier: 1.15
   - type: HardpointVisual
     vehicleState: warray_0
-    damagedVehicleState: warray_1
 
 - type: entity
   parent: VehicleTankHardpointBase
@@ -30,9 +29,9 @@
   - type: Sprite
     state: odrive_enhancer
   - type: HardpointItem
-    hardpointType: HardpointTypeSupport
-    vehicleFamily: HardpointVehicleFamilyTank
-    slotType: HardpointSlotTypeSupportAttachment
+    hardpointType: Support
+    vehicleFamily: Tank
+    slotType: SupportAttachment
     damageMultiplier: 0.075
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -41,7 +40,6 @@
     speedMultiplier: 1.2
   - type: HardpointVisual
     vehicleState: odrive_enhancer_0
-    damagedVehicleState: odrive_enhancer_1
 
 - type: entity
   parent: VehicleTankHardpointBase
@@ -52,9 +50,9 @@
   - type: Sprite
     state: slauncher_0
   - type: HardpointItem
-    hardpointType: HardpointTypeSupport
-    vehicleFamily: HardpointVehicleFamilyTank
-    slotType: HardpointSlotTypeSupportAttachment
+    hardpointType: Support
+    vehicleFamily: Tank
+    slotType: SupportAttachment
     damageMultiplier: 0.075
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -67,6 +65,7 @@
     pixelOffsetWest: "10,0"
   - type: GunUseGunOrigin
   - type: GunIgnoreContainerOwnerCollision
+  - type: GunIgnorePrediction
   - type: Gun
     fireRate: 0.6
     projectileSpeed: 18
@@ -88,7 +87,7 @@
   - type: GunFireArc
     arc: 360
   - type: RefillableByBulletBox
-    bulletType: VehicleAmmoBoxSmokeLauncher
+    bulletType: VehicleAmmoBoxGrenadeLauncher
   - type: GunMuzzleOffset
     offset: "0,0"
     useDirectionalOffsets: true
@@ -108,9 +107,9 @@
   - type: Sprite
     state: slauncher_1
   - type: HardpointItem
-    hardpointType: HardpointTypeSupport
-    vehicleFamily: HardpointVehicleFamilyTank
-    slotType: HardpointSlotTypeSupportAttachment
+    hardpointType: Support
+    vehicleFamily: Tank
+    slotType: SupportAttachment
     damageMultiplier: 0.075
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -123,6 +122,7 @@
     pixelOffsetWest: "10,0"
   - type: GunUseGunOrigin
   - type: GunIgnoreContainerOwnerCollision
+  - type: GunIgnorePrediction
   - type: Gun
     fireRate: 0.5
     projectileSpeed: 20
@@ -167,9 +167,9 @@
   - type: Sprite
     state: artillery
   - type: HardpointItem
-    hardpointType: HardpointTypeSupport
-    vehicleFamily: HardpointVehicleFamilyTank
-    slotType: HardpointSlotTypeSupportAttachment
+    hardpointType: Support
+    vehicleFamily: Tank
+    slotType: SupportAttachment
     damageMultiplier: 0.075
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -180,5 +180,4 @@
     cursorPvsIncrease: 0.5
   - type: HardpointVisual
     vehicleState: artillerymod_0
-    damagedVehicleState: artillerymod_1
 

@@ -3,10 +3,6 @@ using Robust.Shared.Audio;
 using Content.Server.Chat;
 using Content.Server.Chat.Systems;
 using Content.Shared.CCVar;
-// RMC14
-using Content.Shared._RMC14.Language.Prototypes;
-using Content.Shared._RMC14.Xenonids;
-// RMC14
 using Content.Shared.Speech;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Configuration;
@@ -22,10 +18,8 @@ namespace Content.Server.Speech
         [Dependency] private readonly IGameTiming _gameTiming = default!;
         [Dependency] private readonly IPrototypeManager _protoManager = default!;
         [Dependency] private readonly IRobustRandom _random = default!;
-        // RMC14
         [Dependency] private readonly SharedAudioSystem _audio = default!;
         [Dependency] private readonly IConfigurationManager _cfg = default!;
-        // RMC14
 
         public override void Initialize()
         {
@@ -34,22 +28,17 @@ namespace Content.Server.Speech
             SubscribeLocalEvent<SpeechComponent, EntitySpokeEvent>(OnEntitySpoke);
         }
 
-        // RMC14
-        public SoundSpecifier? GetSpeechSound(
-            Entity<SpeechComponent> ent,
-            string message,
-            ProtoId<SpeechSoundsPrototype>? speechSoundsOverride = null)
+        public SoundSpecifier? GetSpeechSound(Entity<SpeechComponent> ent, string message)
         {
             if (_cfg.GetCVar(CCVars.BarksEnabled))
                 return null;
 
-            var speechSounds = speechSoundsOverride ?? ent.Comp.SpeechSounds;
-            if (speechSounds == null)
+            if (ent.Comp.SpeechSounds == null)
                 return null;
 
             // Play speech sound
             SoundSpecifier? contextSound;
-            var prototype = _protoManager.Index<SpeechSoundsPrototype>(speechSounds);
+            var prototype = _protoManager.Index<SpeechSoundsPrototype>(ent.Comp.SpeechSounds);
 
             // Different sounds for ask/exclaim based on last character
             contextSound = message[^1] switch
@@ -75,42 +64,25 @@ namespace Content.Server.Speech
             contextSound.Params = ent.Comp.AudioParams.WithPitchScale(scale);
             return contextSound;
         }
-        // RMC14
 
-        // RMC14
-        private ProtoId<SpeechSoundsPrototype>? GetSpeechSoundOverride(EntityUid uid, ProtoId<LanguagePrototype>? language)
+        private void OnEntitySpoke(EntityUid uid, SpeechComponent component, EntitySpokeEvent args)
         {
-            if (language == null ||
-                !_protoManager.TryIndex(language.Value, out var languageProto))
-            {
-                return null;
-            }
+            if (_cfg.GetCVar(CCVars.BarksEnabled))
+                return;
 
-            if (HasComp<XenoComponent>(uid))
-                return null;
-
-            return languageProto.SpeechOverride.SpeechSoundsOverride;
-        }
-        // RMC14
-
-        // RMC14
-        private void OnEntitySpoke(Entity<SpeechComponent> ent, ref EntitySpokeEvent args)
-        {
-            var effectiveSpeechSounds = GetSpeechSoundOverride(ent.Owner, args.Language) ?? ent.Comp.SpeechSounds;
-            if (effectiveSpeechSounds == null)
+            if (component.SpeechSounds == null)
                 return;
 
             var currentTime = _gameTiming.CurTime;
-            var cooldown = TimeSpan.FromSeconds(ent.Comp.SoundCooldownTime);
+            var cooldown = TimeSpan.FromSeconds(component.SoundCooldownTime);
 
             // Ensure more than the cooldown time has passed since last speaking
-            if (currentTime - ent.Comp.LastTimeSoundPlayed < cooldown)
+            if (currentTime - component.LastTimeSoundPlayed < cooldown)
                 return;
 
-            var sound = GetSpeechSound(ent, args.Message, effectiveSpeechSounds);
-            ent.Comp.LastTimeSoundPlayed = currentTime;
-            _audio.PlayPvs(sound, ent.Owner);
+            var sound = GetSpeechSound((uid, component), args.Message);
+            component.LastTimeSoundPlayed = currentTime;
+            _audio.PlayPvs(sound, uid);
         }
-        // RMC14
     }
 }

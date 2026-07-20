@@ -1,6 +1,3 @@
-﻿using Content.Shared._RMC14.AlertLevel;
-using Content.Shared._RMC14.ARES;
-using Content.Shared._RMC14.ARES.Logs;
 using Content.Shared._RMC14.AlertLevel;
 using Content.Shared._RMC14.Marines.Announce;
 using Content.Shared._RMC14.Commendations;
@@ -31,7 +28,6 @@ public abstract class SharedMarineControlComputerSystem : EntitySystem
     [Dependency] private readonly RMCAlertLevelSystem _alertLevel = default!;
     [Dependency] private readonly SharedCommendationSystem _commendation = default!;
     [Dependency] private readonly IConfigurationManager _config = default!;
-    [Dependency] private readonly ARESCoreSystem _core = default!;
     [Dependency] private readonly DialogSystem _dialog = default!;
     [Dependency] private readonly SharedEvacuationSystem _evacuation = default!;
     [Dependency] private readonly SharedMarineAnnounceSystem _marineAnnounce = default!;
@@ -43,7 +39,6 @@ public abstract class SharedMarineControlComputerSystem : EntitySystem
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly WarshipSystem _warship = default!;
 
-    private static readonly EntProtoId<ARESLogTypeComponent> LogCat = "ARESTabAnnouncementLogs";
     private int _characterLimit = 1000;
 
     public override void Initialize()
@@ -308,10 +303,9 @@ public abstract class SharedMarineControlComputerSystem : EntitySystem
             args.Message,
             Loc.GetString("rmc-announcement-author-shipside"),
             sound: SharedMarineAnnounceSystem.AresAnnouncementSound,
-            filter: Filter.BroadcastMap(map).RemoveWhereAttachedEntity(e => !HasComp<MarineComponent>(e) && !HasComp<GhostComponent>(e))
+            filter: Filter.BroadcastMap(map).RemoveWhereAttachedEntity(e => !HasComp<MarineComponent>(e) && !HasComp<GhostComponent>(e)),
+            excludeSurvivors: false
         );
-
-        _core.CreateARESLog(ent, LogCat, (string)$"{Name(user)} sent a Warship Announcement: {args.Message}");
     }
 
     private void OnMedal(Entity<MarineControlComputerComponent> ent, ref MarineControlComputerMedalMsg args)

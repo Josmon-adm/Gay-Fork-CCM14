@@ -109,8 +109,6 @@
   components:
   - type: Weldable
     time: 3
-  - type: RMCWeldEffectSource
-    startingOffset: 0, -0.5
   - type: WiresVisuals
   - type: ExtensionCableReceiver
   - type: Electrified

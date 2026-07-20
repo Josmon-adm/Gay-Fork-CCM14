@@ -69,8 +69,6 @@
       types:
         Blunt: 80
   - type: XenoCrusherChargable
-    instantDestroy: True
-    passOnDestroy: True
   - type: RMCMesonsNonviewable
   - type: Tag
     tags:

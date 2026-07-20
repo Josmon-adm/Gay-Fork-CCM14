@@ -20,8 +20,5 @@ public sealed partial class VentCrawlableComponent : Component
     public PipeDirection TravelDirection;
 
     [DataField, AutoNetworkedField]
-    public PipeDirection OriginalTravelDirection;
-
-    [DataField, AutoNetworkedField]
     public SoundSpecifier? TravelSound = new SoundCollectionSpecifier("XenoVentCrawl");
 }

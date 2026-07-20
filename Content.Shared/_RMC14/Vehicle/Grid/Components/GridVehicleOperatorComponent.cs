@@ -1,6 +1,6 @@
 using Robust.Shared.GameStates;
 
-namespace Content.Shared._RMC14.Vehicle;
+namespace Content.Shared.Vehicle.Components;
 
 [RegisterComponent, NetworkedComponent]
 [Access(typeof(VehicleSystem))]

@@ -28,11 +28,18 @@ public sealed partial class VehicleViewToggleComponent : Component
     [DataField, AutoNetworkedField]
     public bool IsOutside;
 
-    [DataField, AutoNetworkedField]
+    [DataField]
     public HashSet<EntityUid> Sources = new();
 }
 
 public sealed partial class VehicleToggleViewActionEvent : InstantActionEvent;
 
-[ByRefEvent]
-public readonly record struct VehicleViewToggledEvent(bool IsOutside);
+public sealed class VehicleViewToggledEvent : EntityEventArgs
+{
+    public readonly bool IsOutside;
+
+    public VehicleViewToggledEvent(bool isOutside)
+    {
+        IsOutside = isOutside;
+    }
+}

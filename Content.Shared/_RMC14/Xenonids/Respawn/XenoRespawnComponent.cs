@@ -15,10 +15,10 @@ public sealed partial class XenoRespawnComponent : Component
     public TimeSpan RespawnAt;
 
     [DataField]
-    public bool RespawnAtLocation = false;
+    public bool RespawnAtCorpse = false;
 
     [DataField]
-    public EntityCoordinates? Location;
+    public EntityCoordinates? CorpseLocation;
 
     [DataField]
     public EntProtoId Larva = "CMXenoLarva";

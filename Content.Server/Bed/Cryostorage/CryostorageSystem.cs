@@ -10,7 +10,7 @@ using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
 using Content.Server.StationRecords;
 using Content.Server.StationRecords.Systems;
-using Content.Shared._RMC14.Cryostorage; // RMC14 cryo recovery console hooks.
+using Content.Shared._RMC14.Cryostorage;
 using Content.Shared.Access.Systems;
 using Content.Shared.Bed.Cryostorage;
 using Content.Shared.Chat;
@@ -79,17 +79,6 @@ public sealed class CryostorageSystem : SharedCryostorageSystem
         UpdateCryostorageUIState(ent);
     }
 
-    /// <summary>
-    /// RMC14: lets sidecar recovery systems refresh vanilla cryostorage windows after moving or hiding items.
-    /// </summary>
-    public void RefreshCryostorageUI(EntityUid uid, CryostorageComponent? component = null)
-    {
-        if (!Resolve(uid, ref component, false))
-            return;
-
-        UpdateCryostorageUIState((uid, component));
-    }
-
     private void OnRemoveItemBuiMessage(Entity<CryostorageComponent> ent, ref CryostorageRemoveItemBuiMessage args)
     {
         var (_, comp) = ent;
@@ -121,13 +110,6 @@ public sealed class CryostorageSystem : SharedCryostorageSystem
 
         if (entity == null)
             return;
-
-        // RMC14: stock cryo gear stays on the body, but is unavailable through both chamber and recovery UIs.
-        if (HasComp<RMCCryoUnavailableOnStoreComponent>(entity.Value))
-        {
-            UpdateCryostorageUIState(ent);
-            return;
-        }
 
         AdminLog.Add(LogType.Action, LogImpact.High,
             $"{ToPrettyString(attachedEntity):player} removed item {ToPrettyString(entity)} from cryostorage-contained player " +
@@ -241,7 +223,6 @@ public sealed class CryostorageSystem : SharedCryostorageSystem
         UpdateCryostorageUIState((cryostorageEnt.Value, cryostorageComponent));
         AdminLog.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(ent):player} was entered into cryostorage inside of {ToPrettyString(cryostorageEnt.Value)}");
 
-        // RMC14: notify recovery consoles without changing vanilla storage ownership.
         var ev = new EnteredCryostorageEvent();
         RaiseLocalEvent(ent, ref ev);
         if (!TryComp<StationRecordsComponent>(station, out var stationRecords))
@@ -300,7 +281,6 @@ public sealed class CryostorageSystem : SharedCryostorageSystem
         AdminLog.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(entity):player} re-entered the game from cryostorage {ToPrettyString(cryostorage)}");
         UpdateCryostorageUIState((cryostorage, cryostorageComponent));
 
-        // RMC14: recovery consoles must stop listing bodies that re-entered the round.
         var ev = new LeftCryostorageEvent();
         RaiseLocalEvent(entity, ref ev);
     }
@@ -344,20 +324,12 @@ public sealed class CryostorageSystem : SharedCryostorageSystem
         var enumerator = _inventory.GetSlotEnumerator(uid);
         while (enumerator.NextItem(out var item, out var slotDef))
         {
-            // RMC14: keep unavailable stock gear out of the upstream chamber UI as well.
-            if (HasComp<RMCCryoUnavailableOnStoreComponent>(item))
-                continue;
-
             data.ItemSlots.Add(slotDef.Name, Name(item));
         }
 
         foreach (var hand in _hands.EnumerateHands(uid))
         {
             if (!_hands.TryGetHeldItem(uid, hand, out var heldEntity))
-                continue;
-
-            // RMC14: keep unavailable stock gear out of the upstream chamber UI as well.
-            if (HasComp<RMCCryoUnavailableOnStoreComponent>(heldEntity.Value))
                 continue;
 
             data.HeldItems.Add(hand, Name(heldEntity.Value));

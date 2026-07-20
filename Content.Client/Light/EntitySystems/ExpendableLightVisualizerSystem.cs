@@ -51,17 +51,9 @@ public sealed class ExpendableLightVisualizerSystem : VisualizerSystem<Expendabl
         switch (state)
         {
             case ExpendableLightState.Lit:
-            case ExpendableLightState.PhaseOne:
-            case ExpendableLightState.PhaseTwo:
-            case ExpendableLightState.PhaseThree:
-            case ExpendableLightState.PhaseFour:
-            case ExpendableLightState.PhaseFive:
-            case ExpendableLightState.Fading:
-                if (state != ExpendableLightState.PhaseOne)
-                    comp.PlayingStream = _audioSystem.Stop(comp.PlayingStream);
-
-                if (state == ExpendableLightState.Lit)
-                    comp.PlayingStream = _audioSystem.PlayPvs(comp.LoopedSound, uid)?.Entity;
+                _audioSystem.Stop(comp.PlayingStream);
+                comp.PlayingStream = _audioSystem.PlayPvs(
+                    comp.LoopedSound, uid)?.Entity;
 
                 if (SpriteSystem.LayerMapTryGet((uid, args.Sprite), ExpendableLightVisualLayers.Overlay, out var layerIdx, true))
                 {
@@ -83,14 +75,7 @@ public sealed class ExpendableLightVisualizerSystem : VisualizerSystem<Expendabl
                 break;
             case ExpendableLightState.Dead:
                 comp.PlayingStream = _audioSystem.Stop(comp.PlayingStream);
-
-                //RMC14
-                var spentLayer = ExpendableLightVisualLayers.Base;
-                if (comp.UsesOverlay)
-                    spentLayer = ExpendableLightVisualLayers.Overlay;
-                //RMC14
-
-                if (SpriteSystem.LayerMapTryGet((uid, args.Sprite), spentLayer, out layerIdx, true))
+                if (SpriteSystem.LayerMapTryGet((uid, args.Sprite), ExpendableLightVisualLayers.Overlay, out layerIdx, true))
                 {
                     if (!string.IsNullOrWhiteSpace(comp.IconStateSpent))
                         SpriteSystem.LayerSetRsiState((uid, args.Sprite), layerIdx, comp.IconStateSpent);

@@ -35,7 +35,6 @@
     - type: ScoutWhitelist
     - type: SniperWhitelist
     - type: PyroWhitelist
-    - type: QYJWhitelist
   hidden: true
 
 - type: entity

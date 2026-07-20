@@ -88,19 +88,14 @@ namespace Content.Shared.Chat
 
         // RMC14
         public bool HidePopup;
-        public bool UseEmoteSpeechBubble;
         public string? SpeechStyleClass;
         public bool RepeatCheckSender;
         public string? TranslatedMessage;
-        public string? LanguageIcon;
-        // RMC14
 
         [NonSerialized]
         public bool Read;
 
-        // RMC14
-        public ChatMessage(ChatChannel channel, string message, string wrappedMessage, NetEntity source, int? senderKey, bool hideChat = false, Color? colorOverride = null, string? audioPath = null, float audioVolume = 0, bool hidePopup = false, bool useEmoteSpeechBubble = false, string? speechStyleClass = null, bool repeatCheckSender = true, string? translatedMessage = null,
-            string? languageIcon = null)
+        public ChatMessage(ChatChannel channel, string message, string wrappedMessage, NetEntity source, int? senderKey, bool hideChat = false, Color? colorOverride = null, string? audioPath = null, float audioVolume = 0, bool hidePopup = false, string? speechStyleClass = null, bool repeatCheckSender = true, string? translatedMessage = null)
         {
             Channel = channel;
             Message = message;
@@ -112,13 +107,10 @@ namespace Content.Shared.Chat
             AudioPath = audioPath;
             AudioVolume = audioVolume;
             HidePopup = hidePopup;
-            UseEmoteSpeechBubble = useEmoteSpeechBubble;
             SpeechStyleClass = speechStyleClass;
             RepeatCheckSender = repeatCheckSender;
             TranslatedMessage = translatedMessage;
-            LanguageIcon = languageIcon;
         }
-        // RMC14
     }
 
     /// <summary>

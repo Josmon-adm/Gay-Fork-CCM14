@@ -59,12 +59,9 @@ public sealed class AreaInfoSystem : EntitySystem
         if (!_inv.TryGetInventoryEntity<GrantAreaInfoComponent>(args.Equipee, out _))
             RemCompDeferred<AreaInfoComponent>(args.Equipee);
     }
-
     private void OnMapInit(Entity<AreaInfoComponent> ent, ref MapInitEvent args)
     {
-        if (GetAreaInfo(ent, false) is not { areaName: var areaName, ceilingLevel: var ceilingLevel, restrictions: var restrictions })
-            return;
-
+        var (areaName, ceilingLevel, restrictions) = GetAreaInfo(ent);
         _alerts.ShowAlert(ent, ent.Comp.Alert,
             severity: ceilingLevel,
             dynamicMessage: Loc.GetString("rmc-area-info",
@@ -72,7 +69,6 @@ public sealed class AreaInfoSystem : EntitySystem
                 ("ceilingLevel", ceilingLevel),
                 ("restrictions", restrictions)));
     }
-
     private void OnRemove(Entity<AreaInfoComponent> ent, ref ComponentRemove args)
     {
         _alerts.ClearAlert(ent, ent.Comp.Alert);
@@ -82,12 +78,8 @@ public sealed class AreaInfoSystem : EntitySystem
     {
         if (_timing.ApplyingState)
             return;
-
-        // TODO RMC14 make this client only?
         // update the alert when they move to a new area
-        if (GetAreaInfo(ent, true) is not { areaName: var areaName, ceilingLevel: var ceilingLevel, restrictions: var restrictions })
-            return;
-
+        var (areaName, ceilingLevel, restrictions) = GetAreaInfo(ent);
         _alerts.ShowAlert(ent, ent.Comp.Alert,
             severity: ceilingLevel,
             dynamicMessage: Loc.GetString("rmc-area-info",
@@ -96,21 +88,12 @@ public sealed class AreaInfoSystem : EntitySystem
                 ("restrictions", restrictions)));
     }
 
-    private (string areaName, short ceilingLevel, string restrictions)? GetAreaInfo(Entity<AreaInfoComponent> ent, bool checkMove)
+    private (string areaName, short ceilingLevel, string restrictions) GetAreaInfo(EntityUid ent)
     {
-        var coordinates = ent.Owner.ToCoordinates();
+        var coordinates = ent.ToCoordinates();
         if (!_area.TryGetArea(coordinates, out var area, out var areaProto))
             return (Loc.GetString("rmc-tacmap-alert-no-area"), 0, string.Empty);
 
-        var time = _timing.CurTime;
-        if (checkMove)
-        {
-            if (time < ent.Comp.LastMoveUpdate + ent.Comp.LastMoveInterval)
-                return null;
-
-            ent.Comp.LastMoveUpdate = time;
-            Dirty(ent);
-        }
 
         short ceilingLevel = 0;
         short severityToUse = 0;
@@ -256,9 +239,7 @@ public sealed class AreaInfoSystem : EntitySystem
                 if (TerminatingOrDeleted(ent))
                     continue;
 
-                if (GetAreaInfo(ent, false) is not { areaName: var areaName, ceilingLevel: var ceilingLevel, restrictions: var restrictions })
-                    continue;
-
+                var (areaName, ceilingLevel, restrictions) = GetAreaInfo(ent);
                 _alerts.ShowAlert(ent, ent.Comp.Alert,
                     severity: ceilingLevel,
                     dynamicMessage: Loc.GetString("rmc-area-info",

@@ -1,4 +1,5 @@
 using Content.Client.Rotation;
+using Content.Shared._RMC14.Buckle;
 using Content.Shared.Buckle;
 using Content.Shared.Buckle.Components;
 using Content.Shared.Movement.Systems;
@@ -36,6 +37,10 @@ internal sealed class BuckleSystem : SharedBuckleSystem
 
     private void OnStrapMoveEvent(EntityUid uid, StrapComponent component, ref MoveEvent args)
     {
+        // RMC14
+        if (HasComp<RMCStrapNoDrawDepthChangeComponent>(uid))
+            return;
+
         // I'm moving this to the client-side system, but for the sake of posterity let's keep this comment:
         // > This is mega cursed. Please somebody save me from Mr Buckle's wild ride
 
@@ -49,10 +54,8 @@ internal sealed class BuckleSystem : SharedBuckleSystem
         // Give some of the sprite rotations their own drawdepth, maybe as an offset within the rsi, or something like this
         // And we won't ever need to set the draw depth manually
 
-        // RMC14
         if (!component.ModifyBuckleDrawDepth)
             return;
-        // RMC14
 
         if (args.NewRotation == args.OldRotation)
             return;
@@ -91,10 +94,8 @@ internal sealed class BuckleSystem : SharedBuckleSystem
     /// </summary>
     private void OnBuckledEvent(Entity<BuckleComponent> ent, ref BuckledEvent args)
     {
-        // RMC14
         if (!args.Strap.Comp.ModifyBuckleDrawDepth)
             return;
-        // RMC14
 
         if (!TryComp<SpriteComponent>(args.Strap, out var strapSprite))
             return;
@@ -116,10 +117,8 @@ internal sealed class BuckleSystem : SharedBuckleSystem
     /// </summary>
     private void OnUnbuckledEvent(Entity<BuckleComponent> ent, ref UnbuckledEvent args)
     {
-        // RMC14
         if (!args.Strap.Comp.ModifyBuckleDrawDepth)
             return;
-        // RMC14
 
         if (!TryComp<SpriteComponent>(ent.Owner, out var buckledSprite))
             return;

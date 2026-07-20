@@ -2,7 +2,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Content.Shared._CCM.Barks;
 using Content.Shared._CCM.Preferences;
-using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Shared._RMC14.Marines.Squads;
 using Content.Shared._RMC14.NamedItems;
 using Content.Shared._RMC14.Xenonids.Name;
@@ -58,12 +57,6 @@ namespace Content.Shared.Preferences
         private HashSet<ProtoId<TraitPrototype>> _traitPreferences = new();
 
         /// <summary>
-        /// When spawning in, decides what type of rank to give based on job. (Also dependent on playtime)
-        /// </summary>
-        [DataField]
-        private Dictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?> _rankPreferences = new();
-
-        /// <summary>
         /// <see cref="_loadouts"/>
         /// </summary>
         public IReadOnlyDictionary<string, RoleLoadout> Loadouts => _loadouts;
@@ -117,11 +110,6 @@ namespace Content.Shared.Preferences
         /// </summary>
         [DataField]
         public ArmorPreference ArmorPreference { get; private set; }
-
-        /// <summary>
-        /// <see cref="_rankPreferences"/>
-        /// </summary>
-        public IReadOnlyDictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?> RankPreferences => _rankPreferences;
 
         /// <summary>
         /// When spawning into a squad role, what squad is preferred.
@@ -187,14 +175,6 @@ namespace Content.Shared.Preferences
         [DataField]
         public float BarkSpeed { get; private set; } = 1f;
 
-        /// <summary>
-        ///     TTS (Text-To-Speech) voice prototype id. <see cref="Content.Shared._Forge.TTS.TTSVoicePrototype"/>
-        /// </summary>
-        [DataField]
-        public string Voice { get; private set; } = DefaultVoice;
-
-        public const string DefaultVoice = "Papich";
-
         public HumanoidCharacterProfile(
             string name,
             string flavortext,
@@ -205,7 +185,6 @@ namespace Content.Shared.Preferences
             HumanoidCharacterAppearance appearance,
             SpawnPriorityPreference spawnPriority,
             ArmorPreference armorPreference,
-            Dictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?> rankPreference,
             EntProtoId<SquadTeamComponent>? squadPreference,
             Dictionary<ProtoId<JobPrototype>, JobPriority> jobPriorities,
             PreferenceUnavailableMode preferenceUnavailable,
@@ -223,13 +202,12 @@ namespace Content.Shared.Preferences
             string corporateRelationId,
             string barkVoice,
             float barkPitch,
-            float barkSpeed,
-            string voice)
+            float barkSpeed)
         {
             Name = name;
             FlavorText = flavortext;
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             Species = allowedSpecies.Contains(species) ? species : "Human";
             Age = age;
             Sex = sex;
@@ -237,7 +215,6 @@ namespace Content.Shared.Preferences
             Appearance = appearance;
             SpawnPriority = spawnPriority;
             ArmorPreference = armorPreference;
-            _rankPreferences = rankPreference;
             SquadPreference = squadPreference;
             _jobPriorities = jobPriorities;
             PreferenceUnavailable = preferenceUnavailable;
@@ -259,7 +236,6 @@ namespace Content.Shared.Preferences
             BarkVoice = barkVoice;
             BarkPitch = barkPitch;
             BarkSpeed = barkSpeed;
-            Voice = voice;
         }
 
         /// <summary>Copy constructor</summary>
@@ -273,7 +249,6 @@ namespace Content.Shared.Preferences
                 other.Appearance.Clone(),
                 other.SpawnPriority,
                 other.ArmorPreference,
-                new Dictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?>(other.RankPreferences),
                 other.SquadPreference,
                 new Dictionary<ProtoId<JobPrototype>, JobPriority>(other.JobPriorities),
                 other.PreferenceUnavailable,
@@ -291,8 +266,7 @@ namespace Content.Shared.Preferences
                 other.CorporateRelationId,
                 other.BarkVoice,
                 other.BarkPitch,
-                other.BarkSpeed,
-                other.Voice)
+                other.BarkSpeed)
         {
         }
 
@@ -315,7 +289,7 @@ namespace Content.Shared.Preferences
             species ??= SharedHumanoidAppearanceSystem.DefaultSpecies;
 
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             if (!allowedSpecies.Contains(species))
                 species = SharedHumanoidAppearanceSystem.DefaultSpecies;
 
@@ -329,7 +303,6 @@ namespace Content.Shared.Preferences
                 HumanoidCharacterAppearance.DefaultWithSpecies(species),
                 SpawnPriorityPreference.Cryosleep,
                 ArmorPreference.None,
-                new(),
                 null,
                 new() { { SharedGameTicker.FallbackOverflowJob, JobPriority.First } },
                 PreferenceUnavailableMode.SpawnAsOverflow,
@@ -347,8 +320,7 @@ namespace Content.Shared.Preferences
                 "neutral",
                 BarkPrototype.Default,
                 1f,
-                1f,
-                DefaultVoice
+                1f
             );
         }
 
@@ -359,7 +331,7 @@ namespace Content.Shared.Preferences
             var random = IoCManager.Resolve<IRobustRandom>();
 
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             var species = random.Pick(prototypeManager
                 .EnumeratePrototypes<SpeciesPrototype>()
                 .Where(x => allowedSpecies.Contains(x.ID) && x.RoundStart)
@@ -374,7 +346,7 @@ namespace Content.Shared.Preferences
             species ??= SharedHumanoidAppearanceSystem.DefaultSpecies;
 
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             if (!allowedSpecies.Contains(species))
                 species = "Human";
 
@@ -413,7 +385,6 @@ namespace Content.Shared.Preferences
                 HumanoidCharacterAppearance.Random(species, sex),
                 SpawnPriorityPreference.Cryosleep,
                 ArmorPreference.None,
-                new(),
                 null,
                 new() { { SharedGameTicker.FallbackOverflowJob, JobPriority.First } },
                 PreferenceUnavailableMode.SpawnAsOverflow,
@@ -431,8 +402,7 @@ namespace Content.Shared.Preferences
                 "neutral",
                 BarkPrototype.Default,
                 1f,
-                1f,
-                DefaultVoice
+                1f
             );
         }
 
@@ -464,7 +434,7 @@ namespace Content.Shared.Preferences
         public HumanoidCharacterProfile WithSpecies(string species)
         {
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             if (!allowedSpecies.Contains(species))
                 species = "Human";
             return new(this) { Species = species };
@@ -484,18 +454,6 @@ namespace Content.Shared.Preferences
         public HumanoidCharacterProfile WithArmorPreference(ArmorPreference armorPreference)
         {
             return new(this) { ArmorPreference = armorPreference };
-        }
-
-        public HumanoidCharacterProfile WithRankPreference(ProtoId<JobPrototype> jobId, ProtoId<RankPrototype>? rankId)
-        {
-            var dictionary = new Dictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?>(_rankPreferences);
-
-            if (rankId == null)
-                dictionary.Remove(jobId);
-            else
-                dictionary[jobId] = rankId;
-
-            return new(this) { _rankPreferences = dictionary };
         }
 
         public HumanoidCharacterProfile WithSquadPreference(EntProtoId<SquadTeamComponent>? squadPreference)
@@ -551,11 +509,6 @@ namespace Content.Shared.Preferences
         public HumanoidCharacterProfile WithBarkPitch(float barkPitch)
         {
             return new(this) { BarkPitch = barkPitch };
-        }
-
-        public HumanoidCharacterProfile WithVoice(string voice)
-        {
-            return new(this) { Voice = voice };
         }
 
         public HumanoidCharacterProfile WithBarkSpeed(float barkSpeed)
@@ -709,14 +662,12 @@ namespace Content.Shared.Preferences
             if (FlavorText != other.FlavorText) return false;
             if (NamedItems != other.NamedItems) return false;
             if (ArmorPreference != other.ArmorPreference) return false;
-            if (!_rankPreferences.SequenceEqual(other._rankPreferences)) return false;
             if (PlaytimePerks != other.PlaytimePerks) return false;
             if (XenoPrefix != other.XenoPrefix) return false;
             if (XenoPostfix != other.XenoPostfix) return false;
             if (BarkVoice != other.BarkVoice) return false;
             if (Math.Abs(BarkPitch - other.BarkPitch) > 0.0001f) return false;
             if (Math.Abs(BarkSpeed - other.BarkSpeed) > 0.0001f) return false;
-            if (Voice != other.Voice) return false;
             return Appearance.MemberwiseEquals(other.Appearance);
         }
 
@@ -727,7 +678,7 @@ namespace Content.Shared.Preferences
             var compFactory = collection.Resolve<IComponentFactory>();
 
             // Only allow specific species - convert any disallowed species to Human
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             if (!allowedSpecies.Contains(Species.Id) || !prototypeManager.TryIndex(Species, out var speciesPrototype) || speciesPrototype.RoundStart == false)
             {
                 Species = SharedHumanoidAppearanceSystem.DefaultSpecies; // Defaults to Human
@@ -855,16 +806,6 @@ namespace Content.Shared.Preferences
 
             ArmorPreference = armorPreference;
 
-            var ranks = new Dictionary<ProtoId<JobPrototype>, ProtoId<RankPrototype>?>(RankPreferences
-                .Where(p => prototypeManager.TryIndex<JobPrototype>(p.Key, out var job) && job.SetRankPreference && p.Value != null));
-
-            _rankPreferences.Clear();
-
-            foreach (var (job, rank) in ranks)
-            {
-                _rankPreferences.Add(job, rank);
-            }
-
             if (!prototypeManager.TryIndex(SquadPreference, out var squad) ||
                 !squad.TryGetComponent(out SquadTeamComponent? team, compFactory) ||
                 !team.RoundStart)
@@ -926,7 +867,7 @@ namespace Content.Shared.Preferences
                 for (var i = 0; i < xenoName.Length; i++)
                 {
                     var c = xenoName[i];
-                    if (i > 0 && numberEndingAllowed && c >= '0' && c <= '9')
+                    if (i > 0 && numberEndingAllowed && (c > '0' || c < '9'))
                         continue;
 
                     if (c < 'A' || c > 'Z')
@@ -969,25 +910,6 @@ namespace Content.Shared.Preferences
             BarkPitch = Math.Clamp(BarkPitch, 0.7f, 1.4f);
             BarkSpeed = Math.Clamp(BarkSpeed, 0.7f, 1.4f);
             // CCM barks - end
-
-            // Forge TTS - start
-            if (!prototypeManager.TryIndex<Content.Shared._Forge.TTS.TTSVoicePrototype>(Voice, out var ttsVoice) ||
-                !ttsVoice.RoundStart ||
-                !CanHaveVoice(ttsVoice, Sex))
-            {
-                Voice = prototypeManager
-                    .EnumeratePrototypes<Content.Shared._Forge.TTS.TTSVoicePrototype>()
-                    .FirstOrDefault(o => o.RoundStart && CanHaveVoice(o, Sex))?.ID ?? DefaultVoice;
-            }
-            // Forge TTS - end
-        }
-
-        /// <summary>
-        ///     Whether a TTS voice can be used by a character of the given sex.
-        /// </summary>
-        public static bool CanHaveVoice(Content.Shared._Forge.TTS.TTSVoicePrototype voice, Sex sex)
-        {
-            return voice.Sex == sex || voice.Sex == Sex.Unsexed;
         }
 
         /// <summary>
@@ -1065,7 +987,6 @@ namespace Content.Shared.Preferences
             hashCode.Add(Appearance);
             hashCode.Add((int)SpawnPriority);
             hashCode.Add((int)ArmorPreference);
-            hashCode.Add(_rankPreferences);
             hashCode.Add(SquadPreference);
             hashCode.Add((int)PreferenceUnavailable);
             hashCode.Add(NamedItems);
@@ -1075,7 +996,6 @@ namespace Content.Shared.Preferences
             hashCode.Add(BarkVoice);
             hashCode.Add(BarkPitch);
             hashCode.Add(BarkSpeed);
-            hashCode.Add(Voice);
             return hashCode.ToHashCode();
         }
 

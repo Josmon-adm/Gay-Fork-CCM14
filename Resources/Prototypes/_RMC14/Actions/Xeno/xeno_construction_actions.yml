@@ -19,9 +19,6 @@
     useDelay: 1
   - type: InstantAction
     event: !type:XenoPlantWeedsActionEvent
-  - type: SwappableAction
-    swappedEventTemplate: !type:XenoExpandWeedsActionEvent
-    originalEventTemplate: !type:XenoPlantWeedsActionEvent
 
 - type: entity
   id: ActionXenoChooseStructure

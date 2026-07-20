@@ -10,20 +10,16 @@
   - CMAccessIllegal
   icon: "CMJobIconExecAssMan"
   greeting: rmc-job-greeting-solaris-pmc-supervisor
-  spawnMenuRoleName: Corporate Supervisor (Solaris Special Survivor)
+  spawnMenuRoleName: Survivor — Corporate Supervisor (Solaris Ridge special survivor)
   startingGear: RMCGearSurvivorSolarisCorporateSupervisor
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Japanese
-      - English
-      understoodLanguages:
-      - Japanese
-      - English
-      currentLanguage: English
-      defaultLanguage: English
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivorWeYaManager
     - type: MarineOrders

@@ -1,7 +1,4 @@
 - type: Tag
-  id: RMCSkillPamphlet
-
-- type: Tag
   id: CMCartridge10x20mm
 
 - type: Tag
@@ -98,9 +95,6 @@
   id: RMCGlass
 
 - type: Tag
-  id: RMCFoldingBarricade
-
-- type: Tag
   id: RMCHelmet
 
 - type: Tag
@@ -114,9 +108,6 @@
 
 - type: Tag
   id: RMCMacheteScabbard
-
-- type: Tag
-  id: RMCMacheteHolder
 
 - type: Tag
   id: RMCScalpel
@@ -149,11 +140,6 @@
   id: Bacon
 
 - type: Tag
-
-  id: Watch
-
-- type: Tag
-
   id: RMCPinpointer
 
 - type: Tag
@@ -197,6 +183,3 @@
 
 - type: Tag
   id: RMCSentryLaptop
-
-- type: Tag
-  id: RMCDataDisk

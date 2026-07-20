@@ -1,16 +1,15 @@
 - type: entity
+  name: surplus box of ingredients
   parent: RMCBoxCardboard
-  id: RMCBoxDonkpockets
-  name: box of donk-pockets
-  description: "Instructions: Heat in microwave. Product will cool if not eaten within seven minutes."
+  id: RMCBoxIngredients
+  description: This box contains ingredients.
   components:
-  - type: Storage
-    whitelist:
-      tags:
-      - DonkPocket
-  - type: StorageFill
+  - type: StorageFill # TODO RMC14 add ingredients
     contents:
-    - id: RMCFoodDonkpocket
-      amount: 6
+      - id: FoodPotato
+        amount: 2
+      - id: FoodTomato
+        amount: 1
+      - id: FoodEgg
+        amount: 1
   - type: Sprite
-    state: donk_kit

@@ -445,7 +445,7 @@
 - type: entity
   parent: RMCAreaFiorinaStationTelecomm
   id: RMCAreaFiorinaStationTelecommLz1Tram
-  name: Fiorina - LZ1 Aux Port Engineering Passage
+  name: Fiorina - LZ1 Aux Port Communications Relay
   components:
   - type: Area
     landingZone: true

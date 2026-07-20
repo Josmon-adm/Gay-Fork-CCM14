@@ -37,10 +37,4 @@ public sealed partial class SkyFallingComponent : Component
     /// </summary>
     [DataField]
     public SoundSpecifier? DropSound;
-
-    /// <summary>
-    ///     The original sprite offset.
-    /// </summary>
-    [DataField]
-    public Vector2 OriginalSpriteOffset;
 }

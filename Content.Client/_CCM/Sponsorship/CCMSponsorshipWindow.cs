@@ -7,7 +7,6 @@ using Content.Client.Resources;
 using Content.Client.Stylesheets;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._CCM.Sponsorship;
-using Content.Shared._Forge.Sponsor;
 using Robust.Shared.Configuration;
 using Robust.Client.Graphics;
 using Robust.Client.ResourceManagement;
@@ -22,7 +21,7 @@ namespace Content.Client._CCM.Sponsorship;
 
 public sealed class CCMSponsorshipWindow : DefaultCMWindow
 {
-    private const string DefaultDonateUrl = "https://boosty.to/corvaxforge";
+    private const string DefaultDonateUrl = "https://boosty.to/cmc14";
     private const float DefaultWindowWidth = 1380f;
     private const float DefaultWindowHeight = 930f;
     private const float CompactMinWidth = 760f;
@@ -45,7 +44,7 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
     private PanelContainer _infoPanel = default!;
     private Label _infoTitleLabel = default!;
     private string _donateUrl = DefaultDonateUrl;
-    private SponsorLevel _currentLevel = SponsorLevel.None;
+    private CCMSponsorshipTier _currentTier = CCMSponsorshipTier.None;
 
     public event Action<string>? OpenDonateRequested;
 
@@ -159,8 +158,8 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
         Contents.AddChild(root);
 
         ApplyWindowTheme();
-        BuildTierCards(SponsorLevel.None);
-        UpdateStatusHeader(SponsorLevel.None, 0);
+        BuildTierCards(CCMSponsorshipTier.None);
+        UpdateStatusHeader(CCMSponsorshipTier.None, 0);
         StyleWebsiteButton();
         _config.OnValueChanged(RMCCVars.RMCUIColorTheme, OnThemeChanged, false);
         _config.OnValueChanged(RMCCVars.RMCLobbyUiStyle, OnThemeChanged, false);
@@ -221,63 +220,33 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
         _donateUrl = string.IsNullOrWhiteSpace(snapshot.DonateUrl)
             ? DefaultDonateUrl
             : snapshot.DonateUrl;
-        _currentLevel = snapshot.Level;
+        _currentTier = snapshot.Tier;
         _websiteButton.Disabled = false;
-        UpdateStatusHeader(snapshot.Level, snapshot.ExpirationUnixSeconds);
-        BuildTierCards(snapshot.Level);
+        UpdateStatusHeader(snapshot.Tier, snapshot.ExpirationUnixSeconds);
+        BuildTierCards(snapshot.Tier);
         StyleWebsiteButton();
     }
 
-    private void UpdateStatusHeader(SponsorLevel level, long expirationUnixSeconds)
+    private void UpdateStatusHeader(CCMSponsorshipTier tier, long expirationUnixSeconds)
     {
         _statusLabel.Text = Loc.GetString("ccm-sponsorship-current-tier",
-            ("tier", GetLevelDisplayName(level)));
-
-        // У нас нет источника даты окончания подписки, поэтому строку "Подписка не активна"
-        // не показываем вовсе — метка скрывается, когда даты нет.
-        if (expirationUnixSeconds > 0)
-        {
-            _expirationLabel.Visible = true;
-            _expirationLabel.Text = Loc.GetString("ccm-sponsorship-expires",
+            ("tier", Loc.GetString(GetTierTitleKey(tier))));
+        _expirationLabel.Text = expirationUnixSeconds > 0
+            ? Loc.GetString("ccm-sponsorship-expires",
                 ("date", DateTimeOffset.FromUnixTimeSeconds(expirationUnixSeconds)
                     .ToLocalTime()
-                    .ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture)));
-        }
-        else
-        {
-            _expirationLabel.Visible = false;
-            _expirationLabel.Text = string.Empty;
-        }
+                    .ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture)))
+            : Loc.GetString("ccm-sponsorship-expires-none");
     }
 
-    private void BuildTierCards(SponsorLevel currentLevel)
+    private void BuildTierCards(CCMSponsorshipTier currentTier)
     {
         _tiersContainer.DisposeAllChildren();
 
-        // Карточки соответствуют трём порогам перков (L1/L2/L3); уровни L4-L6 наследуют порог L3.
-        var currentThreshold = ThresholdLevel(currentLevel);
-        foreach (var cardLevel in new[] { SponsorLevel.Level1, SponsorLevel.Level3, SponsorLevel.Level2 })
+        foreach (var tier in new[] { CCMSponsorshipTier.SponsorI, CCMSponsorshipTier.SponsorIII, CCMSponsorshipTier.SponsorII })
         {
-            _tiersContainer.AddChild(BuildTierCard(cardLevel, cardLevel == currentThreshold, cardLevel == SponsorLevel.Level3));
+            _tiersContainer.AddChild(BuildTierCard(tier, currentTier == tier, tier == CCMSponsorshipTier.SponsorIII));
         }
-    }
-
-    private static SponsorLevel ThresholdLevel(SponsorLevel level)
-    {
-        return level switch
-        {
-            >= SponsorLevel.Level3 => SponsorLevel.Level3,
-            SponsorLevel.Level2 => SponsorLevel.Level2,
-            SponsorLevel.Level1 => SponsorLevel.Level1,
-            _ => SponsorLevel.None,
-        };
-    }
-
-    private static string GetLevelDisplayName(SponsorLevel level)
-    {
-        return level == SponsorLevel.None
-            ? Loc.GetString("ccm-sponsorship-tier-none-title")
-            : SponsorData.SponsorNames.GetValueOrDefault(level, level.ToString());
     }
 
     private PanelContainer BuildHeroPanel(Control topSection)
@@ -335,11 +304,11 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
         return hero;
     }
 
-    private Control BuildTierCard(SponsorLevel level, bool current, bool featured)
+    private Control BuildTierCard(CCMSponsorshipTier tier, bool current, bool featured)
     {
-        var accent = GetTierAccent(level);
-        var baseBackground = BlendTowards(GetTierCardBackground(level), Color.Black, 0.10f);
-        var imageBackground = BlendTowards(GetTierImageBackground(level), Color.Black, 0.08f);
+        var accent = GetTierAccent(tier);
+        var baseBackground = BlendTowards(GetTierCardBackground(tier), Color.Black, 0.10f);
+        var imageBackground = BlendTowards(GetTierImageBackground(tier), Color.Black, 0.08f);
         var cardWidth = featured ? 376 : 316;
         var cardHeight = featured ? 496 : 454;
         var imageHeight = featured ? 184 : 162;
@@ -377,15 +346,11 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
             },
         });
 
-        var titleText = GetLevelDisplayName(level);
-        // Длинные названия (например "Подмастерье Форжа") не помещаются в карточку при базовом
-        // размере шрифта и вылезали за рамку — подбираем максимальный размер, который влезает.
-        var fittedTitleSize = FitFontSize("/Fonts/Exo2/Exo2-Bold.ttf", titleText, titleSize, cardWidth - 28);
         content.AddChild(new Label
         {
-            Text = titleText,
+            Text = Loc.GetString(GetTierTitleKey(tier)),
             HorizontalAlignment = HAlignment.Center,
-            FontOverride = _resourceCache.GetFont("/Fonts/Exo2/Exo2-Bold.ttf", fittedTitleSize),
+            FontOverride = _resourceCache.GetFont("/Fonts/Exo2/Exo2-Bold.ttf", titleSize),
             FontColorOverride = accent,
         });
 
@@ -446,75 +411,52 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
             VerticalExpand = true,
             MaxWidth = cardWidth - 34,
         };
-        perks.SetMessage(BuildPerksMessage(level));
+        perks.SetMessage(BuildPerksMessage(tier));
 
         content.AddChild(perks);
         panel.AddChild(content);
         return panel;
     }
 
-    private int FitFontSize(string fontPath, string text, int maxSize, float maxWidth, int minSize = 14)
+    private static Color GetTierAccent(CCMSponsorshipTier tier)
     {
-        for (var size = maxSize; size > minSize; size--)
+        return tier switch
         {
-            if (MeasureTextWidth(_resourceCache.GetFont(fontPath, size), text) <= maxWidth)
-                return size;
-        }
-
-        return minSize;
-    }
-
-    private static float MeasureTextWidth(Font font, string text)
-    {
-        var width = 0f;
-        foreach (var rune in text.EnumerateRunes())
-        {
-            if (font.TryGetCharMetrics(rune, 1f, out var metrics))
-                width += metrics.Advance;
-        }
-
-        return width;
-    }
-
-    private static Color GetTierAccent(SponsorLevel level)
-    {
-        return level switch
-        {
-            >= SponsorLevel.Level3 => SponsorshipGoldAccent,
-            SponsorLevel.Level2 => SponsorshipPurpleAccent,
-            SponsorLevel.Level1 => SponsorshipBlueAccent,
+            CCMSponsorshipTier.SponsorIII => SponsorshipGoldAccent,
+            CCMSponsorshipTier.SponsorII => SponsorshipPurpleAccent,
+            CCMSponsorshipTier.SponsorI => SponsorshipBlueAccent,
             _ => SponsorshipBlueAccent,
         };
     }
 
-    private static Color GetTierCardBackground(SponsorLevel level)
+    private static Color GetTierCardBackground(CCMSponsorshipTier tier)
     {
-        return level switch
+        return tier switch
         {
-            >= SponsorLevel.Level3 => Color.FromHex("#3A311A"),
-            SponsorLevel.Level2 => Color.FromHex("#39244A"),
-            SponsorLevel.Level1 => Color.FromHex("#233E60"),
+            CCMSponsorshipTier.SponsorIII => Color.FromHex("#3A311A"),
+            CCMSponsorshipTier.SponsorII => Color.FromHex("#39244A"),
+            CCMSponsorshipTier.SponsorI => Color.FromHex("#233E60"),
             _ => Color.FromHex("#233E60"),
         };
     }
 
-    private static Color GetTierImageBackground(SponsorLevel level)
+    private static Color GetTierImageBackground(CCMSponsorshipTier tier)
     {
-        return level switch
+        return tier switch
         {
-            >= SponsorLevel.Level3 => Color.FromHex("#5C4B1D"),
-            SponsorLevel.Level2 => Color.FromHex("#6A3B8A"),
-            SponsorLevel.Level1 => Color.FromHex("#447CB1"),
+            CCMSponsorshipTier.SponsorIII => Color.FromHex("#5C4B1D"),
+            CCMSponsorshipTier.SponsorII => Color.FromHex("#6A3B8A"),
+            CCMSponsorshipTier.SponsorI => Color.FromHex("#447CB1"),
             _ => Color.FromHex("#447CB1"),
         };
     }
 
-    private FormattedMessage BuildPerksMessage(SponsorLevel level)
+    private FormattedMessage BuildPerksMessage(CCMSponsorshipTier tier)
     {
-        var fontSize = level >= SponsorLevel.Level3 ? 12 : 11;
+        var fontSize = tier == CCMSponsorshipTier.SponsorIII ? 12 : 11;
         var message = new FormattedMessage();
 
-        foreach (var perkKey in GetTierPerkKeys(level))
+        foreach (var perkKey in GetTierPerkKeys(tier))
         {
             message.AddMarkupOrThrow($"[font=\"/Fonts/Exo2/Exo2-Regular.ttf\" size={fontSize}][color=#DCE5EE]- {Loc.GetString(perkKey)}[/color][/font]\n");
         }
@@ -522,34 +464,43 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
         return message;
     }
 
-    private static IReadOnlyList<string> GetTierPerkKeys(SponsorLevel level)
+    private static string GetTierTitleKey(CCMSponsorshipTier tier)
     {
-        // На карточке показываем ТОЛЬКО новые для данного порога перки.
-        // О том, что более высокий уровень включает все предыдущие, говорится в info-line-1.
-        //   Level1  - приоритетный вход, цвет OOC, ckey в конце раунда
-        //   Level2  - таймеры всех ролей, цвет LOOC, готовый OOC-тег, базовая кастомизация
-        //   Level3+ - свой OOC-тег, скин призрака, скины ксеноморфов, расширенная кастомизация
-        return level switch
+        return tier switch
         {
-            >= SponsorLevel.Level3 =>
+            CCMSponsorshipTier.SponsorIII => "ccm-sponsorship-tier-3-title",
+            CCMSponsorshipTier.SponsorII => "ccm-sponsorship-tier-2-title",
+            CCMSponsorshipTier.SponsorI => "ccm-sponsorship-tier-1-title",
+            _ => "ccm-sponsorship-tier-none-title",
+        };
+    }
+
+    private static IReadOnlyList<string> GetTierPerkKeys(CCMSponsorshipTier tier)
+    {
+        return tier switch
+        {
+            CCMSponsorshipTier.SponsorIII =>
             [
-                "ccm-sponsorship-perk-ooc-tag-custom",
-                "ccm-sponsorship-perk-ghost-skin",
-                "ccm-sponsorship-perk-xeno-skin",
-                "ccm-sponsorship-extended-perk-customization"
-            ],
-            SponsorLevel.Level2 =>
-            [
+                "ccm-sponsorship-perk-chat-color",
+                "ccm-sponsorship-perk-endgame-credits",
+                "ccm-sponsorship-extended-perk-customization",
                 "ccm-sponsorship-perk-role-timers",
-                "ccm-sponsorship-perk-looc-color",
-                "ccm-sponsorship-perk-ooc-tag-preset",
-                "ccm-sponsorship-perk-customization"
+                "ccm-sponsorship-perk-custom-sprite-skin",
+                "ccm-sponsorship-perk-thanks"
+            ],
+            CCMSponsorshipTier.SponsorII =>
+            [
+                "ccm-sponsorship-perk-chat-color",
+                "ccm-sponsorship-perk-endgame-credits",
+                "ccm-sponsorship-perk-customization",
+                "ccm-sponsorship-perk-role-timers",
+                "ccm-sponsorship-perk-thanks"
             ],
             _ =>
             [
-                "ccm-sponsorship-perk-queue",
-                "ccm-sponsorship-perk-ooc-color",
+                "ccm-sponsorship-perk-chat-color",
                 "ccm-sponsorship-perk-endgame-credits",
+                "ccm-sponsorship-perk-queue",
                 "ccm-sponsorship-perk-thanks"
             ],
         };
@@ -650,9 +601,9 @@ public sealed class CCMSponsorshipWindow : DefaultCMWindow
 
     private Color GetWebsiteAccent()
     {
-        return _currentLevel == SponsorLevel.None
+        return _currentTier == CCMSponsorshipTier.None
             ? GetWindowAccent()
-            : GetTierAccent(_currentLevel);
+            : GetTierAccent(_currentTier);
     }
 
     private static Color MakeButtonBackground(Color accent, float scale, float alpha)

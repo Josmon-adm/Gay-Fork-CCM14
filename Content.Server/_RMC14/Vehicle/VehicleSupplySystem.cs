@@ -4,8 +4,6 @@ using System.Linq;
 using System.Numerics;
 using Content.Shared._RMC14.Intel;
 using Content.Shared._RMC14.Intel.Tech;
-using Content.Shared._RMC14.Requisitions;
-using Content.Shared._RMC14.Requisitions.Components;
 using Content.Shared._RMC14.Vehicle;
 using Content.Shared._RMC14.Vehicle.Supply;
 using Content.Shared._RMC14.Vendors;
@@ -14,7 +12,6 @@ using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Physics;
 using Content.Shared.Tag;
-using Content.Shared.Vehicle.Components;
 using Content.Shared.UserInterface;
 using Robust.Server.Audio;
 using Robust.Server.GameObjects;
@@ -32,18 +29,16 @@ public sealed class VehicleSupplySystem : EntitySystem
     private const int VendedHardpointAmmoCount = 3;
 
     [Dependency] private readonly AudioSystem _audio = default!;
-    [Dependency] private readonly IComponentFactory _compFactory = default!;
-    [Dependency] private readonly VehicleHardpointVisualsSystem _hardpointVisuals = default!;
     [Dependency] private readonly IntelSystem _intel = default!;
-    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly EntityLookupSystem _lookup = default!;
-    [Dependency] private readonly PhysicsSystem _physics = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly SharedRequisitionsSystem _requisitions = default!;
-    [Dependency] private readonly VehicleSystem _rmcVehicles = default!;
+    [Dependency] private readonly IComponentFactory _compFactory = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly IPrototypeManager _prototypes = default!;
+    [Dependency] private readonly PhysicsSystem _physics = default!;
+    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly SharedCMAutomatedVendorSystem _vendor = default!;
+    [Dependency] private readonly VehicleSystem _rmcVehicles = default!;
 
     private readonly Dictionary<string, List<HardpointItemInfo>> _hardpointItemsByType = new();
     private readonly Dictionary<string, string> _hardpointTypeByProto = new();
@@ -68,7 +63,7 @@ public sealed class VehicleSupplySystem : EntitySystem
     {
         SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
         SubscribeLocalEvent<VehicleSupplyConsoleComponent, BeforeActivatableUIOpenEvent>(OnConsoleBeforeUiOpen);
-        SubscribeLocalEvent<VehicleSupplyConsoleComponent, MapInitEvent>(OnConsoleMapInit);
+        SubscribeLocalEvent<VehicleSupplyConsoleComponent, MapInitEvent>(OnConsoleMapInit); // CCM14
         SubscribeLocalEvent<VehicleHardpointVendorComponent, MapInitEvent>(OnVendorMapInit);
         SubscribeLocalEvent<VehicleHardpointVendorComponent, BeforeActivatableUIOpenEvent>(OnVendorBeforeUiOpen);
         SubscribeLocalEvent<VehicleSupplyLiftComponent, MapInitEvent>(OnLiftMapInit);
@@ -256,9 +251,9 @@ public sealed class VehicleSupplySystem : EntitySystem
             if (!proto.TryGetComponent(out HardpointItemComponent? hardpointItem, _compFactory))
                 continue;
 
-            _hardpointTypeByProto[Normalize(proto.ID)] = Normalize(hardpointItem.HardpointType.Id);
+            _hardpointTypeByProto[Normalize(proto.ID)] = hardpointItem.HardpointType;
 
-            var key = Normalize(hardpointItem.HardpointType.Id);
+            var key = Normalize(hardpointItem.HardpointType);
             if (!_hardpointItemsByType.TryGetValue(key, out var list))
             {
                 list = new List<HardpointItemInfo>();
@@ -289,13 +284,7 @@ public sealed class VehicleSupplySystem : EntitySystem
         var liftQuery = EntityQueryEnumerator<VehicleSupplyLiftComponent>();
         while (liftQuery.MoveNext(out var uid, out var lift))
         {
-            EnsureVehicleInConsoles((uid, lift), ev.Unlock);
-
             if (GetStoredCount(lift, unlock) > 0 || lift.Deployed.Contains(unlock))
-                continue;
-
-            if (!string.IsNullOrWhiteSpace(lift.PendingVehicle) &&
-                Normalize(lift.PendingVehicle) == unlock)
                 continue;
 
             AddStored(lift, unlock);
@@ -305,14 +294,14 @@ public sealed class VehicleSupplySystem : EntitySystem
         SendConsoleStateAll();
         UpdateVendorSectionsAll();
     }
-
+    // CCM14-start
     private void OnConsoleBeforeUiOpen(Entity<VehicleSupplyConsoleComponent> ent, ref BeforeActivatableUIOpenEvent args)
     {
         if (TryGetLift(ent.Owner, ent.Comp, out var lift))
         {
             SeedStoredFromConsoles(lift);
         }
-
+    
         SendConsoleState(ent.Owner, ent.Comp);
     }
 
@@ -331,10 +320,11 @@ public sealed class VehicleSupplySystem : EntitySystem
 
         SendConsoleStateAll();
     }
-
+    // CCM14-end
     private void OnLiftMapInit(Entity<VehicleSupplyLiftComponent> ent, ref MapInitEvent args)
     {
         SeedStoredFromConsoles(ent);
+
         Dirty(ent);
     }
 
@@ -361,14 +351,10 @@ public sealed class VehicleSupplySystem : EntitySystem
                 if (GetStoredCount(lift.Comp, key) > 0)
                     continue;
 
-                if (!string.IsNullOrWhiteSpace(lift.Comp.PendingVehicle) &&
-                    Normalize(lift.Comp.PendingVehicle) == key)
-                    continue;
-
                 AddStored(lift.Comp, key);
             }
         }
-        Dirty(lift);
+        Dirty(lift); // CCM14
     }
 
     private void OnVendorBeforeUiOpen(Entity<VehicleHardpointVendorComponent> ent, ref BeforeActivatableUIOpenEvent args)
@@ -449,6 +435,10 @@ public sealed class VehicleSupplySystem : EntitySystem
         if (!TryGetEntry(ent.Comp, args.VehicleId, out var entry))
             return;
 
+        var unlocked = BuildUnlockedSet();
+        if (!IsEntryUnlocked(entry, unlocked))
+            return;
+
         var id = entry.Vehicle.Id;
         var idKey = Normalize(id);
         if (Normalize(lift.Comp.PendingVehicle) == idKey)
@@ -491,19 +481,23 @@ public sealed class VehicleSupplySystem : EntitySystem
             {
                 if (TryGetEntry(console.Comp, selected, out var entry))
                 {
-                    var key = Normalize(selected);
-                    if (GetStoredCount(comp, key) > 0 && _prototypes.TryIndex<EntityPrototype>(selected, out _))
+                    var unlocked = BuildUnlockedSet();
+                    if (IsEntryUnlocked(entry, unlocked))
                     {
-                        if (TryRemoveStored(comp, key))
+                        var key = Normalize(selected);
+                        if (GetStoredCount(comp, key) > 0 && _prototypes.TryIndex<EntityPrototype>(selected, out _))
                         {
-                            canQueueVehicle = true;
-                            nextVehicle = selected;
-                            comp.PendingVehicleEntity = null;
-                            if (TryTakeStoredEntity(comp, key, console.Comp.SelectedVehicleCopyIndex, out var pendingEntity))
-                                comp.PendingVehicleEntity = pendingEntity;
+                            if (TryRemoveStored(comp, key))
+                            {
+                                canQueueVehicle = true;
+                                nextVehicle = selected;
+                                comp.PendingVehicleEntity = null;
+                                if (TryTakeStoredEntity(comp, key, console.Comp.SelectedVehicleCopyIndex, out var pendingEntity))
+                                    comp.PendingVehicleEntity = pendingEntity;
 
-                            console.Comp.SelectedVehicle = string.Empty;
-                            console.Comp.SelectedVehicleCopyIndex = 0;
+                                console.Comp.SelectedVehicle = string.Empty;
+                                console.Comp.SelectedVehicleCopyIndex = 0;
+                            }
                         }
                     }
                 }
@@ -526,13 +520,6 @@ public sealed class VehicleSupplySystem : EntitySystem
             if (comp.Mode == VehicleSupplyLiftMode.Lowered)
                 return;
 
-            if (comp.ActiveVehicle == null || !IsOnLift(lift, comp.ActiveVehicle.Value))
-            {
-                comp.ActiveVehicle = null;
-                comp.ActiveVehicleId = string.Empty;
-                TryAdoptVehicleOnLift(lift);
-            }
-
             if (IsLoweringBlocked(lift))
                 return;
         }
@@ -540,24 +527,6 @@ public sealed class VehicleSupplySystem : EntitySystem
         comp.ToggledAt = _timing.CurTime;
         comp.Busy = true;
         SetMode(lift, VehicleSupplyLiftMode.Preparing, raise ? VehicleSupplyLiftMode.Raising : VehicleSupplyLiftMode.Lowering);
-    }
-
-    private void TryAdoptVehicleOnLift(Entity<VehicleSupplyLiftComponent> lift)
-    {
-        var comp = lift.Comp;
-        var coords = _transform.GetMapCoordinates(lift);
-        foreach (var candidate in _lookup.GetEntitiesInRange<VehicleComponent>(coords, comp.Radius))
-        {
-            if (Deleted(candidate.Owner) || candidate.Owner == comp.ActiveVehicle)
-                continue;
-
-            if (!TryComp(candidate.Owner, out MetaDataComponent? meta) || meta.EntityPrototype is not { } prototype)
-                continue;
-
-            comp.ActiveVehicle = candidate.Owner;
-            comp.ActiveVehicleId = prototype.ID;
-            return;
-        }
     }
 
     private bool IsLoweringBlocked(Entity<VehicleSupplyLiftComponent> lift)
@@ -589,21 +558,6 @@ public sealed class VehicleSupplySystem : EntitySystem
         lift.Comp.Mode = mode;
         lift.Comp.NextMode = nextMode;
         Dirty(lift);
-
-        RequisitionsRailingMode? railingMode = (mode, nextMode) switch
-        {
-            (VehicleSupplyLiftMode.Lowered, _) => RequisitionsRailingMode.Raised,
-            (VehicleSupplyLiftMode.Raised, _) => RequisitionsRailingMode.Lowering,
-            (_, VehicleSupplyLiftMode.Lowering) => RequisitionsRailingMode.Raising,
-            _ => null
-        };
-
-        if (railingMode != null)
-        {
-            var coordinates = _transform.GetMapCoordinates(lift);
-            _requisitions.UpdateRailingsInRange(coordinates, lift.Comp.RailingRange, railingMode.Value);
-        }
-
         SendConsoleStateAll();
     }
 
@@ -793,8 +747,6 @@ public sealed class VehicleSupplySystem : EntitySystem
             comp.Deployed.Remove(key);
             AddStored(comp, key);
             AddStoredEntity(comp, key, active);
-
-            EnsureVehicleInConsoles(lift, comp.ActiveVehicleId);
         }
 
         _transform.SetParent(active, EntityUid.Invalid);
@@ -840,6 +792,7 @@ public sealed class VehicleSupplySystem : EntitySystem
         VehicleSupplyLiftMode? mode = null;
         var busy = false;
         string? activeId = null;
+        string? activeName = null; // CCM14
         string? selectedId = string.IsNullOrWhiteSpace(console.SelectedVehicle) ? null : console.SelectedVehicle;
         var selectedCopyIndex = console.SelectedVehicleCopyIndex;
         VehicleSupplyPreviewState? preview = null;
@@ -850,23 +803,21 @@ public sealed class VehicleSupplySystem : EntitySystem
             mode = lift.Comp.Mode;
             busy = lift.Comp.Busy;
             activeId = string.IsNullOrWhiteSpace(lift.Comp.ActiveVehicleId) ? null : lift.Comp.ActiveVehicleId;
-            selectedId = SanitizeSelectedVehicle(console, lift.Comp);
-            selectedCopyIndex = console.SelectedVehicleCopyIndex;
+            activeName = string.IsNullOrWhiteSpace(activeId) ? null : GetVehicleName(activeId); // CCM14
 
             if (!string.IsNullOrWhiteSpace(selectedId))
             {
                 var key = Normalize(selectedId);
                 var layers = new List<VehicleHardpointLayerState>();
                 var overlays = new List<VehicleSupplyPreviewOverlay>();
-
                 if (TryGetStoredEntity(lift.Comp, key, selectedCopyIndex, out var stored))
                 {
                     layers = BuildPreviewLayers(stored);
                     overlays = BuildPreviewOverlays(stored);
                 }
 
-                var selectedName = GetVehicleName(selectedId);
-                preview = new VehicleSupplyPreviewState(selectedId, selectedName, layers, overlays);
+                var selectedName = GetVehicleName(selectedId); // CCM14
+                preview = new VehicleSupplyPreviewState(selectedId, selectedName, selectedCopyIndex, layers, overlays); // CCM14
             }
         }
 
@@ -889,41 +840,8 @@ public sealed class VehicleSupplySystem : EntitySystem
             available.Add(new VehicleSupplyEntryState(entry.Vehicle.Id, GetEntryName(entry), 1));
         }
 
-        console.Ui = new VehicleSupplyUiState(mode, busy, activeId, selectedId, selectedCopyIndex, preview, available);
-        Dirty(uid, console);
-    }
-
-    private string? SanitizeSelectedVehicle(
-        VehicleSupplyConsoleComponent console,
-        VehicleSupplyLiftComponent lift)
-    {
-        if (!string.IsNullOrWhiteSpace(console.SelectedVehicle) &&
-            TryGetEntry(console, console.SelectedVehicle, out var selectedEntry))
-        {
-            var selectedKey = Normalize(selectedEntry.Vehicle.Id);
-            var selectedCount = GetStoredCount(lift, selectedKey);
-            if (selectedCount > 0)
-            {
-                console.SelectedVehicle = selectedEntry.Vehicle.Id;
-                console.SelectedVehicleCopyIndex = Math.Clamp(console.SelectedVehicleCopyIndex, 0, selectedCount - 1);
-                return console.SelectedVehicle;
-            }
-        }
-
-        foreach (var entry in console.Vehicles)
-        {
-            var key = Normalize(entry.Vehicle.Id);
-            if (GetStoredCount(lift, key) <= 0)
-                continue;
-
-            console.SelectedVehicle = entry.Vehicle.Id;
-            console.SelectedVehicleCopyIndex = 0;
-            return console.SelectedVehicle;
-        }
-
-        console.SelectedVehicle = string.Empty;
-        console.SelectedVehicleCopyIndex = 0;
-        return null;
+        var state = new VehicleSupplyBuiState(mode, busy, activeId, activeName, selectedId, selectedCopyIndex, preview, available); // CCM14
+        _ui.SetUiState(uid, VehicleSupplyUIKey.Key, state);
     }
 
     private void UpdateVendorSectionsAll()
@@ -990,7 +908,7 @@ public sealed class VehicleSupplySystem : EntitySystem
                 var sectionName = vehicleName;
                 var sectionOrder = int.MaxValue;
 
-                if (TryGetHardpointCategory(entry, hardpoint, out var categoryKey, out var categoryLabel, out var categoryOrder))
+                if (TryGetTankSharedCategory(entry.Vehicle.Id, hardpoint, out var categoryKey, out var categoryLabel, out var categoryOrder))
                 {
                     sharedKey = categoryKey;
                     order = categoryOrder;
@@ -1114,8 +1032,8 @@ public sealed class VehicleSupplySystem : EntitySystem
         _vendor.SetSections((uid, automated), sections);
     }
 
-    private bool TryGetHardpointCategory(
-        VehicleSupplyEntry entry,
+    private bool TryGetTankSharedCategory(
+        string vehicleId,
         string hardpointId,
         out string categoryKey,
         out string categoryLabel,
@@ -1125,41 +1043,46 @@ public sealed class VehicleSupplySystem : EntitySystem
         categoryLabel = string.Empty;
         categoryOrder = int.MaxValue;
 
-        if (entry.HardpointCategories.Count == 0)
+        if (!string.Equals(Normalize(vehicleId), "rmcvehicletank", StringComparison.Ordinal))
             return false;
 
-        foreach (var category in entry.HardpointCategories)
+        var hardpointKey = Normalize(hardpointId);
+        if (hardpointKey == "rmcvehicletanksnowplow")
         {
-            foreach (var item in category.HardpointItems)
-            {
-                if (string.Equals(hardpointId, item.Id, StringComparison.OrdinalIgnoreCase))
-                {
-                    categoryKey = category.Key;
-                    categoryLabel = category.Label;
-                    categoryOrder = category.SortOrder;
-                    return true;
-                }
-            }
+            categoryKey = "tank-general";
+            categoryLabel = "General";
+            categoryOrder = 3;
+            return true;
         }
 
         if (!_hardpointTypeByProto.TryGetValue(Normalize(hardpointId), out var hardpointType))
             return false;
 
-        foreach (var category in entry.HardpointCategories)
+        switch (Normalize(hardpointType))
         {
-            foreach (var type in category.HardpointTypes)
-            {
-                if (string.Equals(hardpointType, type.Id, StringComparison.OrdinalIgnoreCase))
-                {
-                    categoryKey = category.Key;
-                    categoryLabel = category.Label;
-                    categoryOrder = category.SortOrder;
-                    return true;
-                }
-            }
+            case "cannon":
+                categoryKey = "tank-primary";
+                categoryLabel = "Primary";
+                categoryOrder = 0;
+                return true;
+            case "launcher":
+                categoryKey = "tank-secondary";
+                categoryLabel = "Secondary";
+                categoryOrder = 1;
+                return true;
+            case "armor":
+                categoryKey = "tank-armor";
+                categoryLabel = "Armor";
+                categoryOrder = 2;
+                return true;
+            case "support":
+                categoryKey = "tank-support";
+                categoryLabel = "Support";
+                categoryOrder = 4;
+                return true;
+            default:
+                return false;
         }
-
-        return false;
     }
 
     private bool TryGetLiftForVendor(
@@ -1168,6 +1091,7 @@ public sealed class VehicleSupplySystem : EntitySystem
         out Entity<VehicleSupplyLiftComponent> lift)
     {
         lift = default;
+        var found = false;
 
         var vendorCoords = _transform.GetMapCoordinates(vendorUid);
         var maxDistance = vendor.ConsoleSearchRange * vendor.ConsoleSearchRange;
@@ -1184,7 +1108,7 @@ public sealed class VehicleSupplySystem : EntitySystem
             return true;
         }
 
-        return false;
+        return found;
     }
 
     private bool TryFindLiftForVendor(
@@ -1232,7 +1156,7 @@ public sealed class VehicleSupplySystem : EntitySystem
         return false;
     }
 
-    public bool DebugAddVehicleToStorage(EntityUid liftUid, string vehicleId, out string? reason)
+    public bool DebugAddVehicleToStorage(EntityUid liftUid, string vehicleId, bool forceUnlock, out string? reason)
     {
         reason = null;
 
@@ -1255,6 +1179,16 @@ public sealed class VehicleSupplySystem : EntitySystem
         }
 
         var key = Normalize(vehicleId);
+
+        if (forceUnlock)
+        {
+            var tech = EnsureSupplyTech();
+            if (!tech.Comp.Unlocked.Contains(key))
+            {
+                tech.Comp.Unlocked.Add(key);
+                Dirty(tech);
+            }
+        }
 
         AddStored(lift, key);
 
@@ -1262,85 +1196,6 @@ public sealed class VehicleSupplySystem : EntitySystem
         SendConsoleStateAll();
         UpdateVendorSectionsAll();
         return true;
-    }
-
-    public bool DebugEnsureVehicleOnAnyLift(string vehicleId, out string? reason)
-    {
-        reason = null;
-
-        if (!TryGetAnyLift(out var lift))
-        {
-            reason = "No vehicle lift found.";
-            return false;
-        }
-
-        var result = DebugEnsureVehicleInStorage(lift.Owner, vehicleId, out reason);
-        if (result)
-            DebugEnsureVehicleInConsoles(lift.Owner, vehicleId);
-
-        return result;
-    }
-
-    public bool DebugEnsureVehicleInStorage(EntityUid liftUid, string vehicleId, out string? reason)
-    {
-        reason = null;
-
-        if (!TryComp(liftUid, out VehicleSupplyLiftComponent? lift))
-        {
-            reason = $"Entity {liftUid} does not have VehicleSupplyLiftComponent.";
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(vehicleId))
-        {
-            reason = "Vehicle id is empty.";
-            return false;
-        }
-
-        if (!_prototypes.TryIndex<EntityPrototype>(vehicleId, out _))
-        {
-            reason = $"Unknown vehicle prototype '{vehicleId}'.";
-            return false;
-        }
-
-        var key = Normalize(vehicleId);
-
-        var alreadyAvailable =
-            GetStoredCount(lift, key) > 0 ||
-            lift.Deployed.Contains(key) ||
-            (!string.IsNullOrWhiteSpace(lift.PendingVehicle) && Normalize(lift.PendingVehicle) == key) ||
-            (!string.IsNullOrWhiteSpace(lift.ActiveVehicleId) && Normalize(lift.ActiveVehicleId) == key);
-
-        if (!alreadyAvailable)
-            AddStored(lift, key);
-
-        Dirty(liftUid, lift);
-        SendConsoleStateAll();
-        UpdateVendorSectionsAll();
-        return true;
-    }
-
-    private void EnsureVehicleInConsoles(Entity<VehicleSupplyLiftComponent> lift, string vehicleId)
-    {
-        if (!_prototypes.TryIndex<EntityPrototype>(vehicleId, out var proto))
-            return;
-
-        var query = EntityQueryEnumerator<VehicleSupplyConsoleComponent>();
-        while (query.MoveNext(out var uid, out var console))
-        {
-            if (!TryGetLift(uid, console, out var consoleLift) || consoleLift.Owner != lift.Owner)
-                continue;
-
-            if (TryGetEntry(console, vehicleId, out _))
-                continue;
-
-            console.Vehicles.Add(new VehicleSupplyEntry
-            {
-                Vehicle = vehicleId,
-                Unlock = vehicleId,
-                Name = proto.Name,
-            });
-        }
     }
 
     public void DebugEnsureVehicleInConsoles(EntityUid liftUid, string vehicleId)
@@ -1373,20 +1228,12 @@ public sealed class VehicleSupplySystem : EntitySystem
 
     private bool TryGetLift(EntityUid consoleUid, VehicleSupplyConsoleComponent console, out Entity<VehicleSupplyLiftComponent> lift)
     {
-        if (console.Lift is { } cached &&
-            !Deleted(cached) &&
-            TryComp(cached, out VehicleSupplyLiftComponent? cachedComp))
-        {
-            lift = (cached, cachedComp);
-            return true;
-        }
-
-        console.Lift = null;
         lift = default;
         var found = false;
-        var bestDistance = float.MaxValue;
 
         var consoleCoords = _transform.GetMapCoordinates(consoleUid);
+        var bestDistance = float.MaxValue;
+
         var query = EntityQueryEnumerator<VehicleSupplyLiftComponent, TransformComponent>();
         while (query.MoveNext(out var uid, out var comp, out var xform))
         {
@@ -1406,11 +1253,9 @@ public sealed class VehicleSupplySystem : EntitySystem
             found = true;
         }
 
-        if (found)
-            console.Lift = lift.Owner;
-
         return found;
     }
+
 
     private List<VehicleSupplyEntry> BuildVendorCatalog(EntityUid vendorUid, VehicleHardpointVendorComponent vendor)
     {
@@ -1467,8 +1312,12 @@ public sealed class VehicleSupplySystem : EntitySystem
         return false;
     }
 
+    // CCM14-start
     private string GetEntryName(VehicleSupplyEntry entry)
     {
+        // if (!string.IsNullOrWhiteSpace(entry.Name))
+        //     return entry.Name;
+
         return GetPrototypeName(entry.Vehicle.Id);
     }
 
@@ -1476,6 +1325,7 @@ public sealed class VehicleSupplySystem : EntitySystem
     {
         return GetPrototypeName(vehicleId);
     }
+    // CCM14-end
 
     private string GetPrototypeName(string protoId)
     {
@@ -1483,6 +1333,17 @@ public sealed class VehicleSupplySystem : EntitySystem
             return proto.Name;
 
         return protoId;
+    }
+
+    private Entity<VehicleSupplyTechComponent> EnsureSupplyTech()
+    {
+        var query = EntityQueryEnumerator<VehicleSupplyTechComponent>();
+        if (query.MoveNext(out var uid, out var comp))
+            return (uid, comp);
+
+        var tree = _intel.EnsureTechTree();
+        var tech = EnsureComp<VehicleSupplyTechComponent>(tree.Owner);
+        return (tree.Owner, tech);
     }
 
     private List<VehicleHardpointLayerState> BuildPreviewLayers(
@@ -1647,7 +1508,83 @@ public sealed class VehicleSupplySystem : EntitySystem
 
     private string ResolveVisualState(EntityUid item, out bool usesOverlay, int depth = 0)
     {
-        return _hardpointVisuals.ResolveVisualState(item, out usesOverlay, depth);
+        usesOverlay = false;
+        if (depth > 2)
+            return string.Empty;
+
+        if (TryComp(item, out VehicleTurretComponent? turretOverlay) && turretOverlay.ShowOverlay)
+            usesOverlay = true;
+
+        if (TryComp(item, out HardpointSlotsComponent? attachedSlots) &&
+            TryComp(item, out ItemSlotsComponent? attachedItemSlots))
+        {
+            foreach (var slot in attachedSlots.Slots)
+            {
+                if (string.IsNullOrWhiteSpace(slot.Id))
+                    continue;
+
+                if (!_itemSlots.TryGetSlot(item, slot.Id, out var itemSlot, attachedItemSlots) || !itemSlot.HasItem)
+                    continue;
+
+                var child = itemSlot.Item!.Value;
+                var childState = ResolveVisualState(child, out var childOverlay, depth + 1);
+                usesOverlay |= childOverlay;
+                if (!string.IsNullOrWhiteSpace(childState))
+                    return childState;
+            }
+        }
+
+        if (TryComp(item, out HardpointVisualComponent? visual) &&
+            !string.IsNullOrWhiteSpace(visual.VehicleState))
+        {
+            return visual.VehicleState;
+        }
+
+        if (TryComp(item, out VehicleTurretComponent? turret) &&
+            !string.IsNullOrWhiteSpace(turret.OverlayState))
+        {
+            return turret.OverlayState;
+        }
+
+        return string.Empty;
+    }
+
+    private HashSet<string> BuildUnlockedSet()
+    {
+        var unlocked = new HashSet<string>();
+        if (!TryGetSupplyTech(out var tech))
+            return unlocked;
+
+        foreach (var id in tech.Comp.Unlocked)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                continue;
+
+            unlocked.Add(Normalize(id));
+        }
+
+        return unlocked;
+    }
+
+    private bool TryGetSupplyTech(out Entity<VehicleSupplyTechComponent> tech)
+    {
+        var query = EntityQueryEnumerator<VehicleSupplyTechComponent>();
+        if (query.MoveNext(out var uid, out var comp))
+        {
+            tech = (uid, comp);
+            return true;
+        }
+
+        tech = default;
+        return false;
+    }
+
+    private static bool IsEntryUnlocked(VehicleSupplyEntry entry, HashSet<string> unlocked)
+    {
+        if (string.IsNullOrWhiteSpace(entry.Unlock))
+            return true;
+
+        return unlocked.Contains(Normalize(entry.Unlock));
     }
 
     private IReadOnlyList<string> GetHardpointsForVehicle(string vehicleId, IReadOnlyList<VehicleSupplyEntry> entries)
@@ -1680,7 +1617,7 @@ public sealed class VehicleSupplySystem : EntitySystem
 
         foreach (var slot in slots.Slots)
         {
-            var typeKey = Normalize(slot.HardpointType.Id);
+            var typeKey = Normalize(slot.HardpointType);
             if (!_hardpointItemsByType.TryGetValue(typeKey, out var candidates))
                 continue;
 
@@ -1735,54 +1672,5 @@ public sealed class VehicleSupplySystem : EntitySystem
         }
 
         return null;
-    }
-
-    private HashSet<string> BuildUnlockedSet()
-    {
-        var unlocked = new HashSet<string>();
-        if (!TryGetSupplyTech(out var tech))
-            return unlocked;
-
-        foreach (var id in tech.Comp.Unlocked)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-                continue;
-
-            unlocked.Add(Normalize(id));
-        }
-
-        return unlocked;
-    }
-
-    private bool TryGetSupplyTech(out Entity<VehicleSupplyTechComponent> tech)
-    {
-        var query = EntityQueryEnumerator<VehicleSupplyTechComponent>();
-        if (query.MoveNext(out var uid, out var comp))
-        {
-            tech = (uid, comp);
-            return true;
-        }
-
-        tech = default;
-        return false;
-    }
-
-    private static bool IsEntryUnlocked(VehicleSupplyEntry entry, HashSet<string> unlocked)
-    {
-        if (string.IsNullOrWhiteSpace(entry.Unlock))
-            return true;
-
-        return unlocked.Contains(Normalize(entry.Unlock));
-    }
-
-    private Entity<VehicleSupplyTechComponent> EnsureSupplyTech()
-    {
-        var query = EntityQueryEnumerator<VehicleSupplyTechComponent>();
-        if (query.MoveNext(out var uid, out var comp))
-            return (uid, comp);
-
-        var tree = _intel.EnsureTechTree();
-        var tech = EnsureComp<VehicleSupplyTechComponent>(tree.Owner);
-        return (tree.Owner, tech);
     }
 }

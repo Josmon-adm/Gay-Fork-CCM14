@@ -6,14 +6,11 @@
   components:
   - type: Vehicle
     movementKind: Grid
-  - type: LagCompensation
   - type: Clickable
-  - type: WarpPoint
-    follow: true
-    location: APC
   - type: RMCIgnoreGhostInteractionLimits
   - type: RequireProjectileTarget
   - type: GridVehicleMover
+    mobCollisionDamage: 40 # CCM14
     maxSpeed: 5
     acceleration: 4
     deceleration: 10
@@ -50,10 +47,8 @@
         - HighImpassable
         - LowImpassable
         - LargeMobLayer
-        - Vehicle
         layer:
         - LargeMobLayer
-        - Vehicle
       mob:
         shape:
           !type:PhysShapeAabb
@@ -138,34 +133,35 @@
           components:
           - VehiclePortGun
   - type: HardpointSlots
-    vehicleFamily: HardpointVehicleFamilyAPC
+    vehicleFamily: APC
     slots:
     - id: primary
-      hardpointType: HardpointTypeTurret
-      slotType: HardpointSlotTypeTurret
+      hardpointType: Turret
+      slotType: Turret
       visualLayer: primary
       insertDelay: 2.5
       required: false
     - id: secondary
-      hardpointType: HardpointTypeCannon
-      slotType: HardpointSlotTypeCannon
+      hardpointType: Cannon
+      slotType: Cannon
       visualLayer: secondary
       insertDelay: 2.5
       required: false
     - id: support
-      hardpointType: HardpointTypeSupportAttachment
-      slotType: HardpointSlotTypeSupportAttachment
+      hardpointType: SupportAttachment
+      slotType: SupportAttachment
       visualLayer: support
       insertDelay: 2.0
       required: false
     - id: wheel-1
-      hardpointType: HardpointTypeWheel
-      slotType: HardpointSlotTypeWheel
+      hardpointType: Wheel
+      slotType: Wheel
       insertDelay: 1.5
   - type: VehicleWheelSlots
     slotCount: 1
   - type: HardpointIntegrity
-    maxIntegrity: 1000
+    maxIntegrity: 600 # CCM14
+    repairFuelCost: 15
     bypassEntryOnZero: true
   - type: Appearance
   - type: VehicleEnter
@@ -185,33 +181,6 @@
 - type: entity
   parent: VehicleAPCBase
   id: VehicleAPC
-  components:
-  - type: VehicleEnter
-    interiorPath: /Maps/_RMC14/Vehicles/apc_transport_interior.yml
-    enterDoAfter: 1.0
-    exitDoAfter: 1.0
-    maxPassengers: 18
-    maxXenos: 3
-    reservedPassengerPools:
-    - slots: 2
-      eligibleJobs:
-      - CMVehicleCrewman
-    - slots: 1
-      eligibleJobs:
-      - RMCJobSynthetic
-      - RMCCorporateSynthetic
-    entryPoints:
-    - offset: 1.5,0
-      radius: 0.7
-      interiorCoords: 1.55,2.65
-    - offset: -1.5,0
-      radius: 0.7
-      interiorCoords: 1.55,-1.2
-  - type: TacticalMapTracked
-  - type: TacticalMapIcon
-    icon:
-      sprite: /Textures/_RMC14/Interface/map_blips_large.rsi
-      state: apc
 
 - type: entity
   parent: VehicleAPCBase
@@ -241,22 +210,8 @@
     interiorPath: /Maps/_RMC14/Vehicles/apc_medical_interior.yml
     enterDoAfter: 1.0
     exitDoAfter: 1.0
-    maxPassengers: 11
+    maxPassengers: 10
     maxXenos: 3
-    reservedPassengerPools:
-    - slots: 2
-      eligibleJobs:
-      - CMVehicleCrewman
-    - slots: 1
-      eligibleJobs:
-      - CMHospitalCorpsman
-      - CMDoctor
-      - CMResearcher
-      - CMCMO
-      - CMNurse
-      - RMCFieldDoctor
-      - RMCJobSynthetic
-      - RMCCorporateSynthetic
     entryPoints:
     - offset: 1.5,0
       radius: 0.7
@@ -267,11 +222,6 @@
     - offset: 0,2
       radius: 0.85
       interiorCoords: 0.25,-1
-  - type: TacticalMapTracked
-  - type: TacticalMapIcon
-    icon:
-      sprite: /Textures/_RMC14/Interface/map_blips_large.rsi
-      state: apc
 
 - type: entity
   parent: VehicleAPCBase
@@ -301,23 +251,8 @@
     interiorPath: /Maps/_RMC14/Vehicles/apc_command_interior.yml
     enterDoAfter: 1.0
     exitDoAfter: 1.0
-    maxPassengers: 12
+    maxPassengers: 10
     maxXenos: 3
-    reservedPassengerPools:
-    - slots: 2
-      eligibleJobs:
-      - CMVehicleCrewman
-    - slots: 1
-      eligibleJobs:
-      - CMStaffOfficer
-      - CMSeniorEnlistedAdvisor
-      - CMExecutiveOfficer
-      - CMCommandingOfficer
-      - CMUNMCBrigadierGeneral
-    - slots: 1
-      eligibleJobs:
-      - RMCJobSynthetic
-      - RMCCorporateSynthetic
     entryPoints:
     - offset: 1.5,0
       radius: 0.7
@@ -328,11 +263,6 @@
     - offset: 0,2
       radius: 0.85
       interiorCoords: 0.25,-1
-  - type: TacticalMapTracked
-  - type: TacticalMapIcon
-    icon:
-      sprite: /Textures/_RMC14/Interface/map_blips_large.rsi
-      state: apc
 
 - type: entity
   parent: VehicleAPCBase
@@ -341,6 +271,7 @@
   description: An armored personnel carrier configured for SPP forces.
   components:
   - type: GridVehicleMover
+    mobCollisionDamage: 40 # CCM14
     maxSpeed: 5
     acceleration: 2.0
     deceleration: 7.5
@@ -384,33 +315,33 @@
           components:
           - VehicleWheelItem
   - type: HardpointSlots
-    vehicleFamily: HardpointVehicleFamilyAPC
+    vehicleFamily: APC
     slots:
     - id: primary
-      hardpointType: HardpointTypeTurret
-      slotType: HardpointSlotTypeTurret
-      compatibilityId: HardpointCompatibilitySPPAPC
+      hardpointType: Turret
+      slotType: Turret
+      compatibilityId: SPPAPC
       visualLayer: primary
       insertDelay: 2.5
       required: false
     - id: secondary
-      hardpointType: HardpointTypeCannon
-      slotType: HardpointSlotTypeCannon
-      compatibilityId: HardpointCompatibilitySPPAPC
+      hardpointType: Cannon
+      slotType: Cannon
+      compatibilityId: SPPAPC
       visualLayer: secondary
       insertDelay: 2.5
       required: false
     - id: support
-      hardpointType: HardpointTypeSupportAttachment
-      slotType: HardpointSlotTypeSupportAttachment
-      compatibilityId: HardpointCompatibilitySPPAPC
+      hardpointType: SupportAttachment
+      slotType: SupportAttachment
+      compatibilityId: SPPAPC
       visualLayer: support
       insertDelay: 2.0
       required: false
     - id: wheel-1
-      hardpointType: HardpointTypeWheel
-      slotType: HardpointSlotTypeWheel
-      compatibilityId: HardpointCompatibilitySPPAPC
+      hardpointType: Wheel
+      slotType: Wheel
+      compatibilityId: SPPAPC
       insertDelay: 1.5
   - type: VehicleEnter
     interiorPath: /Maps/_RMC14/Vehicles/spp_apc_interior.yml

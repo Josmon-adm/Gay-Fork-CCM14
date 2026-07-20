@@ -142,6 +142,7 @@
     defaultState: Full
     green: false
     blockScopes: true
+    ignoreUserOnlyHalf: true
 
 - type: entity
   parent: IDCardStandard
@@ -837,7 +838,7 @@
   - type: Storage
     maxItemSize: Normal
     grid:
-    - 0,0,15,3
+    - 0,0,11,3
   - type: FixedItemSizeStorage
   - type: GenericVisualizer
     visuals:
@@ -854,12 +855,12 @@
     - id: CMUYautjaWoundClamp
       amount: 2
     - id: CMUYautjaAlienHealthAnalyzer
+    - id: CMUYautjaAutoInjector
+      amount: 6
     - id: CMUYautjaHealingGel
       amount: 6
     - id: CMUYautjaHerbalCase
       amount: 2
-    - id: CMUYautjaAutoInjector
-      amount: 6
 
 - type: entity
   parent: ColMarTechBase

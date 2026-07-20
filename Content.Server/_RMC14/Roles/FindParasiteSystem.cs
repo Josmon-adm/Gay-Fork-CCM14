@@ -8,7 +8,8 @@ using Content.Shared._RMC14.Xenonids.Projectile.Parasite;
 using Content.Shared.Coordinates;
 using Content.Shared.Mobs.Systems;
 using Content.Shared.Verbs;
-using Robust.Server.Containers;
+using Robust.Shared.Console;
+using Robust.Shared.Network;
 
 namespace Content.Server._RMC14.Roles;
 
@@ -19,7 +20,6 @@ public sealed partial class FindParasiteSystem : EntitySystem
     [Dependency] private readonly AreaSystem _areas = default!;
     [Dependency] private readonly XenoEggRoleSystem _parasiteRole = default!;
     [Dependency] private readonly MobStateSystem _mob = default!;
-    [Dependency] private readonly ContainerSystem _container = default!;
     public override void Initialize()
     {
         base.Initialize();
@@ -50,7 +50,7 @@ public sealed partial class FindParasiteSystem : EntitySystem
         var eggs = EntityQueryEnumerator<XenoEggComponent>();
         var eggMorphers = EntityQueryEnumerator<EggMorpherComponent>();
         var parasiteThrowers = EntityQueryEnumerator<XenoParasiteThrowerComponent>();
-        var parasites = EntityQueryEnumerator<XenoParasiteComponent>();
+        var parasites = EntityQueryEnumerator<ParasiteAIComponent>();
 
         var spawners = new List<NetEntity>();
         while (eggs.MoveNext(out var eggEnt, out var egg))
@@ -99,9 +99,7 @@ public sealed partial class FindParasiteSystem : EntitySystem
 
         while (parasites.MoveNext(out var paraEnt, out var parasite))
         {
-            if (!_mob.IsAlive(paraEnt) ||
-                !(HasComp<ParasiteAIComponent>(paraEnt) || HasComp<ParasiteAIDelayAddComponent>(paraEnt))
-                || _container.IsEntityInContainer(paraEnt))
+            if (!_mob.IsAlive(paraEnt))
             {
                 continue;
             }

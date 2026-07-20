@@ -9,13 +9,6 @@
   - type: Corrodible
     isCorrodible: false
   - type: InteractionOutline
-  - type: ApcPowerReceiver
-    powerLoad: 250
-    needsPower: false
-  - type: RMCPowerReceiver
-    idleLoad: 300
-    activeLoad: 300
-    channel: Equipment
 
 - type: entity
   parent: CMComputerDropship
@@ -53,34 +46,6 @@
     hijackable: false
 
 - type: entity
-  parent: CMComputerDropshipNavigation
-  id: CMComputerDropshipNavigationERTTSE
-  name: transport shuttle
-  description: A transport shuttle flight computer.
-  components:
-  - type: Sprite
-    sprite: _RMC14/Structures/hybrisa_computer_props.rsi
-    state: blacksensor_comp2
-  - type: DropshipNavigationComputer
-    hijackable: false
-  - type: Transform
-    anchored: false
-
-- type: entity
-  parent: CMComputerDropshipNavigation
-  id: CMComputerDropshipNavigationERTCLF
-  name: transport shuttle
-  description: A transport shuttle flight computer.
-  components:
-  - type: Sprite
-    sprite: _RMC14/Structures/Dropships/clf.rsi
-    state: 93
-  - type: DropshipNavigationComputer
-    hijackable: false
-  - type: Transform
-    anchored: false
-
-- type: entity
   parent: CMComputerDropship
   id: CMComputerDropshipNavigationPlanetside
   name: dropship navigation computer
@@ -89,12 +54,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/dropship_nav_computer.rsi
-    layers:
-    - map: ["base"]
-      state: off
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "on"
-  - type: Appearance
+    state: on
   - type: ActivatableUI
     key: enum.DropshipTerminalUiKey.Key
   - type: AccessReader
@@ -186,17 +146,8 @@
   - type: Sprite
     drawdepth: Objects
     sprite: _RMC14/Structures/Machines/computer.rsi
-    layers:
-    - state: "security_cam0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "security_cam"
-  - type: ApcPowerReceiver
-    powerLoad: 0
-    needsPower: false
-  - type: RMCPowerReceiver
-    idleLoad: 300
-    activeLoad: 300
-    channel: Equipment
+    state: security_cam
+    layers: [ ]
   - type: Clickable
   - type: Corrodible
     isCorrodible: false
@@ -238,10 +189,8 @@
   - type: Sprite
     drawdepth: Objects
     sprite: _RMC14/Structures/Machines/computer.rsi
-    layers:
-    - state: "security_cam0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "security_cam"
+    state: security_cam
+    layers: [ ]
   - type: Clickable
   - type: Corrodible
     isCorrodible: false

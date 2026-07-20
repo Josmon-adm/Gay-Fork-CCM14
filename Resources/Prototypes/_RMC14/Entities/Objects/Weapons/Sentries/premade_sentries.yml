@@ -110,8 +110,14 @@
     interfaces:
       enum.SentryUiKey.Key:
         type: SentryUpgradeBui
-  - type: RMCHealthExaminable
-    speciesType: Mechanical
+  - type: HealthExaminable
+    locPrefix: sentry
+    examinableTypes:
+    - Blunt
+    - Slash
+    - Piercing
+    - Heat
+    - Shock
   - type: ShortExamine
   - type: InteractedBlacklist
     blacklist:
@@ -147,7 +153,7 @@
     capacity: 600
   - type: HTN
     rootTask:
-      task: RMCSentryCompound
+      task: RMCTurretCompound
     blackboard:
       SoundTargetInLOS: !type:SoundPathSpecifier
         path: /Audio/Effects/double_beep.ogg

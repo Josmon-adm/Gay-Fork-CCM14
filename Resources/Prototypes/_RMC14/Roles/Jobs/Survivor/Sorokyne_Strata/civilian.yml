@@ -9,17 +9,11 @@
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Russian
-      - English
-      - Chinese
-      understoodLanguages:
-      - Russian
-      - English
-      - Chinese
-      currentLanguage: Russian
-      defaultLanguage: Russian
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivor
     - type: EquipSurvivorPreset

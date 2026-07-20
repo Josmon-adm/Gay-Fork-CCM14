@@ -8,7 +8,6 @@ rmc-ghost-role-information-provost-squad-description = Вас вызвали н�
 rmc-ghost-name-corp-provost-advisor = Пристав-Советник (Дружественный)
 rmc-job-name-corp-provost-advisor = Пристав-Советник
 rmc-job-prefix-provost-advisor = Пр-С
-rmc-ghost-role-information-provost-advisor-description = Следите за соблюдением устава сотрудниками ВП, обучайте новеньких офицеров, следите за внутренним порядком и помогайте в работе товарищам.
 rmc-ghost-name-corp-provost-chief = Ст. Пристав-Инспектор (Дружественный)
 rmc-job-name-corp-provost-chief = Ст. Пристав-Инспектор
 rmc-job-prefix-provost-chief = Ст. Пр-И

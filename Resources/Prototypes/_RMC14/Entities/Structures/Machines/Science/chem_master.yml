@@ -50,14 +50,10 @@
   - type: ActivatableUI
     key: enum.RMCChemMasterUI.Key
   - type: ActivatableUIRequiresPower
-  - type: Appearance
   - type: ApcPowerReceiver
     powerLoad: 250
-    needsPower: true
-  - type: RMCPowerReceiver
-    idleLoad: 20
-    activeLoad: 0
-    channel: Equipment
+    needsPower: false # TODO RMC14 power
+  - type: Appearance
   - type: GenericVisualizer
     visuals:
       enum.PowerDeviceVisuals.Powered:

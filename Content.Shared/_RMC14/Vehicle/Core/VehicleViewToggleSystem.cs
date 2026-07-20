@@ -112,8 +112,7 @@ public sealed class VehicleViewToggleSystem : EntitySystem
         EnsureSingleToggleAction(ent.Owner, ent.Comp);
         UpdateActionState(ent.Comp);
         Dirty(ent.Owner, ent.Comp);
-        var toggledEv = new VehicleViewToggledEvent(ent.Comp.IsOutside);
-        RaiseLocalEvent(ent.Owner, ref toggledEv);
+        RaiseLocalEvent(ent.Owner, new VehicleViewToggledEvent(ent.Comp.IsOutside));
     }
 
     private void UpdateActionState(VehicleViewToggleComponent toggle)

@@ -200,13 +200,6 @@ public sealed class VehicleFabricatorSystem : EntitySystem
         SortAndCachePrintables(printables);
     }
 
-    private bool IsPrintableEnabled(EntityPrototype proto)
-    {
-        if (proto.TryGetComponent(out VehicleFabricatorPrintableComponent? printable, _compFactory))
-            return printable.Enabled;
-        return true;
-    }
-
     private List<(EntityPrototype Proto, (VehicleFabricatorCategory Category, VehicleType Vehicle) Info)> CollectPrintablePrototypes()
     {
         var prototypes = _prototypes.EnumeratePrototypes<EntityPrototype>();
@@ -214,9 +207,6 @@ public sealed class VehicleFabricatorSystem : EntitySystem
 
         foreach (var proto in prototypes)
         {
-            if (!IsPrintableEnabled(proto))
-                continue;       
-
             if (TryGetAutoPrintableInfo(proto, out var info))
             {
                 printables.Add((proto, info));
@@ -314,18 +304,23 @@ public sealed class VehicleFabricatorSystem : EntitySystem
         return true;
     }
 
-    private void GetVehicleFromFamily(string? vehicleFamilyId, out VehicleType vehicle)
+    private void GetVehicleFromFamily(ProtoId<HardpointVehicleFamilyPrototype>? vehicleFamily,
+        out VehicleType vehicle)
     {
         vehicle = VehicleType.None;
-        if (vehicleFamilyId == null)
-            return;
+        if (vehicleFamily == null) return;
 
-        vehicle = vehicleFamilyId switch
+        var familyStr = vehicleFamily.Value.ToString();
+        vehicle = familyStr switch
         {
-            "HardpointVehicleFamilyHumvee" => VehicleType.Humvee,
-            "HardpointVehicleFamilyAPC" => VehicleType.APC,
-            "HardpointVehicleFamilyTank" => VehicleType.Tank,
-            "HardpointVehicleFamilyVan" => VehicleType.Van,
+            "humvee" => VehicleType.Humvee,
+            "Humvee" => VehicleType.Humvee,
+            "apc" => VehicleType.APC,
+            "APC" => VehicleType.APC,
+            "tank" => VehicleType.Tank,
+            "Tank" => VehicleType.Tank,
+            "van" => VehicleType.Van,
+            "Van" => VehicleType.Van,
             _ => VehicleType.None
         };
     }
@@ -385,10 +380,10 @@ public sealed class VehicleFabricatorSystem : EntitySystem
         return categories;
     }
 
-    private HashSet<VehicleFabricatorCategory> GetCategoriesFromModuleSlot(string hardpointType, string? vehicleFamilyId)
+    private HashSet<VehicleFabricatorCategory> GetCategoriesFromModuleSlot(string hardpointType, ProtoId<HardpointVehicleFamilyPrototype>? vehicleFamily)
     {
         var categories = new HashSet<VehicleFabricatorCategory>();
-        GetVehicleFromFamily(vehicleFamilyId, out var vehicleType);
+        GetVehicleFromFamily(vehicleFamily, out var vehicleType);
 
         foreach (var (_, cachedInfo) in _cachedModulePrintableInfos)
         {
@@ -407,6 +402,7 @@ public sealed class VehicleFabricatorSystem : EntitySystem
 
         return categories;
     }
+
 
     private void SendUIState(EntityUid uid, VehicleFabricatorComponent comp)
     {

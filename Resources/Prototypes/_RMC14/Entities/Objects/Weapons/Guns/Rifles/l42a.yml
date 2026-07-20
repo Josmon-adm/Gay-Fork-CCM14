@@ -119,7 +119,8 @@
   id: RMCMagazineRifleL42AEmpty
   suffix: Empty
   components:
-  - type: RMCEmptyMag
+  - type: BallisticAmmoProvider
+    proto: null
 
 - type: entity
   parent: RMCMagazineRifleL42A
@@ -151,7 +152,8 @@
   id: RMCMagazineRifleL42AExtendedEmpty
   suffix: Empty
   components:
-  - type: RMCEmptyMag
+  - type: BallisticAmmoProvider
+    proto: null
 
 
 - type: entity
@@ -249,7 +251,8 @@
   id: RMCMagazineRifleL42AAPEmpty
   suffix: Empty
   components:
-  - type: RMCEmptyMag
+  - type: BallisticAmmoProvider
+    proto: null
 
 - type: Tag
   id: RMCWeaponRifleL42A

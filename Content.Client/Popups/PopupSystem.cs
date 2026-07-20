@@ -36,7 +36,6 @@ namespace Content.Client.Popups
 
         private readonly Dictionary<WorldPopupData, WorldPopupLabel> _aliveWorldLabels = new();
         private readonly Dictionary<CursorPopupData, CursorPopupLabel> _aliveCursorLabels = new();
-        private bool _popupsSuppressed;
 
         public const float MinimumPopupLifetime = 0.7f;
         public const float MaximumPopupLifetime = 5f;
@@ -59,23 +58,6 @@ namespace Content.Client.Popups
                     _examine,
                     _transform,
                     this));
-        }
-
-        public void SetPopupsSuppressed(bool suppressed)
-        {
-            if (_popupsSuppressed == suppressed)
-                return;
-
-            _popupsSuppressed = suppressed;
-
-            if (suppressed)
-                ClearPopups();
-        }
-
-        private void ClearPopups()
-        {
-            _aliveCursorLabels.Clear();
-            _aliveWorldLabels.Clear();
         }
 
         public override void Shutdown()
@@ -106,9 +88,6 @@ namespace Content.Client.Popups
                 else
                     _replayRecording.RecordClientMessage(new PopupCoordinatesEvent(message, type, GetNetCoordinates(coordinates)));
             }
-
-            if (_popupsSuppressed)
-                return;
 
             var popupData = new WorldPopupData(message, type, coordinates, entity);
             if (_aliveWorldLabels.TryGetValue(popupData, out var existingLabel))
@@ -157,9 +136,6 @@ namespace Content.Client.Popups
 
             if (recordReplay && _replayRecording.IsRecording)
                 _replayRecording.RecordClientMessage(new PopupCursorEvent(message, type));
-
-            if (_popupsSuppressed)
-                return;
 
             var popupData = new CursorPopupData(message, type);
             if (_aliveCursorLabels.TryGetValue(popupData, out var existingLabel))
@@ -307,7 +283,8 @@ namespace Content.Client.Popups
 
         private void OnRoundRestart(RoundRestartCleanupEvent ev)
         {
-            ClearPopups();
+            _aliveCursorLabels.Clear();
+            _aliveWorldLabels.Clear();
         }
 
         #endregion

@@ -1,5 +1,4 @@
 using Content.Shared._RMC14.Marines.Skills;
-using Content.Shared._RMC14.Movement;
 using Content.Shared._RMC14.Storage;
 using Content.Shared.Administration.Logs;
 using Content.Shared.Containers;
@@ -29,7 +28,6 @@ public abstract class SharedAutodocSystem : EntitySystem
     [Dependency] private readonly INetManager _net = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly RMCMovementSystem _rmcMovement = default!;
     [Dependency] private readonly SkillsSystem _skills = default!;
     [Dependency] private readonly SharedStunSystem _stun = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
@@ -106,7 +104,11 @@ public abstract class SharedAutodocSystem : EntitySystem
         UpdateAutodocVisuals(autodoc);
 
         if (!_timing.ApplyingState)
-            EnsureComp<InsideAutodocComponent>(args.Entity).Chamber = autodoc;
+        {
+            var inside = EnsureComp<InsideAutodocComponent>(args.Entity);
+            inside.Autodoc = autodoc;
+            Dirty(args.Entity, inside);
+        }
     }
 
     private void OnAutodocEntRemoved(Entity<AutodocComponent> autodoc, ref EntRemovedFromContainerMessage args)
@@ -125,7 +127,6 @@ public abstract class SharedAutodocSystem : EntitySystem
 
         UpdateAutodocVisuals(autodoc);
         RemCompDeferred<InsideAutodocComponent>(args.Entity);
-        _rmcMovement.SuppressCollisionOnExit(args.Entity, autodoc.Owner);
     }
 
     private void OnAutodocInteractHand(Entity<AutodocComponent> autodoc, ref InteractHandEvent args)
@@ -231,14 +232,11 @@ public abstract class SharedAutodocSystem : EntitySystem
             return;
 
         _container.Remove(occupant, container);
+        if (_net.IsServer)
+            _audio.PlayPvs(autodoc.Comp.EjectSound, autodoc);
 
         if (autodoc.Comp.ExitStun > TimeSpan.Zero && !HasComp<NoStunOnExitComponent>(autodoc))
             _stun.TryStun(occupant, autodoc.Comp.ExitStun, true);
-
-        if (_net.IsClient)
-            return;
-
-        _audio.PlayPvs(autodoc.Comp.EjectSound, autodoc);
     }
 
     protected void UpdateAutodocVisuals(Entity<AutodocComponent> autodoc)
@@ -277,7 +275,7 @@ public abstract class SharedAutodocSystem : EntitySystem
         if (_timing.ApplyingState)
             return;
 
-        if (ent.Comp.Chamber is not { } autodocId)
+        if (ent.Comp.Autodoc is not { } autodocId)
             return;
 
         if (!TryComp<AutodocComponent>(autodocId, out var autodoc))

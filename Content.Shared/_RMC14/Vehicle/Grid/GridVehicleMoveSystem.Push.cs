@@ -7,7 +7,7 @@ using Robust.Shared.GameObjects;
 using Robust.Shared.Maths;
 using Content.Shared.Movement.Systems;
 
-namespace Content.Shared._RMC14.Vehicle;
+namespace Content.Shared.Vehicle;
 
 public sealed partial class GridVehicleMoverSystem : EntitySystem
 {
@@ -48,12 +48,6 @@ public sealed partial class GridVehicleMoverSystem : EntitySystem
         {
             _activeXenoPushers.Remove(uid);
             return Vector2i.Zero;
-        }
-
-        if (TryComp(uid, out RMCVehicleAutopilotComponent? autopilot))
-        {
-            _activeXenoPushers.Remove(uid);
-            return autopilot.Direction;
         }
 
         if (!TryGetActivePusher(uid, mover, out var pusher))
@@ -97,8 +91,8 @@ public sealed partial class GridVehicleMoverSystem : EntitySystem
         if (!fixtureQ.TryComp(uid, out var fixtures))
             return false;
 
-        var vehiclePos = _transform.GetWorldPosition(uid);
-        var contacts = _physics.GetContacts((uid, fixtures));
+        var vehiclePos = transform.GetWorldPosition(uid);
+        var contacts = physics.GetContacts((uid, fixtures));
         var bestScore = 0f;
 
         while (contacts.MoveNext(out var contact))
@@ -123,7 +117,7 @@ public sealed partial class GridVehicleMoverSystem : EntitySystem
             if (dir == Vector2i.Zero)
                 continue;
 
-            var otherPos = _transform.GetWorldPosition(other);
+            var otherPos = transform.GetWorldPosition(other);
             var toVehicle = vehiclePos - otherPos;
             if (toVehicle.LengthSquared() <= 0.0001f)
                 continue;
@@ -140,13 +134,16 @@ public sealed partial class GridVehicleMoverSystem : EntitySystem
             }
         }
 
-        return bestScore > 0f;
+        if (bestScore > 0f)
+            return true;
+
+        return false;
     }
 
     private Vector2i GetPushDirection(EntityUid uid, EntityUid pusher)
     {
-        var vehiclePos = _transform.GetWorldPosition(uid);
-        var pusherPos = _transform.GetWorldPosition(pusher);
+        var vehiclePos = transform.GetWorldPosition(uid);
+        var pusherPos = transform.GetWorldPosition(pusher);
         var delta = vehiclePos - pusherPos;
         if (delta.LengthSquared() <= 0.0001f)
             return Vector2i.Zero;

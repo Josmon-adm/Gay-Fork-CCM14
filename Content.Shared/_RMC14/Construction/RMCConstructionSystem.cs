@@ -1,6 +1,5 @@
 ﻿using Content.Shared._RMC14.Construction.Prototypes;
 using Content.Shared._RMC14.Dropship;
-using Content.Shared._RMC14.Vehicle;
 using Content.Shared._RMC14.Emplacements;
 using Content.Shared._RMC14.Entrenching;
 using Content.Shared._RMC14.Ladder;
@@ -40,12 +39,12 @@ public sealed class RMCConstructionSystem : EntitySystem
     [Dependency] private readonly SkillsSystem _skills = default!;
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly SharedStackSystem _stack = default!;
-    [Dependency] private readonly VehicleSystem _vehicle = default!;
     [Dependency] private readonly SharedWeaponMountSystem _weaponMount = default!;
     [Dependency] private readonly INetManager _net = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
     [Dependency] private readonly ExamineSystemShared _examine = default!;
+    [Dependency] private readonly VehicleSystem _rmcVehicleSystem = default!; // CCM14
 
     private static readonly EntProtoId Blocker = "RMCDropshipDoorBlocker";
 
@@ -87,20 +86,15 @@ public sealed class RMCConstructionSystem : EntitySystem
         var query = EntityQueryEnumerator<RMCReplaceOnHijackLandComponent>();
         while (query.MoveNext(out var uid, out var comp))
         {
-            if (!TryComp(uid, out TransformComponent? xform) || xform.MapUid != ev.Map)
-                continue;
-
             if (comp.Id is not { } id)
             {
                 Del(uid);
                 continue;
             }
 
-            var coordinates = _transform.GetMoverCoordinates(uid, xform);
-            var rotation = xform.LocalRotation;
+            var coordinates = _transform.GetMoverCoordinates(uid);
             Del(uid);
-            var spawned = Spawn(id, coordinates);
-            _transform.SetLocalRotation(spawned, rotation);
+            Spawn(id, coordinates);
         }
     }
 
@@ -413,16 +407,7 @@ public sealed class RMCConstructionSystem : EntitySystem
 
     public bool CanConstruct(EntityUid? user)
     {
-        if (HasComp<DisableConstructionComponent>(user))
-            return false;
-
-        if (user is { } uid && HasComp<VehicleInteriorOccupantComponent>(uid))
-        {
-            _popup.PopupClient(Loc.GetString("rmc-construction-vehicle"), uid, uid);
-            return false;
-        }
-
-        return true;
+        return !HasComp<DisableConstructionComponent>(user);
     }
 
     public bool CanBuildAt(EntityCoordinates coordinates, EntProtoId prototype, out string? popup, bool anchoring = false, Direction direction = Direction.Invalid, CollisionGroup? collision = null, EntityUid? user = null)
@@ -452,13 +437,6 @@ public sealed class RMCConstructionSystem : EntitySystem
     public bool CanBuildAt(EntityCoordinates coordinates, string? prototypeName, out string? popup, bool anchoring = false, Direction direction = Direction.Invalid, CollisionGroup? collision = null)
     {
         popup = default;
-
-        if (_vehicle.TryGetVehicleFromInterior(coordinates.EntityId, out _))
-        {
-            popup = Loc.GetString("construction-system-inside-container");
-            return false;
-        }
-
         if (_transform.GetGrid(coordinates) is not { } gridId)
             return true;
 
@@ -471,6 +449,14 @@ public sealed class RMCConstructionSystem : EntitySystem
             popup = Loc.GetString("rmc-construction-not-proper-surface", ("construction", prototypeName));
             return false;
         }
+
+        // CCM14-start
+        if (_rmcVehicleSystem.TryGetVehicleFromInterior(gridId, out _))
+        {
+            popup = Loc.GetString("rmc-construction-not-proper-surface", ("construction", prototypeName));
+            return false;
+        }
+        // CCM14-end
 
         if (!TryComp(gridId, out MapGridComponent? grid))
             return true;

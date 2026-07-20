@@ -42,7 +42,7 @@ public sealed class VehicleChatRelaySystem : EntitySystem
             if (!TryDistance(ev.Source, target, out var distance) || distance > ev.VoiceRange)
                 continue;
 
-            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(user), true));
+            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(user)));
         }
     }
 
@@ -59,7 +59,7 @@ public sealed class VehicleChatRelaySystem : EntitySystem
             if (!TryDistance(sourceTarget, target, out var distance) || distance > ev.VoiceRange)
                 continue;
 
-            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(user), true));
+            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(user)));
         }
     }
 
@@ -73,7 +73,7 @@ public sealed class VehicleChatRelaySystem : EntitySystem
             if (!TryDistance(sourceTarget, recipient, out var distance) || distance > ev.VoiceRange)
                 continue;
 
-            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(recipient), true));
+            ev.Recipients.TryAdd(session, new ICChatRecipientData(distance, HasComp<GhostHearingComponent>(recipient)));
         }
     }
 
@@ -81,11 +81,15 @@ public sealed class VehicleChatRelaySystem : EntitySystem
     {
         target = default;
 
-        if (TryComp(user, out VehicleViewToggleComponent? viewToggle) &&
-            viewToggle.IsOutside &&
-            viewToggle.OutsideTarget is { } outsideTarget &&
-            Exists(outsideTarget))
+        if (TryComp(user, out VehicleViewToggleComponent? viewToggle))
         {
+            if (!viewToggle.IsOutside ||
+                viewToggle.OutsideTarget is not { } outsideTarget ||
+                !HasComp<VehicleComponent>(outsideTarget))
+            {
+                return false;
+            }
+
             target = outsideTarget;
             return true;
         }

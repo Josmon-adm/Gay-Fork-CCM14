@@ -15,18 +15,8 @@
    components:
    - type: StorageFill
      contents:
-       - id: RMCSuitBioVirology
-       - id: RMCHoodBioVirology
-
- - type: entity
-   id: CMClosetBioMedicalFilled
-   suffix: Filled, Medical, RMC
-   parent: CMClosetBioMedical
-   components:
-   - type: StorageFill
-     contents:
-       - id: RMCSuitBioMedical
-       - id: RMCHoodBioMedical
+       - id: RMCSuitBioGeneral # TODO Virology Biosuit
+       - id: RMCHoodBioGeneral
 
  - type: entity
    id: CMClosetBioSecurityFilled
@@ -35,8 +25,8 @@
    components:
    - type: StorageFill
      contents:
-       - id: RMCSuitBioSecurity
-       - id: RMCHoodBioSecurity
+       - id: RMCSuitBioGeneral # TODO Security Biosuit
+       - id: RMCHoodBioGeneral
 
  - type: entity
    id: CMClosetBioJanitorFilled
@@ -55,5 +45,5 @@
    components:
    - type: StorageFill
      contents:
-       - id: RMCSuitBioScientist
-       - id: RMCHoodBioScientist
+       - id: RMCSuitBioGeneral # TODO Scientist Biosuit
+       - id: RMCHoodBioGeneral

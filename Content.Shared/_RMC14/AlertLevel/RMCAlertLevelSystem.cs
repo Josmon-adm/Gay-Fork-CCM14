@@ -1,5 +1,4 @@
 ﻿using Content.Shared._RMC14.ARES;
-using Content.Shared._RMC14.ARES.Logs;
 using Content.Shared._RMC14.Doors;
 using Content.Shared._RMC14.Dropship;
 using Content.Shared._RMC14.Marines;
@@ -15,7 +14,6 @@ using Content.Shared.Storage.EntitySystems;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
-using Robust.Shared.Prototypes;
 
 namespace Content.Shared._RMC14.AlertLevel;
 
@@ -23,7 +21,7 @@ public sealed class RMCAlertLevelSystem : EntitySystem
 {
     [Dependency] private readonly ISharedAdminLogManager _adminLog = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
-    [Dependency] private readonly ARESCoreSystem _aresCore = default!;
+    [Dependency] private readonly ARESSystem _ares = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedDoorSystem _door = default!;
     [Dependency] private readonly SharedEntityStorageSystem _entityStorage = default!;
@@ -33,7 +31,6 @@ public sealed class RMCAlertLevelSystem : EntitySystem
 
     private EntityQuery<GhostComponent> _ghostQuery;
 
-    private static readonly EntProtoId<ARESLogTypeComponent> LogCat = "ARESTabAnnouncementLogs";
     public override void Initialize()
     {
         SubscribeLocalEvent<DropshipHijackLandedEvent>(OnDropshipHijackLanded);
@@ -112,14 +109,6 @@ public sealed class RMCAlertLevelSystem : EntitySystem
             almayers.Add(uid);
         }
 
-        if (user != null)
-        {
-            foreach (var almayer in almayers)
-            {
-                _aresCore.CreateARESLog(almayer, LogCat, (string)$"{Name(user.Value)} set the alert level to: {level}");
-            }
-        }
-
         var transformQuery = EntityManager.TransformQuery;
         var filter = Filter.Empty()
             .AddWhereAttachedEntity(entity =>
@@ -144,12 +133,16 @@ public sealed class RMCAlertLevelSystem : EntitySystem
         {
             if (announcement != null)
             {
-                _marineAnnounce.AnnounceToMarines(Loc.GetString(announcement));
+                var text = Loc.GetString(announcement);
+                _marineAnnounce.AnnounceToMarines(text);
+                _marineAnnounce.AnnounceAlertLevel(level, text, filter);
             }
             else if (message != null)
             {
-                var ares = _aresCore.EnsureMarineARES();
-                _marineAnnounce.AnnounceRadio(ares, Loc.GetString(message.Value), ent.Comp.RadioChannel);
+                var ares = _ares.EnsureARES();
+                var text = Loc.GetString(message.Value);
+                _marineAnnounce.AnnounceRadio(ares, text, ent.Comp.RadioChannel);
+                _marineAnnounce.AnnounceAlertLevel(level, text, filter);
             }
         }
 

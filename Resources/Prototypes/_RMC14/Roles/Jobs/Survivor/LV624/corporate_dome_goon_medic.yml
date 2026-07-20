@@ -3,7 +3,7 @@
   id: CMSurvivorLV624CorporateDomeGoonMedic
   name: rmc-job-name-pmc-corporate-goon-medic
   description: cm-job-description-survivor
-  spawnMenuRoleName: We-Ya Goon Medic (LV624 Special Survivor)
+  spawnMenuRoleName: We-Ya Goon Medic (Survivor Special)
   startingGear: RMCGearSurvivorGoon
   icon: "RMCJobIconPMCGoonMedic"
   hasIcon: true

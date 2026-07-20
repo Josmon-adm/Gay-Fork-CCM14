@@ -43,7 +43,6 @@ public sealed class EvacuationSystem : SharedEvacuationSystem
             {
                 door.Locked = true;
                 Dirty(child, door);
-                TryDisableEvacuationOpen(child);
 
                 _doors.Clear();
                 _entityLookup.GetEntitiesInRange(child.ToCoordinates(), 2.5f, _doors);
@@ -51,7 +50,6 @@ public sealed class EvacuationSystem : SharedEvacuationSystem
                 {
                     nearbyDoor.Comp.Locked = true;
                     Dirty(nearbyDoor);
-                    TryDisableEvacuationOpen(nearbyDoor);
                 }
             }
         }
@@ -60,7 +58,7 @@ public sealed class EvacuationSystem : SharedEvacuationSystem
         if (GetEvacuationProgress() < 100 &&
             crashLandChance > 0 &&
             _random.Prob(crashLandChance) &&
-            _crashLand.TryGetCrashLandLocation(true, out var location))
+            _crashLand.TryGetCrashLandLocation(out var location))
         {
             children = gridTransform.ChildEnumerator;
             while (children.MoveNext(out var child))

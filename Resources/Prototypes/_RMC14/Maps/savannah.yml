@@ -24,7 +24,6 @@
             CMChiefMP: [1, 1]
             CMMilitaryWarden: [1, 1]
             CMMilitaryPolice: [5, 8]
-            CMProvostInspector: [1, 1]
 
             # Auxiliary
             CMAuxiliarySupportOfficer: [1, 1]
@@ -59,9 +58,7 @@
             CMRifleman: [ -1, -1 ]
 
             # Civilians
-            CMCorrespondent: [1, 1]
-            CMCombatCorrespondent: [1, 1]
+            CMCorrespondent: [2, 2]
 
             # Other
             CMLiaison: [1, 1]
-            RMCWeYaExecutiveBodyguard: [1, 1]

@@ -23,7 +23,6 @@ using Content.Shared.Rounding;
 using Content.Shared.Verbs;
 using Content.Shared.Weapons.Melee;
 using Content.Shared.Whitelist;
-using Robust.Shared.GameObjects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.Manager;
 using Robust.Shared.Timing;
@@ -331,10 +330,10 @@ public sealed class CMArmorSystem : EntitySystem
         RaiseLocalEvent(ent, ref ev);
 
         var armorPiercing = args.ArmorPiercing;
-        if (args.Tool is { } tool && Exists(tool))
+        if (args.Tool != null)
         {
             var piercingEv = new CMGetArmorPiercingEvent(ent);
-            RaiseLocalEvent(tool, ref piercingEv);
+            RaiseLocalEvent(args.Tool.Value, ref piercingEv);
             armorPiercing += piercingEv.Piercing;
         }
 
@@ -358,14 +357,10 @@ public sealed class CMArmorSystem : EntitySystem
             }
         }
 
-        if (args.Origin is { } origin &&
-            Exists(origin) &&
-            origin.IsValid() &&
-            TryComp(origin, out TransformComponent? originXform) &&
-            TryComp(ent, out TransformComponent? entXform))
+        if (args.Origin is { } origin)
         {
-            var originCoords = _transform.GetMapCoordinates(origin, originXform);
-            var armorCoords = _transform.GetMapCoordinates(ent, entXform);
+            var originCoords = _transform.GetMapCoordinates(origin);
+            var armorCoords = _transform.GetMapCoordinates(ent);
 
             if (originCoords.MapId == armorCoords.MapId)
             {

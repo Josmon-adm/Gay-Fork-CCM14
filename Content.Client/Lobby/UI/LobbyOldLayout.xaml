@@ -173,7 +173,7 @@
                                 SizeFlagsStretchRatio="0.84" />
                     </BoxContainer>
                     <BoxContainer Orientation="Horizontal" HorizontalExpand="True">
-                        <Button Name="LinkDiscordButton" Access="Public" Visible="False"
+                        <Button Name="LinkDiscordButton" Access="Public"
                                 Text="{Loc 'ui-lobby-link-discord-button'}"
                                 StyleClasses="OldLobbyButton"
                                 HorizontalExpand="True"

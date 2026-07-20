@@ -7,7 +7,6 @@
   startingGear: CMUYautjaHunterGear
   spawnMenuRoleName: Yautja Hunter
   icon: CMUYautjaJobIcon
-  jobEntity: CMUMobYautja
   joinNotifyCrew: false
   hidden: false
   whitelisted: true

@@ -28,7 +28,7 @@
         startingAttachable: RMCAttachmentUnderbarrelExtinguisherSpec
         whitelist:
           tags:
-          - RMCAttachmentUnderbarrelExtinguisher
+          - RMCAttachmentExtinguisher
   - type: ItemSlots
     slots:
       gun_magazine:

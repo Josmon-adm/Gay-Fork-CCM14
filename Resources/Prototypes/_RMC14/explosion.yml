@@ -19,13 +19,14 @@
     params:
       volume: 0
 
+
 - type: explosion
   id: RMCLTBCannon
   damagePerIntensity:
     types:
-      Blunt: 20
-      Heat: 20
-      Structural: 400
+      Blunt: 40
+      Heat: 40
+      Structural: 1000
   tileBreakChance: [0, 0.5, 1]
   tileBreakIntensity: [0, 8, 20]
   tileBreakRerollReduction: 20

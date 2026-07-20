@@ -92,7 +92,7 @@
     outerClothing: CMArmorM3WO
     ears: CMHeadsetCMP
     belt: CMBeltSecurityMPFilled
-    pocket1: RMCUniversalRecorder
+    #    pocket1: TODO RMC14 tape recorder
     pocket2: RMCPouchGeneralLarge
 
 - type: entity

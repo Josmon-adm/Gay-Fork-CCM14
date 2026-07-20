@@ -8,15 +8,11 @@
   special:
   - !type:AddComponentSpecial
     components:
-    - type: Language
-      spokenLanguages:
-      - Japanese
-      - English
-      understoodLanguages:
-      - Japanese
-      - English
-      currentLanguage: English
-      defaultLanguage: English
+    - type: TacticalMapUser
+      actionId: RMCActionOpenTacticalMapMarine
+      layerSets: [TacticalMapSetSurvivor]
+    - type: TacticalMapLayerTracked
+      layers: [FactionSurvivor]
     - type: Skills
       preset: RMCSkillPresetSurvivor
     - type: EquipSurvivorPreset
@@ -76,8 +72,8 @@
       - [ CMSheetMetal20, RMCSpaceCash1000, CMPenClicky, CMClipboard ]
     randomStartingGear:
       back:
-      - CMSatchelSecureStandard
-      - RMCSatchelBlackSecure
+      - CMSatchel # todo secure satchel
+      - RMCSatchelBlack
       shoes:
       - RMCShoesLaceup
       - RMCShoesLaceupBrown

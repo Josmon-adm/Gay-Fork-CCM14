@@ -8,7 +8,4 @@ public sealed partial class IntelKnowledgeComponent : Component
 {
     [DataField, AutoNetworkedField]
     public HashSet<EntityUid> Read = new();
-
-    [DataField, AutoNetworkedField]
-    public Dictionary<NetEntity, string> PersonalClues = new();
 }

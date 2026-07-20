@@ -1,3 +1,4 @@
+using Content.Shared._RMC14.Slow;
 using Content.Shared.Actions;
 using Content.Shared.FixedPoint;
 using Content.Shared.StatusEffect;
@@ -25,12 +26,8 @@ public sealed partial class XenoSacrificeHealActionEvent : EntityTargetActionEve
     [DataField]
     public EntProtoId HealEffect = "RMCEffectHealSacrifice";
 
-    //TODO RMC14 move these effects over to the new status effect system
     [DataField]
-    public ProtoId<StatusEffectPrototype>[] AilmentsRemove = ["KnockedDown", "Stun", "Unconscious"];
-
-    [DataField]
-    public EntProtoId[] AilmentsRemoveNew = ["Dazed"];
+    public ProtoId<StatusEffectPrototype>[] AilmentsRemove = ["KnockedDown", "Stun", "Dazed", "Unconscious"];
 
     [DataField]
     public ComponentRegistry ComponentsRemove;

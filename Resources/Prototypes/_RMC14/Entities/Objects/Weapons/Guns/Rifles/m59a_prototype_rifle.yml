@@ -112,8 +112,8 @@
           - RMCAttachmentU1GrenadeLauncher
           - RMCAttachmentU7UnderbarrelShotgun
           - RMCAttachmentVerticalGrip
-          - RMCAttachmentUnderbarrelExtinguisher
-          - RMCAttachmentMiniFlamethrower
+          - RMCAttachmentExtinguisher
+          - RMCAttachmentFlamer
           #TODO RMC: add adv underbarrel flamer here when it is added
   - type: AttachableHolderVisuals
     offsets:

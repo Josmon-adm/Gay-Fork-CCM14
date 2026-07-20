@@ -108,7 +108,6 @@
   components:
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
   - type: RemoveComponents
     components:
     - type: InteractionTransparency
@@ -173,7 +172,6 @@
       map: [ "roof" ]
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
   - type: RemoveComponents
     components:
     - type: InteractionTransparency

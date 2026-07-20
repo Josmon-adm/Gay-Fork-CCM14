@@ -17,22 +17,22 @@
       "name": "mag-0"
     },
     {
-      "name": "mag-1"
+      "name": "mag-02"
     },
     {
-      "name": "inhand-left",
+      "name": "inhands-left",
       "directions": 4
     },
     {
-      "name": "wielded-inhand-left",
+      "name": "wielded-inhands-left",
       "directions": 4
     },
     {
-      "name": "inhand-right",
+      "name": "inhands-right",
       "directions": 4
     },
     {
-      "name": "wielded-inhand-right",
+      "name": "wielded-inhands-right",
       "directions": 4
     }
   ]

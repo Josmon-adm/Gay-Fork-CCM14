@@ -61,9 +61,6 @@
       entity_storage: !type:Container
       paper_label: !type:ContainerSlot
   - type: Weldable
-  - type: RMCWeldEffectSource
-    startingOffset: 0.1, -0.45
-    endingOffset: 0.1, 0.45
   - type: PlaceableSurface
     placeCentered: true
     isPlaceable: false
@@ -142,9 +139,6 @@
   - type: Clickable
   - type: ResistLocker
   - type: Weldable
-  - type: RMCWeldEffectSource
-    startingOffset: 0.1, -0.45
-    endingOffset: 0.1, 0.45
   - type: WallMount
     arc: 175
   - type: StaticPrice
@@ -291,9 +285,6 @@
     containers:
       entity_storage: !type:Container
   - type: Weldable
-  - type: RMCWeldEffectSource
-    startingOffset: 0.1, -0.45
-    endingOffset: 0.1, 0.45
   - type: PlaceableSurface
     placeCentered: true
     isPlaceable: false

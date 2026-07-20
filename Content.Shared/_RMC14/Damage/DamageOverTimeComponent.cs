@@ -57,9 +57,6 @@ public sealed partial class DamageOverTimeComponent : Component
     public string? Popup;
 
     [DataField, AutoNetworkedField]
-    public EntityWhitelist? Cover;
-
-    [DataField, AutoNetworkedField]
     public EntityWhitelist? Whitelist;
 
     [DataField, AutoNetworkedField]

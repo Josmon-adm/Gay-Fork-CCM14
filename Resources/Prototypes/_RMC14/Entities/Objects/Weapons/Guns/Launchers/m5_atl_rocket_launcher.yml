@@ -164,7 +164,6 @@
     - range: 7
       falloff: 10
   - type: DeleteOnTrigger
-  - type: IgnoreSwiftSteps
 
 - type: entity
   parent: RMCBaseProjectileRocket84mm
@@ -297,8 +296,7 @@
       path: /Audio/_RMC14/Weapons/Guns/Flamer/gun_flamethrower3.ogg
   - type: DeleteOnTrigger
   - type: SpawnOnTerminate
-    spawn: RMCSmokeWhitePhosphorus
-    spawnOffset: -0.5
+    spawn: MCSmokeM5 #CCM edit
   - type: RMCAreaDamage
     damageArea: 3.5
     falloffDistance: 3.5

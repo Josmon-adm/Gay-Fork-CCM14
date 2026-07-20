@@ -60,35 +60,6 @@
         RMCSkillIntel: 2
         RMCSkillDomestics: 2
         RMCSkillNavigations: 1
-    - type: Language
-      spokenLanguages:
-      - English
-      - French
-      - Japanese
-      - Russian
-      - Scandinavian
-      - German
-      - Chinese
-      - Spanish
-      understoodLanguages:
-      - English
-      - French
-      - Japanese
-      - Russian
-      - Scandinavian
-      - German
-      - Chinese
-      - Spanish
-      currentLanguage: English
-      defaultLanguage: English
-    - type: LanguageLearning
-      learnableLanguages:
-      - Xeno
-      firstContactLanguages:
-      - Xeno
-      comprehensionThreshold: 0.8
-      learningRange: 8.0
-      baseWordLearningRate: 0.05
     - type: CMVendorUser
       id: RMCJobSynthetic
       points: 45
@@ -124,7 +95,6 @@
     id: RMCIDCardSynth
     ears: RMCHeadsetSynth
     belt: CMBeltUtilityFilled
-    pocket1: RMCUniversalRecorder
 
 - type: entity
   parent: CMSpawnPointJobBase
@@ -151,9 +121,9 @@
     alert: SynthNightVision
   - type: EyeProtection
   - type: Insulated
+  - type: RMCLeapProtection
+    inherentStunDuration: 3
   - type: ZombieImmune
-  - type: ShowHealthIcons
-  - type: ShowHealthBars
   - type: ParalyzeImmuneFrom
     whitelist:
       tags:

@@ -11,12 +11,8 @@
   - type: Physics
     bodyType: Static
   - type: ApcPowerReceiver
-    powerLoad: 250
-    needsPower: true
-  - type: RMCPowerReceiver
-    idleLoad: 30
-    activeLoad: 200
-    channel: Equipment
+    needsPower: false # TODO RMC14
+    powerLoad: 0
   - type: LitOnPowered
   - type: Fixtures
     fixtures:
@@ -46,7 +42,6 @@
   - type: Icon
     sprite: _RMC14/Structures/Machines/photocopier.rsi
     state: bigscanner
-  # - type: ActivatableUIRequiresPower TODO RMC14 UI
 
 - type: entity
   parent: RMCPhotocopier

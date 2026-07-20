@@ -163,11 +163,9 @@ public abstract partial class SharedMoverController : VirtualController
             return;
 
         RelayTargetQuery.TryComp(uid, out var relayTarget);
-        // RMC14
         EntityUid? relaySource = null;
         if (relayTarget != null && EnsureValidRelayTarget(uid, relayTarget))
             relaySource = relayTarget.Source;
-        // RMC14
 
         // If we're not the target of a relay then handle lerp data.
         if (relaySource == null)

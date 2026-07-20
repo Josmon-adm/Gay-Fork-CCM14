@@ -25,6 +25,7 @@
     - CMPosterSilicon
     - CMPosterMissJanuary
     - CMPosterF100
+    - CMPosterRememberIo
     - CMPosterAssaultRifle
     - CMPosterMissJuly
     - CMPosterMissApril
@@ -53,6 +54,7 @@
     - CMPosterFallingFalcons
     - CMPosterElectroMan
     - CMPosterPizzaGalaxy
+    - CMPosterTartarus
     - CMPosterEATBlue
     - CMPosterCola
     - CMPosterCMB1
@@ -142,6 +144,7 @@
     - CMPosterSilicon
     - CMPosterMissJanuary
     - CMPosterF100
+    - CMPosterRememberIo
     - CMPosterAssaultRifle
     - CMPosterMissJuly
     - CMPosterMissApril
@@ -170,6 +173,7 @@
     - CMPosterFallingFalcons
     - CMPosterElectroMan
     - CMPosterPizzaGalaxy
+    - CMPosterTartarus
     - CMPosterEATBlue
     - CMPosterCola
     - CMPosterCMB1

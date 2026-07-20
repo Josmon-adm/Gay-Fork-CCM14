@@ -19,9 +19,9 @@
   components:
   - type: StorageFill
     contents:
-    - id: RMCDrinkMilkCarton
+    - id: DrinkMilkCarton
       amount: 2
-    - id: RMCDrinkSoyMilkCarton
+    - id: DrinkSoyMilkCarton
       amount: 2
     - id: FoodContainerEgg
     - id: FoodCondimentBottleEnzyme

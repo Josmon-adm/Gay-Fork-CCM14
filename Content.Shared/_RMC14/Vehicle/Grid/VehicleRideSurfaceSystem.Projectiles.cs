@@ -1,10 +1,11 @@
 using Content.Shared.Projectiles;
+using Content.Shared.Vehicle.Components;
 using Content.Shared.Weapons.Ranged.Components;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Map;
 using Robust.Shared.Physics.Events;
 
-namespace Content.Shared._RMC14.Vehicle;
+namespace Content.Shared.Vehicle;
 
 public sealed partial class VehicleRideSurfaceSystem
 {

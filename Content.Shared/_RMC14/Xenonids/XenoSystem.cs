@@ -1,11 +1,10 @@
+using System.Linq;
 using Content.Shared._RMC14.Atmos;
 using Content.Shared._RMC14.CCVar;
-using Content.Shared._RMC14.Commendations;
 using Content.Shared._RMC14.Damage;
 using Content.Shared._RMC14.Entrenching;
 using Content.Shared._RMC14.Marines;
 using Content.Shared._RMC14.Medical.Scanner;
-using Content.Shared._RMC14.Mentor.ImaginaryFriend;
 using Content.Shared._RMC14.NightVision;
 using Content.Shared._RMC14.Rules;
 using Content.Shared._RMC14.Tackle;
@@ -27,7 +26,6 @@ using Content.Shared._RMC14.Xenonids.Weeds;
 using Content.Shared.Access.Components;
 using Content.Shared.Actions;
 using Content.Shared.Atmos;
-using Content.Shared.Body.Events;
 using Content.Shared.Buckle.Components;
 using Content.Shared.Chat;
 using Content.Shared.CombatMode;
@@ -57,7 +55,6 @@ using Robust.Shared.Configuration;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
-using System.Linq;
 
 namespace Content.Shared._RMC14.Xenonids;
 
@@ -71,7 +68,6 @@ public sealed partial class XenoSystem : EntitySystem
     [Dependency] private readonly SharedHandsSystem _hands = default!;
     [Dependency] private readonly SharedXenoHiveSystem _hive = default!;
     [Dependency] private readonly HiveLeaderSystem _hiveLeader = default!;
-    [Dependency] private readonly SharedImaginaryFriendSystem _imaginaryFriend = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly MobThresholdSystem _mobThresholds = default!;
     [Dependency] private readonly MovementSpeedModifierSystem _movementSpeed = default!;
@@ -142,7 +138,6 @@ public sealed partial class XenoSystem : EntitySystem
             before: [typeof(SharedHandsSystem), typeof(SharedStaminaSystem)],
             after: [typeof(TackleSystem)]);
         SubscribeLocalEvent<XenoComponent, DisarmedEvent>(OnDisarmed, before: new[] { typeof(SharedHandsSystem) });
-        SubscribeLocalEvent<XenoComponent, BeingGibbedEvent>(OnBeingGibbed);
 
         SubscribeLocalEvent<XenoRegenComponent, MapInitEvent>(OnXenoRegenMapInit, before: [typeof(SharedXenoPheromonesSystem)]);
         SubscribeLocalEvent<XenoRegenComponent, DamageStateCritBeforeDamageEvent>(OnXenoRegenBeforeCritDamage, before: [typeof(SharedXenoPheromonesSystem)]);
@@ -193,16 +188,12 @@ public sealed partial class XenoSystem : EntitySystem
     {
         var oldRotation = _transform.GetWorldRotation(args.OldXeno);
         _transform.SetWorldRotation(newXeno, oldRotation);
-
-        _imaginaryFriend.TryTransferFriends(args.OldXeno, newXeno);
     }
 
     private void OnXenoDevolved(Entity<XenoComponent> newXeno, ref XenoDevolvedEvent args)
     {
         var oldRotation = _transform.GetWorldRotation(args.OldXeno);
         _transform.SetWorldRotation(newXeno, oldRotation);
-
-        _imaginaryFriend.TryTransferFriends(args.OldXeno, newXeno);
     }
 
     private void OnXenoHealthScannerAttemptTarget(Entity<XenoComponent> ent, ref HealthScannerAttemptTargetEvent args)
@@ -410,7 +401,7 @@ public sealed partial class XenoSystem : EntitySystem
         EnsureComp<XenoComponent>(xeno);
     }
 
-    public void SetHealOffWeeds(Entity<XenoRegenComponent?> xeno, bool healOffWeeds) //CMU14
+    public void SetHealOffWeeds(Entity<XenoRegenComponent?> xeno, bool healOffWeeds)
     {
         if (!Resolve(xeno, ref xeno.Comp, false) ||
             xeno.Comp.HealOffWeeds == healOffWeeds)
@@ -420,31 +411,6 @@ public sealed partial class XenoSystem : EntitySystem
 
         xeno.Comp.HealOffWeeds = healOffWeeds;
         DirtyField(xeno.Owner, xeno.Comp, nameof(XenoRegenComponent.HealOffWeeds));
-    }
-
-    private void OnBeingGibbed(Entity<XenoComponent> xeno, ref BeingGibbedEvent args)
-    {
-        if (!TryComp<HiveMemberComponent>(xeno, out var member))
-            return;
-
-        var hive = _hive.GetHive((xeno, member));
-
-        if (hive == null)
-            return;
-
-        if (!TryComp(xeno, out CommendationReceiverComponent? receiver) ||
-    receiver.LastPlayerId == null || receiver.LastPlayerId == string.Empty)
-        {
-            return;
-        }
-
-        var gibbed = new GibbedXenoInfo
-        {
-            Name = Name(xeno),
-            LastPlayerId = receiver.LastPlayerId
-        };
-
-        _hive.RecordGib(hive.Value, gibbed);
     }
 
     private FixedPoint2 GetWeedsHealAmount(Entity<XenoRegenComponent> xeno)

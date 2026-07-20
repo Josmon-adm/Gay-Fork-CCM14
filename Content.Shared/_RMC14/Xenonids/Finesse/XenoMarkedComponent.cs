@@ -1,17 +1,14 @@
-using Robust.Shared.GameStates;
+﻿using Robust.Shared.GameStates;
 
 namespace Content.Shared._RMC14.Xenonids.Finesse;
 
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent]
 [Access(typeof(XenoFinesseSystem))]
 public sealed partial class XenoMarkedComponent : Component
 {
-    [DataField, AutoNetworkedField]
+    [DataField]
     public TimeSpan TimeAdded;
 
-    [DataField, AutoNetworkedField]
+    [DataField]
     public TimeSpan WearOffAt;
-
-    [DataField, AutoNetworkedField]
-    public bool IsCriticalTag = false;
 }

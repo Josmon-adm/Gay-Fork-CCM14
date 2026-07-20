@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Content.Shared._RMC14.Vehicle;
+using Content.Shared.Vehicle;
 using Content.Shared.Vehicle.Components;
 using Robust.Client.Graphics;
 using Robust.Shared.Enums;
@@ -12,9 +13,9 @@ using Robust.Shared.Physics;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Timing;
 
-using SharedMover = Content.Shared._RMC14.Vehicle.GridVehicleMoverSystem;
+using SharedMover = Content.Shared.Vehicle.GridVehicleMoverSystem;
 
-namespace Content.Client._RMC14.Vehicle;
+namespace Content.Client.Vehicle;
 
 public sealed class GridVehicleMoverOverlay : Overlay
 {
@@ -44,8 +45,8 @@ public sealed class GridVehicleMoverOverlay : Overlay
     public override OverlaySpace Space => OverlaySpace.WorldSpaceBelowFOV;
 
     public bool DebugEnabled { get; set; }
-    public bool CollisionsEnabled { get; set; }
-    public bool MovementEnabled { get; set; }
+    public bool CollisionsEnabled { get; set; } = true;
+    public bool MovementEnabled { get; set; } = true;
 
     private readonly IEntityManager _ents;
     private readonly IGameTiming _timing;

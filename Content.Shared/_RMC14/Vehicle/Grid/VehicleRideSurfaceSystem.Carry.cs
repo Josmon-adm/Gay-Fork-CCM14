@@ -1,7 +1,8 @@
+using Content.Shared.Vehicle.Components;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Map;
 
-namespace Content.Shared._RMC14.Vehicle;
+namespace Content.Shared.Vehicle;
 
 public sealed partial class VehicleRideSurfaceSystem
 {

@@ -35,9 +35,6 @@ public sealed partial class RotaryPhoneComponent : Component
     public EntProtoId<RMCTelephoneComponent> PhoneId = "RMCTelephone";
 
     [DataField, AutoNetworkedField]
-    public bool PhoneCanBeTransferred = true;
-
-    [DataField, AutoNetworkedField]
     public string ContainerId = "rmc_rotary_phone_telephone";
 
     [DataField, AutoNetworkedField]

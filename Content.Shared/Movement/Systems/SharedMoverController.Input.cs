@@ -296,30 +296,25 @@ namespace Content.Shared.Movement.Systems
             Dirty(entity.Owner, entity.Comp);
         }
 
-        // RMC14
         private void HandleDirChange(Entity<InputMoverComponent?> entity, Direction dir, ushort subTick, bool state)
         {
             var hasMover = MoverQuery.Resolve(entity.Owner, ref entity.Comp, false);
-        // RMC14
 
             // Relayed movement just uses the same keybinds given we're moving the relayed entity
             // the same as us.
 
             // TODO: Should move this into HandleMobMovement itself.
-            // RMC14
-            if (RelayQuery.TryComp(entity, out var relayMover))
+            if (hasMover && entity.Comp != null && entity.Comp.CanMove && RelayQuery.TryComp(entity, out var relayMover))
             {
                 DebugTools.Assert(relayMover.RelayEntity != entity.Owner);
                 DebugTools.AssertNotNull(relayMover.RelayEntity);
 
-                if (hasMover && entity.Comp != null)
-                    SetMoveInput((entity.Owner, entity.Comp), MoveButtons.None);
+                if (MoverQuery.TryGetComponent(entity, out var mover))
+                    SetMoveInput((entity.Owner, mover), MoveButtons.None);
 
-                if (hasMover && entity.Comp != null && entity.Comp.CanMove)
-                    HandleDirChange(relayMover.RelayEntity, dir, subTick, state);
+                HandleDirChange(relayMover.RelayEntity, dir, subTick, state);
                 return;
             }
-            // RMC14
 
             // For stuff like "Moving out of locker" or the likes
             // We'll relay a movement input to the parent.
@@ -332,12 +327,10 @@ namespace Content.Shared.Movement.Systems
                 RaiseLocalEvent(xform.ParentUid, ref relayMoveEvent);
             }
 
-            // RMC14
             if (!hasMover || entity.Comp == null)
                 return;
 
             SetVelocityDirection(new Entity<InputMoverComponent>(entity.Owner, entity.Comp), dir, subTick, state);
-            // RMC14
         }
 
         private void OnInputInit(Entity<InputMoverComponent> entity, ref ComponentInit args)

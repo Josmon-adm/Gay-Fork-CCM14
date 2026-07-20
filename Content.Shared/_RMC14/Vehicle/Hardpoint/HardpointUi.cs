@@ -11,44 +11,19 @@ public enum HardpointUiKey : byte
     Key,
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class HardpointUiEntry
+[Serializable, NetSerializable]
+public sealed class HardpointUiEntry
 {
-    [DataField]
-    public string SlotId;
-
-    [DataField]
-    public string HardpointType;
-
-    [DataField]
-    public string? InstalledName;
-
-    [DataField]
-    public NetEntity? InstalledEntity;
-
-    [DataField]
-    public float Integrity;
-
-    [DataField]
-    public float MaxIntegrity;
-
-    [DataField]
-    public bool HasIntegrity;
-
-    [DataField]
-    public bool HasItem;
-
-    [DataField]
-    public bool Required;
-
-    [DataField]
-    public bool Removing;
-
-    public HardpointUiEntry()
-    {
-        SlotId = string.Empty;
-        HardpointType = string.Empty;
-    }
+    public readonly string SlotId;
+    public readonly string HardpointType;
+    public readonly string? InstalledName;
+    public readonly NetEntity? InstalledEntity;
+    public readonly float Integrity;
+    public readonly float MaxIntegrity;
+    public readonly bool HasIntegrity;
+    public readonly bool HasItem;
+    public readonly bool Required;
+    public readonly bool Removing;
 
     public HardpointUiEntry(
         string slotId,
@@ -75,30 +50,16 @@ public sealed partial class HardpointUiEntry
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class HardpointUiState
+[Serializable, NetSerializable]
+public sealed class HardpointBoundUserInterfaceState : BoundUserInterfaceState
 {
-    [DataField]
-    public List<HardpointUiEntry> Hardpoints;
+    public readonly List<HardpointUiEntry> Hardpoints;
+    public readonly float FrameIntegrity;
+    public readonly float FrameMaxIntegrity;
+    public readonly bool HasFrameIntegrity;
+    public readonly string? Error;
 
-    [DataField]
-    public float FrameIntegrity;
-
-    [DataField]
-    public float FrameMaxIntegrity;
-
-    [DataField]
-    public bool HasFrameIntegrity;
-
-    [DataField]
-    public string? Error;
-
-    public HardpointUiState()
-    {
-        Hardpoints = new List<HardpointUiEntry>();
-    }
-
-    public HardpointUiState(
+    public HardpointBoundUserInterfaceState(
         List<HardpointUiEntry> hardpoints,
         float frameIntegrity,
         float frameMaxIntegrity,

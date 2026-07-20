@@ -186,7 +186,6 @@
     state: back_1
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
 
 - type: entity
   parent: VehiclePizzaVanWallBase
@@ -196,7 +195,6 @@
     state: back_2
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
 
 - type: entity
   parent: VehiclePizzaVanWallBase
@@ -374,7 +372,6 @@
     drawdepth: Walls
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
   - type: RemoveComponents
     components:
     - type: InteractionTransparency
@@ -415,7 +412,6 @@
     fadeOnSharedGrid: true
   - type: Clickable
   - type: InteractionOutline
-  - type: RMCIgnoreGhostInteractionLimits
   - type: RemoveComponents
     components:
     - type: InteractionTransparency

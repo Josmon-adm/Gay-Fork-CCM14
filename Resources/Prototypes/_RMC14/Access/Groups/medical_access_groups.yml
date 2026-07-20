@@ -7,12 +7,10 @@
   - CMAccessMedical
   - RMCAccessMorgue
   - CMAccessResearch
-  - RMCAccessFieldDoctor
   - RMCAccessCommand
   - CMAccessChemistry
   - RMCAccessDatabase
   - RMCAccessSeniorCommand
-  - RMCAccessLogs
 
 - type: accessGroup
   id: CMMedbay
@@ -43,14 +41,3 @@
   - CMAccessResearch
   - CMAccessChemistry
   - RMCAccessMorgue
-
-- type: accessGroup
-  id: RMCFieldDoctor
-  parent: RMCBaseMedicalJob
-  name: Field Doctor
-  tags:
-  - CMAccessMedical
-  - RMCAccessMorgue
-  - CMAccessChemistry
-  - RMCAccessDatabase
-  - RMCAccessFieldDoctor

@@ -30,7 +30,6 @@ public sealed class MentorManager : IPostInjectInit
     [Dependency] private readonly PlayerRateLimitManager _rateLimit = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly UserDbDataManager _userDb = default!;
-    [Dependency] private readonly IEntityManager _entMan = default!;
 
     private const string RateLimitKey = "MentorHelp";
     private static readonly ProtoId<JobPrototype> MentorJob = "CMSeniorEnlistedAdvisor";
@@ -190,17 +189,8 @@ public sealed class MentorManager : IPostInjectInit
         };
 
         var isAdmin = false;
-        var title = "Mentor";
         if (_player.TryGetSessionById(author.UserId, out var authorSession))
-        {
-            var data = _admin.GetAdminData(authorSession);
-
-            if (data != null)
-            {
-                isAdmin = true;
-                title = data.Title ?? "Admin";
-            }
-        }
+            isAdmin = _admin.IsAdmin(authorSession);
 
         var mentorMsg = new MentorMessage(
             destination,
@@ -211,8 +201,7 @@ public sealed class MentorManager : IPostInjectInit
             DateTime.Now,
             true,
             isAdmin,
-            true,
-            title
+            true
         );
         var messages = new List<MentorMessage> { mentorMsg };
         var receive = new MentorMessagesReceivedMsg { Messages = messages };
@@ -268,26 +257,6 @@ public sealed class MentorManager : IPostInjectInit
         }
     }
 
-    private void OnMentorTeleport(MentorClientTeleportMsg message)
-    {
-        var author = message.MsgChannel;
-        if (!_player.TryGetSessionById(author.UserId, out var authorSession) ||
-            !_activeMentors.Contains(authorSession))
-        {
-            return;
-        }
-
-        if (authorSession.AttachedEntity is not { } mentorEntity)
-            return;
-
-        var destination = new NetUserId(message.Destination);
-        if (!_player.TryGetSessionById(destination, out var targetSession) || targetSession.AttachedEntity is not { } targetEntity)
-            return;
-
-        var ev = new MentorFollowEvent(_entMan.GetNetEntity(mentorEntity), _entMan.GetNetEntity(targetEntity));
-        _entMan.EventBus.RaiseLocalEvent(mentorEntity, ref ev);
-    }
-
     private void Unclaim(INetChannel author, NetUserId destination, bool disconnect)
     {
         if (!_destinationClaims.TryGetValue(destination, out var claims))
@@ -310,17 +279,8 @@ public sealed class MentorManager : IPostInjectInit
         };
 
         var isAdmin = false;
-        var title = "Mentor";
         if (_player.TryGetSessionById(author.UserId, out var authorSession))
-        {
-            var data = _admin.GetAdminData(authorSession);
-
-            if (data != null)
-            {
-                isAdmin = true;
-                title = data.Title ?? "Admin";
-            }
-        }
+            isAdmin = _admin.IsAdmin(authorSession);
 
         var mentorMsg = new MentorMessage(
             destination,
@@ -331,8 +291,7 @@ public sealed class MentorManager : IPostInjectInit
             DateTime.Now,
             true,
             isAdmin,
-            true,
-            title
+            true
         );
         var messages = new List<MentorMessage> { mentorMsg };
         var receive = new MentorMessagesReceivedMsg { Messages = messages };
@@ -389,18 +348,7 @@ public sealed class MentorManager : IPostInjectInit
             recipients.Add(active.Channel);
         }
 
-        var isAdmin = false;
-        var title = "Mentor";
-        if (author != null && _player.TryGetSessionById(author.UserId, out var authorSession))
-        {
-            var data = _admin.GetAdminData(authorSession);
-
-            if (data != null)
-            {
-                isAdmin = true;
-                title = data.Title ?? "Admin";
-            }
-        }
+        var isAdmin = author != null && _admin.IsAdmin(author);
         var mentorMsg = new MentorMessage(
             destination,
             destinationName,
@@ -410,8 +358,7 @@ public sealed class MentorManager : IPostInjectInit
             DateTime.Now,
             isMentor,
             isAdmin,
-            create,
-            title
+            create
         );
         var messages = new List<MentorMessage> { mentorMsg };
         var receive = new MentorMessagesReceivedMsg { Messages = messages };
@@ -506,7 +453,6 @@ public sealed class MentorManager : IPostInjectInit
         _net.RegisterNetMessage<MentorClientUnclaimMsg>(OnClientUnclaim);
         _net.RegisterNetMessage<MentorClaimMsg>();
         _net.RegisterNetMessage<MentorUnclaimMsg>();
-        _net.RegisterNetMessage<MentorClientTeleportMsg>(OnMentorTeleport);
 
         _net.Connected += OnConnected;
         _net.Disconnect += OnDisconnected;

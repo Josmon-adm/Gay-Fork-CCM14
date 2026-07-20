@@ -2,7 +2,6 @@
   parent: CMJobBase
   id: CMTSEResponder
   name: rmc-job-name-tse-responder
-  spawnMenuRoleName: TSE Communications Officer (Fax Responder)
   description: rmc-job-description-tse-responder
   playTimeTracker: CMJobTSEResponder
   ranks:

@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Content.Server._Forge.Sponsor;
 using Content.Server.Administration.Managers;
 using Content.Server.Chat.Managers;
 using Content.Server.Connection.IPIntel;
@@ -30,11 +29,6 @@ namespace Content.Server.Connection
     {
         void Initialize();
         void PostInit();
-
-        /// <summary>
-        /// Whether the user can bypass the join queue and the soft player cap (admins, sponsors, players who were mid-round).
-        /// </summary>
-        Task<bool> HasPrivilegedJoin(NetUserId userId);
 
         /// <summary>
         /// Temporarily allow a user to bypass regular connection requirements.
@@ -71,7 +65,6 @@ namespace Content.Server.Connection
         [Dependency] private readonly IHttpClientHolder _http = default!;
         [Dependency] private readonly IAdminManager _adminManager = default!;
         [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly SponsorManager _sponsorMan = default!;
 
         private GameTicker? _ticker;
 
@@ -309,7 +302,6 @@ namespace Content.Server.Connection
                             _ticker.PlayerGameStatuses.TryGetValue(userId, out var status) &&
                             status == PlayerGameStatus.JoinedGame;
             var adminBypass = _cfg.GetCVar(CCVars.AdminBypassMaxPlayers) && adminData != null;
-            var sponsorBypass = _sponsorMan.Sponsors.ContainsKey(userId);
             var softPlayerCount = _plyMgr.PlayerCount;
 
             if (!_cfg.GetCVar(CCVars.AdminsCountForMaxPlayers))
@@ -317,7 +309,7 @@ namespace Content.Server.Connection
                 softPlayerCount -= _adminManager.ActiveAdmins.Count();
             }
 
-            if ((softPlayerCount >= _cfg.GetCVar(CCVars.SoftMaxPlayers) && !adminBypass && !sponsorBypass) && !wasInGame)
+            if ((softPlayerCount >= _cfg.GetCVar(CCVars.SoftMaxPlayers) && !adminBypass) && !wasInGame)
             {
                 return (ConnectionDenyReason.Full, Loc.GetString("soft-player-cap-full"), null);
             }
@@ -367,18 +359,6 @@ namespace Content.Server.Connection
         private bool HasTemporaryBypass(NetUserId user)
         {
             return _temporaryBypasses.TryGetValue(user, out var time) && time > _gameTiming.RealTime;
-        }
-
-        public async Task<bool> HasPrivilegedJoin(NetUserId userId)
-        {
-            var isAdmin = await _db.GetAdminDataForAsync(userId) != null;
-            var isSponsor = _sponsorMan.Sponsors.ContainsKey(userId);
-            _ticker ??= _entityManager.SystemOrNull<GameTicker>();
-            var wasInGame = _ticker != null &&
-                            _ticker.PlayerGameStatuses.TryGetValue(userId, out var status) &&
-                            status == PlayerGameStatus.JoinedGame;
-
-            return isAdmin || isSponsor || wasInGame;
         }
 
         private async Task<NetUserId?> AssignUserIdCallback(string name)

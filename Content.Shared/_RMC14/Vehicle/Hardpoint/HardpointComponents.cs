@@ -20,16 +20,16 @@ public sealed partial class HardpointItemComponent : Component
     public const string ComponentId = "HardpointItem";
 
     [DataField(required: true)]
-    public EntProtoId HardpointType;
+    public string HardpointType = string.Empty;
 
     [DataField]
-    public EntProtoId? VehicleFamily;
+    public ProtoId<HardpointVehicleFamilyPrototype>? VehicleFamily;
 
     [DataField]
-    public EntProtoId? SlotType;
+    public ProtoId<HardpointSlotTypePrototype>? SlotType;
 
     [DataField]
-    public EntProtoId? CompatibilityId;
+    public string? CompatibilityId;
 
     [DataField]
     public float DamageMultiplier = 1f;
@@ -39,12 +39,12 @@ public sealed partial class HardpointItemComponent : Component
 }
 
 
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
-[Access(typeof(HardpointSystem), typeof(HardpointSlotSystem))]
+[RegisterComponent, NetworkedComponent]
+[Access(typeof(HardpointSystem), typeof(HardpointSlotSystem), typeof(VehicleWheelSystem))] // CCM14
 public sealed partial class HardpointSlotsComponent : Component
 {
     [DataField]
-    public EntProtoId? VehicleFamily;
+    public ProtoId<HardpointVehicleFamilyPrototype>? VehicleFamily;
 
     [DataField(required: true)]
     public List<HardpointSlot> Slots = new();
@@ -54,9 +54,6 @@ public sealed partial class HardpointSlotsComponent : Component
 
     [DataField]
     public ProtoId<ToolQualityPrototype> RemoveToolQuality = "Prying";
-
-    [AutoNetworkedField]
-    public HardpointUiState Ui = new(new List<HardpointUiEntry>(), 0f, 0f, false, null);
 }
 
 [RegisterComponent]
@@ -64,13 +61,16 @@ public sealed partial class HardpointSlotsComponent : Component
 public sealed partial class HardpointStateComponent : Component
 {
     [NonSerialized]
-    public Dictionary<string, EntityUid> PendingInserts = new();
+    public HashSet<string> PendingInserts = new();
 
     [NonSerialized]
     public HashSet<string> CompletingInserts = new();
 
     [NonSerialized]
     public HashSet<string> PendingRemovals = new();
+
+    [NonSerialized]
+    public HashSet<EntityUid> PendingInsertUsers = new();
 
     [NonSerialized]
     public string? LastUiError;
@@ -83,13 +83,13 @@ public sealed partial class HardpointSlot
     public string Id { get; set; } = string.Empty;
 
     [DataField(required: true)]
-    public EntProtoId HardpointType { get; set; }
+    public string HardpointType { get; set; } = string.Empty;
 
     [DataField]
-    public EntProtoId? SlotType { get; set; }
+    public ProtoId<HardpointSlotTypePrototype>? SlotType { get; set; }
 
     [DataField]
-    public EntProtoId? CompatibilityId { get; set; }
+    public string? CompatibilityId { get; set; }
 
     [DataField]
     public string VisualLayer { get; set; } = string.Empty;
@@ -104,10 +104,13 @@ public sealed partial class HardpointSlot
     public float RemoveDelay { get; set; } = -1f;
 
     [DataField]
+    public bool DisableEject { get; set; }
+
+    [DataField]
     public EntityWhitelist? Whitelist { get; set; }
 }
 
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class HardpointIntegrityComponent : Component
 {
     [DataField]
@@ -117,7 +120,7 @@ public sealed partial class HardpointIntegrityComponent : Component
     public float Integrity;
 
     [DataField]
-    public FixedPoint2 FuelPerSecond = FixedPoint2.New(1);
+    public FixedPoint2 RepairFuelCost = FixedPoint2.New(5);
 
     [DataField]
     public SoundSpecifier? RepairSound;
@@ -141,7 +144,7 @@ public sealed partial class HardpointIntegrityComponent : Component
     public float RepairChunkMinimum = 0.01f;
 
     [DataField]
-    public float FrameRepairChunkSeconds = 1f;
+    public float FrameRepairChunkSeconds = 2f;
 
     [DataField, AutoNetworkedField]
     public bool BypassEntryOnZero;
@@ -153,7 +156,7 @@ public sealed partial class HardpointIntegrityComponent : Component
 [RegisterComponent]
 public sealed partial class HardpointDamageModifierComponent : Component
 {
-    [DataField]
+    [DataField("modifierSets")]
     public List<ProtoId<DamageModifierSetPrototype>> ModifierSets = new();
 }
 
@@ -220,11 +223,4 @@ public sealed partial class HardpointRepairDoAfterEvent : DoAfterEvent
     }
 }
 
-[ByRefEvent]
 public readonly record struct HardpointSlotsChangedEvent(EntityUid Vehicle);
-
-[ByRefEvent]
-public readonly record struct HardpointIntegrityChangedEvent;
-
-[ByRefEvent]
-public readonly record struct VehicleFrameIntegrityChangedEvent(EntityUid Vehicle, bool Intact);

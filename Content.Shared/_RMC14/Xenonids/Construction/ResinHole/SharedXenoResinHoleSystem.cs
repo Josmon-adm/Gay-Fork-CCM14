@@ -120,13 +120,16 @@ public abstract class SharedXenoResinHoleSystem : EntitySystem
 
     private void OnResinHoleActivation(Entity<XenoResinHoleComponent> ent, ref XenoResinHoleActivationEvent args)
     {
+        if (_hive.GetHive(ent.Owner) is not { } hive)
+            return;
+
         var locationName = "Unknown";
 
         if (_areas.TryGetArea(ent, out _, out var areaProto))
             locationName = areaProto.Name;
 
         var msg = Loc.GetString(args.message, ("location", locationName), ("type", GetTrapTypeName(ent)));
-        _announce.AnnounceSameHive(ent.Owner, msg, color: ent.Comp.MessageColor, useHiveAsSource: true);
+        _announce.AnnounceToHive(ent.Owner, hive, msg, color: ent.Comp.MessageColor);
     }
 
     protected void SetTrapType(Entity<XenoResinHoleComponent> resinHole, string? newTrapPrototype)

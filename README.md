@@ -1,16 +1,16 @@
 <p align="center"> <img alt="Space Station 14" width="400" height="400" src="https://github.com/user-attachments/assets/51a5b8f3-9068-4eeb-8caa-c6c9439118d7" /></p>
 
-Colonial-Marine is a repository based on RMC-14.
+CCM-14 is a repository based on RMC-14.
 
-This is the primary repo for Colonial-Marine.
+This is the primary repo for CCM-14.
 
 ## Links
 
-[CCM-14 Community Wiki](https://station14.ru/wiki/Портал:Colonial_Marines) | [Discord](https://discord.gg/corvax-forge) | [SS14 Steam Launcher](https://store.steampowered.com/app/1255460/Space_Station_14/)
+[CCM-14 Community Wiki](https://station14.ru/wiki/Портал:Colonial_Marines) | [Discord](https://discord.gg/VWJZFUWgRc) | [SS14 Steam Launcher](https://store.steampowered.com/app/1255460/Space_Station_14/) | [Our Website](https://cm14.ru/)
 
 ## Contributing
 
-We have a [list of issues](https://github.com/Forge-Station/Colonial-Marine/issues) that need to be addressed, and anyone can take them on. Don't be afraid to ask for help!
+We have a [list of issues](https://github.com/corvax-team/RMC-14/issues) that need to be addressed, and anyone can take them on. Don't be afraid to ask for help!
 
 ## Contributing Requirements
 - Understanding how to contribute - Read this resource provided by SS14 and attempt to keep to it. [Pull Request and Changelog Guidelines](https://docs.spacestation14.com/en/general-development/codebase-info/pull-request-guidelines.html).
@@ -20,7 +20,6 @@ We have a [list of issues](https://github.com/Forge-Station/Colonial-Marine/issu
 
 ## Contributing Requirements
 - Understanding how to contribute - Read this resource provided by SS14 and attempt to keep to it. [Pull Request and Changelog Guidelines](https://docs.spacestation14.com/en/general-development/codebase-info/pull-request-guidelines.html).
-- Standards - Following the commonly agreed upon standards, ensuring that work is submitted in a reasonable state. [Coding Standards](coding-standards.md)
 - Media - Add relevant media like videos and photos whereever possible, as proof of changes working in game, and for easier review.
 - Responisbility - By submitting any form of PR, you are confirming that you either own them or have provided the correct necessary licenses to use and distribute them. You are agreeing to be fully responsible for any legal claims or issues arising from the use of these materials.
 - Patience - Please understand that the amount of capable reviewers is very small, PRs depending on their importance priority and size can take anywhere from weeks to months to review. Please do not close your PRs without providing a reason, as we will eventually get around to all of them. A PR awaiting a review does not mean we do not have interest.
@@ -35,9 +34,9 @@ We have a [list of issues](https://github.com/Forge-Station/Colonial-Marine/issu
 
 ## License
 
-The vast majority of code implemented before February 1, 2026 is licensed under [MIT](https://github.com/Forge-Station/Colonial-Marine/blob/master/MIT.TXT).
+The vast majority of code implemented before February 1, 2026 is licensed under [MIT](https://github.com/corvax-team/RMC-14/blob/master/MIT.TXT).
 
-All code implemented after February 1, 2026 is distributed under the [GNU AGPL 3.0](https://github.com/Forge-Station/Colonial-Marine/blob/master/LICENSE) license, unless otherwise specified.
+All code implemented after February 1, 2026 is distributed under the [GNU AGPL 3.0](https://github.com/corvax-team/RMC-14/blob/master/LICENSE) license, unless otherwise specified.
 
 Most assets are licensed under [CC-BY-SA-3.0](https://creativecommons.org/licenses/by-sa/3.0/) unless stated otherwise. Assets have their license and the copyright in the metadata file. [Example](https://github.com/space-wizards/space-station-14/blob/master/Resources/Textures/Objects/Tools/crowbar.rsi/meta.json).
 

@@ -82,7 +82,6 @@
         state: background_command
     - type: MutinyEligible
     - type: RMCAwardRecommendation
-    - type: SeeNewPlayers
 
 - type: startingGear
   id: CMGearStaffOfficer

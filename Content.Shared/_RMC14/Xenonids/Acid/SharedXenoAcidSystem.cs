@@ -211,12 +211,7 @@ public abstract class SharedXenoAcidSystem : EntitySystem
             return;
 
         _acidHole.TryStoreAcidDirection(target, xeno.Owner);
-
-        var acidTime = args.Time * mult;
-        if (CorrosiveAcidInstant)
-            acidTime = TimeSpan.Zero;
-
-        ApplyAcid(args.AcidId, args.Strength, target, args.Dps, args.ExpendableLightDps, acidTime);
+        ApplyAcid(args.AcidId, args.Strength, target, args.Dps, args.ExpendableLightDps, args.Time * mult, source: xeno.Owner);
     }
 
     /// <summary>
@@ -267,15 +262,13 @@ public abstract class SharedXenoAcidSystem : EntitySystem
             if (!solution.Comp.Solution.ContainsReagent(AcidRemovedBy, null))
                 continue;
 
-            if (!TryComp(ent.Owner, out GunSecondWindComponent? secondWind) || !secondWind.HasSecondWind)
+            if (HasComp<GunComponent>(ent.Owner) &&
+                (!TryComp(ent.Owner, out GunSecondWindComponent? secondWind) || !secondWind.HasSecondWind))
             {
-                if (secondWind != null)
-                {
-                    _popup.PopupEntity(
-                        Loc.GetString("rmc-acid-gun-second-wind-spent", ("target", ent.Owner)),
-                        ent.Owner,
-                        PopupType.SmallCaution);
-                }
+                _popup.PopupEntity(
+                    Loc.GetString("rmc-acid-gun-second-wind-spent", ("target", ent.Owner)),
+                    ent.Owner,
+                    PopupType.SmallCaution);
                 return;
             }
 
@@ -456,12 +449,9 @@ public abstract class SharedXenoAcidSystem : EntitySystem
         }
     }
 
-    public bool TryConsumeGunSecondWind(EntityUid uid, GunSecondWindComponent? secondWind = null)
+    private bool TryConsumeGunSecondWind(EntityUid uid)
     {
-        if (!Resolve(uid, ref secondWind, false))
-            return false;
-
-        if (!secondWind.HasSecondWind)
+        if (!TryComp(uid, out GunSecondWindComponent? secondWind) || !secondWind.HasSecondWind)
             return false;
 
         secondWind.HasSecondWind = false;

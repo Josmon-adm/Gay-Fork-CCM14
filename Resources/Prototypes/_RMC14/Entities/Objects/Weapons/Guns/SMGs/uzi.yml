@@ -113,8 +113,6 @@
     zeroVisible: false
     zeroOnlyOnEmpty: true
   - type: Appearance
-  - type: Item
-    size: Small
 
 - type: entity
   parent: RMCMagazineSMGUZI
@@ -134,8 +132,6 @@
     tags:
     - CMMagazineSmg
     - RMCMagazineSMGUZIExt
-  - type: Item
-    size: Small
 
 - type: entity
   parent: CMCartridge9mmSMG

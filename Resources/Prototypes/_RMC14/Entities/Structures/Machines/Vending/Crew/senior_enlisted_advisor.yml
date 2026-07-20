@@ -16,7 +16,7 @@
     - name: Стандартное снаряжение # CCM14
       takeAll: CMStandard
       entries:
-      - id: CMSatchelSecureStandard
+      - id: CMSatchel
       - id: CMBootsBlackFilled
       - id: CMMRE
       - id: RMCStampSEA

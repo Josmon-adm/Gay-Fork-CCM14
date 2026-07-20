@@ -12,7 +12,6 @@
   - CMAccessDropship
   - RMCAccessDatabase
   - RMCAccessSeniorCommand
-  - RMCAccessLogs
 
 - type: accessGroup
   id: OT

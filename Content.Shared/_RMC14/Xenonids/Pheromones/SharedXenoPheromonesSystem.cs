@@ -225,13 +225,6 @@ public abstract class SharedXenoPheromonesSystem : EntitySystem
         a = FixedPoint2.Max(a, b);
     }
 
-    private void MaybeCapPheromones(ref FixedPoint2 multiplier, EntityUid ent, XenoPheromones pheros)
-    {
-        if (TryComp<XenoCappedPheromonesComponent>(ent, out var capped) &&
-            capped.CappedPheromones.ContainsKey(pheros))
-            multiplier = FixedPoint2.Min(multiplier, capped.CappedPheromones[pheros]);
-    }
-
     public void DeactivatePheromones(Entity<XenoPheromonesComponent?> xeno)
     {
         if (!Resolve(xeno, ref xeno.Comp, false))
@@ -402,8 +395,6 @@ public abstract class SharedXenoPheromonesSystem : EntitySystem
                         oldRecovery.Remove(receiver);
                         var recovery = EnsureComp<XenoRecoveryPheromonesComponent>(receiver);
                         AssignMaxMultiplier(ref recovery.Multiplier, pheromones.PheromonesMultiplier);
-
-                        MaybeCapPheromones(ref recovery.Multiplier, receiver, XenoPheromones.Recovery);
                     }
 
                     break;
@@ -419,8 +410,6 @@ public abstract class SharedXenoPheromonesSystem : EntitySystem
                         oldWarding.Remove(receiver);
                         var warding = EnsureComp<XenoWardingPheromonesComponent>(receiver);
                         AssignMaxMultiplier(ref warding.Multiplier, pheromones.PheromonesMultiplier);
-
-                        MaybeCapPheromones(ref warding.Multiplier, receiver, XenoPheromones.Warding);
                     }
 
                     break;
@@ -437,8 +426,6 @@ public abstract class SharedXenoPheromonesSystem : EntitySystem
                         var frenzy = EnsureComp<XenoFrenzyPheromonesComponent>(receiver);
                         var old = frenzy.Multiplier;
                         AssignMaxMultiplier(ref frenzy.Multiplier, pheromones.PheromonesMultiplier);
-
-                        MaybeCapPheromones(ref frenzy.Multiplier, receiver, XenoPheromones.Frenzy);
 
                         if (frenzy.Multiplier != old)
                             _refreshSpeeds.Add(receiver);

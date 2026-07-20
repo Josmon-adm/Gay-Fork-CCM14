@@ -6,13 +6,12 @@
   sprites: CMUMobYautjaSprites
   maleFirstNames: CMUNamesYautjaFirst
   femaleFirstNames: CMUNamesYautjaFirst
-  maleLastNames: CMUNamesYautjaLast
-  femaleLastNames: CMUNamesYautjaLast
+  lastNames: CMUNamesYautjaLast
   naming: FirstLast
   defaultSkinTone: "#ffffff"
   markingLimits: CMUMobYautjaMarkingLimits
   dollPrototype: CMUMobYautjaDummy
-  skinColoration: HumanToned
+  skinColoration: Hues
   sexes:
   - Male
   - Female

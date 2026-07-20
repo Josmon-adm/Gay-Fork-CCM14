@@ -4,7 +4,6 @@ using Content.Client._RMC14.Weapons.Melee;
 using Content.Client.Gameplay;
 using Content.Shared._RMC14.Input;
 using Content.Shared._RMC14.Tackle;
-using Content.Shared.CCVar;
 using Content.Shared.CombatMode;
 using Content.Shared.Effects;
 using Content.Shared.Hands.Components;
@@ -19,7 +18,6 @@ using Robust.Client.Graphics;
 using Robust.Client.Input;
 using Robust.Client.Player;
 using Robust.Client.State;
-using Robust.Shared.Configuration;
 using Robust.Shared.Input;
 using Robust.Shared.Map;
 using Robust.Shared.Player;
@@ -37,7 +35,6 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
     [Dependency] private readonly SharedColorFlashEffectSystem _color = default!;
     [Dependency] private readonly MapSystem _map = default!;
     [Dependency] private readonly SpriteSystem _sprite = default!;
-    [Dependency] private readonly IConfigurationManager _cfg = default!;
 
     private EntityQuery<TransformComponent> _xformQuery;
 
@@ -88,7 +85,7 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
         var altDown = _inputSystem.CmdStates.GetState(EngineKeyFunctions.UseSecondary);
         var wideDown = _inputSystem.CmdStates.GetState(CMKeyFunctions.CMXenoWideSwing);
 
-        if (weapon.AutoAttack || useDown != BoundKeyState.Down && altDown != BoundKeyState.Down && wideDown != BoundKeyState.Down || _cfg.GetCVar(CCVars.ControlHoldToAttackMelee))
+        if (weapon.AutoAttack || useDown != BoundKeyState.Down && altDown != BoundKeyState.Down && wideDown != BoundKeyState.Down)
         {
             if (weapon.Attacking)
             {

@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// CM14 rework: non-RMC edit marker.
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using Content.Client._RMC14.Mentor;
 using Content.Client.Administration.Managers;
 using Content.Client.Administration.Systems;
 using Content.Client.Administration.UI.Bwoink;
@@ -24,6 +24,7 @@ using Robust.Client.UserInterface.Controls;
 using Robust.Client.UserInterface.CustomControls;
 using Robust.Shared.Configuration;
 using Robust.Shared.Input.Binding;
+using Robust.Shared.Localization;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
@@ -38,16 +39,14 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
     [Dependency] private readonly IPlayerManager _playerManager = default!;
     [Dependency] private readonly IClyde _clyde = default!;
     [Dependency] private readonly IUserInterfaceManager _uiManager = default!;
-    [Dependency] private readonly StaffHelpUIController _staffHelp = default!;
     [UISystemDependency] private readonly AudioSystem _audio = default!;
 
     private BwoinkSystem? _bwoinkSystem;
     public MenuButton? GameAHelpButton => UIManager.GetActiveUIWidgetOrNull<GameTopMenuBar>()?.AHelpButton;
-    public Button? LobbyAHelpButton => (UIManager.ActiveScreen as LobbyGui)?.AHelpButton;
+    public Button? LobbyAHelpButton => (UIManager.ActiveScreen as LobbyGui)?.ActiveAHelpButton;
     public IAHelpUIHandler? UIHelper;
     private bool _discordRelayActive;
     private bool _hasUnreadAHelp;
-    private bool _hasUnreadMHelp; // RMC14
     private bool _bwoinkSoundEnabled;
     private string? _aHelpSound;
 
@@ -92,9 +91,7 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
 
     private void AHelpButtonPressed(BaseButton.ButtonEventArgs obj)
     {
-        _staffHelp.ToggleWindow();
-        // EnsureUIHelper();
-        // UIHelper!.ToggleWindow();
+        ToggleWindow();
     }
 
     public void OnSystemLoaded(BwoinkSystem system)
@@ -236,7 +233,7 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
         helper.ClydeWindow = _clyde.CreateWindow(new WindowCreateParameters
         {
             Maximized = false,
-            Title = "Admin Help",
+            Title = Loc.GetString("rmc-ahelp-window-title"),
             Monitor = monitor,
             Width = 900,
             Height = 500
@@ -254,47 +251,16 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
 
     public void UnreadAHelpReceived()
     {
-        _hasUnreadAHelp = true; //RMC14
-        UpdateUnreadState();
+        GameAHelpButton?.StyleClasses.Add(MenuButton.StyleClassRedTopButton);
+        LobbyAHelpButton?.StyleClasses.Add(StyleNano.StyleClassButtonColorRed);
+        _hasUnreadAHelp = true;
     }
 
-    //RMC14
-    public void UnreadMHelpReceived()
+    private void UnreadAHelpRead()
     {
-        _hasUnreadMHelp = true;
-        UpdateUnreadState();
-    }
-
-    public void UnreadAHelpRead()
-    {
-        _hasUnreadAHelp = false; // RMC14
-        UpdateUnreadState();
-    }
-
-    //RMC14
-    public void UnreadMHelpRead()
-    {
-        _hasUnreadMHelp = false;
-        UpdateUnreadState();
-    }
-
-    // RMC14
-    private void UpdateUnreadState()
-    {
-        var isAdmin = _adminManager.HasFlag(AdminFlags.Adminhelp);
-        var isMentor = _staffHelp.IsMentor;
-        var red = isAdmin && _hasUnreadAHelp || isMentor && _hasUnreadMHelp;
-
-        if (red)
-        {
-            GameAHelpButton?.StyleClasses.Add(MenuButton.StyleClassRedTopButton);
-            LobbyAHelpButton?.StyleClasses.Add(StyleNano.StyleClassButtonColorRed);
-        }
-        else
-        {
-            GameAHelpButton?.StyleClasses.Remove(MenuButton.StyleClassRedTopButton);
-            LobbyAHelpButton?.StyleClasses.Remove(StyleNano.StyleClassButtonColorRed);
-        }
+        GameAHelpButton?.StyleClasses.Remove(MenuButton.StyleClassRedTopButton);
+        LobbyAHelpButton?.StyleClasses.Remove(StyleNano.StyleClassButtonColorRed);
+        _hasUnreadAHelp = false;
     }
 
     public void OnStateEntered(GameplayState state)
@@ -312,16 +278,6 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
             else
             {
                 UnreadAHelpRead();
-            }
-
-            //RMC14
-            if (_hasUnreadMHelp)
-            {
-                UnreadMHelpReceived();
-            }
-            else
-            {
-                UnreadMHelpRead();
             }
         }
     }
@@ -347,16 +303,6 @@ public sealed class AHelpUIController: UIController, IOnSystemChanged<BwoinkSyst
             else
             {
                 UnreadAHelpRead();
-            }
-
-            //RMC14
-            if (_hasUnreadMHelp)
-            {
-                UnreadMHelpReceived();
-            }
-            else
-            {
-                UnreadMHelpRead();
             }
         }
     }
@@ -554,7 +500,7 @@ public sealed class UserAHelpUIHandler : IAHelpUIHandler
     }
     public bool IsAdmin => false;
     public bool IsOpen => _window is { Disposed: false, IsOpen: true };
-    private DefaultWindow? _window;
+    private DefaultCMWindow? _window;
     private BwoinkPanel? _chatPanel;
     private bool _discordRelayActive;
 
@@ -621,7 +567,7 @@ public sealed class UserAHelpUIHandler : IAHelpUIHandler
         _chatPanel = new BwoinkPanel(text => SendMessageAction?.Invoke(_ownerId, text, true, false));
         _chatPanel.InputTextChanged += text => InputTextChanged?.Invoke(_ownerId, text);
         _chatPanel.RelayedToDiscordLabel.Visible = relayActive;
-        _window = new DefaultWindow()
+        _window = new DefaultCMWindow()
         {
             TitleClass="windowTitleAlert",
             HeaderClass="windowHeaderAlert",
@@ -644,3 +590,4 @@ public sealed class UserAHelpUIHandler : IAHelpUIHandler
         _chatPanel = null;
     }
 }
+

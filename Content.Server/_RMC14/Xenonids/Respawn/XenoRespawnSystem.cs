@@ -4,7 +4,6 @@ using Content.Server.Ghost.Roles.Components;
 using Content.Server.Mind;
 using Content.Server.Popups;
 using Content.Shared._RMC14.Xenonids.Hive;
-using Content.Shared._RMC14.Xenonids.JoinXeno;
 using Content.Shared._RMC14.Xenonids.Respawn;
 using Content.Shared.Mind;
 using Content.Shared.Popups;
@@ -25,13 +24,12 @@ public sealed partial class XenoRespawnSystem : EntitySystem
     [Dependency] private readonly PopupSystem _popup = default!;
     [Dependency] private readonly AudioSystem _audio = default!;
     [Dependency] private readonly TransformSystem _transform = default!;
-    public void RespawnXeno(EntityUid xeno, TimeSpan time, bool atLocation = false, EntityCoordinates? location = null)
+    public void RespawnXeno(EntityUid xeno, TimeSpan time, bool atCorpse = false, EntityCoordinates? corpse = null)
     {
         if (!TryComp(xeno, out ActorComponent? actor))
             return;
 
         RemComp<GhostTakeoverAvailableComponent>(xeno);
-        RemComp<CanBeLarvaQueuedComponent>(xeno);
 
         var session = actor.PlayerSession;
 
@@ -49,8 +47,8 @@ public sealed partial class XenoRespawnSystem : EntitySystem
             var respawn = EnsureComp<XenoRespawnComponent>(ghost.Value);
             respawn.Hive = _hive.GetHive(xeno);
             respawn.RespawnAt = _timing.CurTime + time;
-            respawn.RespawnAtLocation = atLocation;
-            respawn.Location = location;
+            respawn.RespawnAtCorpse = atCorpse;
+            respawn.CorpseLocation = corpse;
         }
     }
 
@@ -68,15 +66,15 @@ public sealed partial class XenoRespawnSystem : EntitySystem
                 continue;
 
             ActorComponent? actor;
-            if (respawn.RespawnAtLocation)
+            if (respawn.RespawnAtCorpse)
             {
-                if (respawn.Location == null)
+                if (respawn.CorpseLocation == null)
                 {
                     RemCompDeferred<XenoRespawnComponent>(ghost);
                     continue;
                 }
 
-                var spawn = SpawnAtPosition(respawn.Larva, respawn.Location.Value);
+                var spawn = SpawnAtPosition(respawn.Larva, respawn.CorpseLocation.Value);
                 _hive.SetHive(spawn, respawn.Hive);
 
                 if (!TryComp(ghost, out actor))
@@ -89,12 +87,8 @@ public sealed partial class XenoRespawnSystem : EntitySystem
 
                 _mind.TransferTo(mindId, spawn);
 
-
-                if (!_hive.TryGetHiveCore(spawn, out _))
-                {
-                    _popup.PopupEntity(Loc.GetString("rmc-xeno-respawn-corpse-self"), spawn, spawn, PopupType.MediumCaution);
-                    _popup.PopupEntity(Loc.GetString("rmc-xeno-respawn-corpse-others"), spawn, Filter.PvsExcept(spawn), true, PopupType.MediumCaution);
-                }
+                _popup.PopupEntity(Loc.GetString("rmc-xeno-respawn-corpse-self"), spawn, spawn, PopupType.MediumCaution);
+                _popup.PopupEntity(Loc.GetString("rmc-xeno-respawn-corpse-others"), spawn, Filter.PvsExcept(spawn), true, PopupType.MediumCaution);
 
                 _audio.PlayPvs(respawn.CorpseSound, _transform.GetMoverCoordinates(spawn));
 
@@ -108,7 +102,7 @@ public sealed partial class XenoRespawnSystem : EntitySystem
 
             if (TryComp(ghost, out actor))
             {
-                _hive.ChangeBurrowedLarva((respawn.Hive.Value, hiveComp), 1);
+                _hive.IncreaseBurrowedLarva((respawn.Hive.Value, hiveComp), 1);
                 _hive.JoinBurrowedLarva((respawn.Hive.Value, hiveComp), actor.PlayerSession);
             }
 

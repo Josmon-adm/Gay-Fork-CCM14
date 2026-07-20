@@ -1,4 +1,3 @@
-using Content.Shared._RMC14.Damage;
 using Content.Shared._RMC14.Pulling;
 using Content.Shared._RMC14.Shields;
 using Content.Shared._RMC14.Slow;
@@ -19,10 +18,8 @@ public sealed class XenoCleaveSystem : EntitySystem
     [Dependency] private readonly RMCPullingSystem _rmcPulling = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedRMCMeleeWeaponSystem _rmcMelee = default!;
-    [Dependency] private readonly SharedRMCDamageableSystem _rmcDamageable = default!;
     [Dependency] private readonly RMCSlowSystem _slow = default!;
     [Dependency] private readonly RMCSizeStunSystem _sizeStun = default!;
-
     public override void Initialize()
     {
         SubscribeLocalEvent<XenoCleaveComponent, XenoCleaveActionEvent>(OnCleaveAction);
@@ -58,7 +55,6 @@ public sealed class XenoCleaveSystem : EntitySystem
             var origin = _transform.GetMapCoordinates(xeno);
 
             _sizeStun.KnockBack(args.Target, origin, flingRange, flingRange, 10, true);
-            _rmcDamageable.DoLethalDamage(args.Target, origin: xeno);
 
             if (_net.IsServer)
             {

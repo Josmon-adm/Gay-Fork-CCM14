@@ -2,8 +2,6 @@ using System.Numerics;
 using Content.Shared._RMC14.Attachable.Events;
 using Content.Shared._RMC14.Emplacements;
 using Content.Shared._RMC14.Overwatch;
-using Content.Shared._RMC14.Vehicle;
-using Content.Shared._RMC14.Vehicle.Viewport;
 using Content.Shared.Actions;
 using Content.Shared.Camera;
 using Content.Shared.DoAfter;
@@ -250,18 +248,9 @@ public abstract partial class SharedScopeSystem : EntitySystem
             return false;
         }
 
-        if (HasComp<VehicleViewportUserComponent>(user))
+        if (HasComp<OverwatchWatchingComponent>(user))
         {
-            var msgError = Loc.GetString("rmc-action-popup-scoping-user-cannot-viewport", ("scope", ent));
-            _popup.PopupClient(msgError, user, user);
-            return false;
-        }
-
-        if (HasComp<GridVehicleOperatorComponent>(user) ||
-            HasComp<VehicleWeaponsOperatorComponent>(user) ||
-            HasComp<VehiclePortGunOperatorComponent>(user))
-        {
-            var msgError = Loc.GetString("rmc-action-popup-scoping-user-cannot-vehicle", ("scope", ent));
+            var msgError = Loc.GetString("rmc-action-popup-scoping-user-cannot-view-cameras", ("scope", ent));
             _popup.PopupClient(msgError, user, user);
             return false;
         }

@@ -9,8 +9,7 @@ internal readonly record struct HardpointSlotLocation(
     HardpointStateComponent State,
     ItemSlotsComponent ItemSlots,
     HardpointSlot Definition,
-    ItemSlot Slot,
-    VehicleSlotPath Path);
+    ItemSlot Slot);
 
 public sealed partial class HardpointSystem
 {
@@ -25,57 +24,41 @@ public sealed partial class HardpointSystem
         string? slotId,
         [NotNullWhen(true)] out HardpointSlotLocation location)
     {
-        if (!VehicleSlotPath.TryParse(slotId, out var path))
-        {
-            location = default;
-            return false;
-        }
-
-        return TryResolveSlotLocation(owner, hardpoints, path, out location, parentPath: null);
-    }
-
-    private bool TryResolveSlotLocation(
-        EntityUid owner,
-        HardpointSlotsComponent hardpoints,
-        VehicleSlotPath targetPath,
-        [NotNullWhen(true)] out HardpointSlotLocation location,
-        VehicleSlotPath? parentPath)
-    {
         location = default;
 
+        if (string.IsNullOrWhiteSpace(slotId))
+            return false;
+
+        if (VehicleTurretSlotIds.TryParse(slotId, out var parentSlotId, out var childSlotId))
+        {
+            if (!TryResolveSlotLocation(owner, hardpoints, parentSlotId, out var parentLocation))
+                return false;
+
+            if (parentLocation.Slot.Item is not { } attached)
+                return false;
+
+            if (!TryComp(attached, out HardpointSlotsComponent? childSlots) ||
+                !TryComp(attached, out HardpointStateComponent? childState) ||
+                !TryComp(attached, out ItemSlotsComponent? childItemSlots))
+            {
+                return false;
+            }
+
+            return TryResolveSlotLocation(attached, childSlots, childSlotId, out location);
+        }
+
+        if (!TryGetSlot(hardpoints, slotId, out var slot))
+            return false;
+
         if (!TryComp(owner, out HardpointStateComponent? state) ||
-            !TryComp(owner, out ItemSlotsComponent? itemSlots))
+            !TryComp(owner, out ItemSlotsComponent? itemSlots) ||
+            !_itemSlots.TryGetSlot(owner, slot.Id, out var itemSlot, itemSlots))
         {
             return false;
         }
 
-        foreach (var slot in hardpoints.Slots)
-        {
-            if (string.IsNullOrWhiteSpace(slot.Id))
-                continue;
-
-            if (!_itemSlots.TryGetSlot(owner, slot.Id, out var itemSlot, itemSlots))
-                continue;
-
-            var path = parentPath?.Append(slot.Id) ?? new VehicleSlotPath(slot.Id);
-
-            if (path == targetPath)
-            {
-                location = new HardpointSlotLocation(owner, hardpoints, state, itemSlots, slot, itemSlot, path);
-                return true;
-            }
-
-            if (itemSlot.Item is not { } attached ||
-                !TryComp(attached, out HardpointSlotsComponent? childSlots))
-            {
-                continue;
-            }
-
-            if (TryResolveSlotLocation(attached, childSlots, targetPath, out location, path))
-                return true;
-        }
-
-        return false;
+        location = new HardpointSlotLocation(owner, hardpoints, state, itemSlots, slot, itemSlot);
+        return true;
     }
 
     internal bool TryFindEmptyInstallLocation(
@@ -83,16 +66,6 @@ public sealed partial class HardpointSystem
         HardpointSlotsComponent hardpoints,
         EntityUid item,
         [NotNullWhen(true)] out HardpointSlotLocation location)
-    {
-        return TryFindEmptyInstallLocation(owner, hardpoints, item, out location, parentPath: null);
-    }
-
-    private bool TryFindEmptyInstallLocation(
-        EntityUid owner,
-        HardpointSlotsComponent hardpoints,
-        EntityUid item,
-        [NotNullWhen(true)] out HardpointSlotLocation location,
-        VehicleSlotPath? parentPath)
     {
         location = default;
 
@@ -110,8 +83,7 @@ public sealed partial class HardpointSystem
             if (!_itemSlots.TryGetSlot(owner, slot.Id, out var itemSlot, itemSlots) || itemSlot.HasItem)
                 continue;
 
-            var path = parentPath?.Append(slot.Id) ?? new VehicleSlotPath(slot.Id);
-            location = new HardpointSlotLocation(owner, hardpoints, state, itemSlots, slot, itemSlot, path);
+            location = new HardpointSlotLocation(owner, hardpoints, state, itemSlots, slot, itemSlot);
             return true;
         }
 
@@ -126,8 +98,7 @@ public sealed partial class HardpointSystem
             if (!TryComp(installed, out HardpointSlotsComponent? childSlots))
                 continue;
 
-            var path = parentPath?.Append(slot.Id) ?? new VehicleSlotPath(slot.Id);
-            if (TryFindEmptyInstallLocation(installed, childSlots, item, out location, path))
+            if (TryFindEmptyInstallLocation(installed, childSlots, item, out location))
                 return true;
         }
 

@@ -31,6 +31,7 @@
   - type: MCEdgeSpreader # CCM14
     delay: 0.7
     range: 3
+    id: RMCSmokeAcid
   - type: MCTimedDespawnDisappearanceVisuals
     lifetime: 12
   - type: EvenSmoke
@@ -52,13 +53,7 @@
     whitelist:
       components:
       - Marine
-      - Xeno
       - Vehicle
-    multipliers:
-    - multiplier: 2
-      whitelist:
-        components:
-        - Vehicle
   - type: DeleteOnExplosion # so this is supposed to be random depending on the explosion severity but uhhh hahAHAHA help
 
 - type: entity
@@ -94,6 +89,7 @@
   - type: ActiveEdgeSpreader
   - type: MCEdgeSpreader # CCM14
     delay: 0.1
+    id: RMCSmokeNeurotoxin
   - type: MCTimedDespawnDisappearanceVisuals # CCM14
     lifetime: 12
   - type: EvenSmoke
@@ -186,6 +182,7 @@
   - type: DeleteOnExplosion
   - type: MCEdgeSpreader # CCM14
     delay: 0.1
+    id: RMCSmokeKingDoom
   - type: MCTimedDespawnDisappearanceVisuals # CCM14
     lifetime: 12
 

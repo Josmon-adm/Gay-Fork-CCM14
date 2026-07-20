@@ -21,9 +21,6 @@ public sealed partial class SquadLeaderTrackerComponent : Component
     public ProtoId<TrackerModePrototype>? Mode;
 
     [DataField, AutoNetworkedField]
-    public bool ManualMode;
-
-    [DataField, AutoNetworkedField]
     public EntityUid? Target;
 
     [DataField, AutoNetworkedField]

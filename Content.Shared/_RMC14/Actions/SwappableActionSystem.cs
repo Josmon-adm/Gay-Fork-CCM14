@@ -1,41 +1,17 @@
 using Content.Shared.Actions;
 using Content.Shared.Actions.Components;
-using Robust.Shared.GameStates;
 
 namespace Content.Shared._RMC14.Actions;
 
+// Swaps between instant and WorldTarget actions whilst keeping action bar position.
 public sealed class SwappableActionSystem : EntitySystem
 {
     [Dependency] private readonly SharedActionsSystem _actions = default!;
     [Dependency] private readonly MetaDataSystem _metaData = default!;
 
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        SubscribeLocalEvent<SwappableActionComponent, AfterAutoHandleStateEvent>(OnSwappableHandleState);
-    }
-
-    private void OnSwappableHandleState(Entity<SwappableActionComponent> ent, ref AfterAutoHandleStateEvent args)
-    {
-        if (ent.Comp.IsSwapped)
-        {
-            if (!HasComp<WorldTargetActionComponent>(ent) || ent.Comp.SwappedEventTemplate == null)
-                return;
-
-            _actions.SetEvent(ent, ent.Comp.SwappedEventTemplate);
-        }
-        else
-        {
-            if (!HasComp<InstantActionComponent>(ent) || ent.Comp.OriginalEventTemplate == null)
-                return;
-
-            _actions.SetEvent(ent, ent.Comp.OriginalEventTemplate);
-        }
-    }
-
     public bool SwapInstantToWorldTarget<TOriginalEvent>(
         EntityUid owner,
+        WorldTargetActionEvent swappedEvent,
         string swappedName,
         string swappedDescription) where TOriginalEvent : InstantActionEvent
     {
@@ -47,15 +23,9 @@ public sealed class SwappableActionSystem : EntitySystem
                 continue;
             }
 
-            if (!TryComp<SwappableActionComponent>(actionId, out var swappable) ||
-                swappable.SwappedEventTemplate == null)
-            {
-                continue;
-            }
-
+            var swappable = EnsureComp<SwappableActionComponent>(actionId);
             swappable.OriginalName = MetaData(actionId).EntityName;
             swappable.OriginalDescription = MetaData(actionId).EntityDescription;
-            swappable.IsSwapped = true;
             Dirty(actionId, swappable);
 
             RemComp<InstantActionComponent>(actionId);
@@ -67,8 +37,9 @@ public sealed class SwappableActionSystem : EntitySystem
             targetAction.Repeat = false;
             Dirty(actionId, targetAction);
 
-            EnsureComp<WorldTargetActionComponent>(actionId);
-            _actions.SetEvent(actionId, swappable.SwappedEventTemplate);
+            var worldTarget = EnsureComp<WorldTargetActionComponent>(actionId);
+            worldTarget.Event = swappedEvent;
+            Dirty(actionId, worldTarget);
 
             _metaData.SetEntityName(actionId, swappedName);
             _metaData.SetEntityDescription(actionId, swappedDescription);
@@ -79,7 +50,7 @@ public sealed class SwappableActionSystem : EntitySystem
         return false;
     }
 
-    public void SwapAllToInstant(EntityUid owner)
+    public void SwapAllToInstant(EntityUid owner, InstantActionEvent originalEvent)
     {
         foreach (var (actionId, _) in _actions.GetActions(owner))
         {
@@ -92,20 +63,16 @@ public sealed class SwappableActionSystem : EntitySystem
                 continue;
             }
 
-            if (swappable.OriginalEventTemplate == null)
-                continue;
-
             RemComp<WorldTargetActionComponent>(actionId);
             RemComp<TargetActionComponent>(actionId);
 
-            EnsureComp<InstantActionComponent>(actionId);
-            _actions.SetEvent(actionId, swappable.OriginalEventTemplate);
+            var instant = EnsureComp<InstantActionComponent>(actionId);
+            instant.Event = originalEvent;
 
             _metaData.SetEntityName(actionId, swappable.OriginalName);
             _metaData.SetEntityDescription(actionId, swappable.OriginalDescription);
 
-            swappable.IsSwapped = false;
-            Dirty(actionId, swappable);
+            RemComp<SwappableActionComponent>(actionId);
         }
     }
 }

@@ -1,40 +1,36 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using Content.Server.Chat.Managers;
-using Content.Server.Radio.Components;
+using Content.Server.Chat.Systems;
 using Content.Server.Speech.EntitySystems;
 using Content.Server.Speech.Prototypes;
 using Content.Shared._CMU14.Yautja;
 using Content.Shared._RMC14.Chat;
 using Content.Shared._RMC14.Marines;
-using Content.Shared._RMC14.Mentor.ImaginaryFriend;
 using Content.Shared._RMC14.Xenonids;
 using Content.Shared.Chat;
-using Content.Shared.Ghost;
 using Content.Shared.Inventory;
 using Content.Shared.Popups;
+using Robust.Shared.Console;
 using Content.Shared.Radio;
-using Content.Shared.Radio.Components;
+using Content.Shared.Speech;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Robust.Shared.Prototypes;
-using Content.Server.Chat.Systems;
-using Content.Shared.Speech;
 
 namespace Content.Server._RMC14.Chat.Chat;
 
 public sealed class CMChatSystem : SharedCMChatSystem
 {
     [Dependency] private readonly IChatManager _chat = default!;
-    [Dependency] private readonly SharedChatSystem _chatSystem = default!;
+    [Dependency] private readonly ChatSystem _chatSystem = default!;
     [Dependency] private readonly InventorySystem _inventory = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ReplacementAccentSystem _wordreplacement = default!;
-    [Dependency] private readonly IPrototypeManager _proto = default!;
 
     private static readonly ProtoId<ReplacementAccentPrototype> ChatSanitize = "CMChatSanitize";
     private static readonly ProtoId<ReplacementAccentPrototype> MarineChatSanitize = "CMChatSanitizeMarine";
@@ -49,7 +45,6 @@ public sealed class CMChatSystem : SharedCMChatSystem
         base.Initialize();
         SubscribeLocalEvent<MarineComponent, ChatMessageAfterGetRecipients>(OnMarineAfterGetRecipients);
         SubscribeLocalEvent<XenoComponent, ChatMessageAfterGetRecipients>(OnXenoAfterGetRecipients);
-        SubscribeLocalEvent<ImaginaryFriendComponent, ChatMessageAfterGetRecipients>(OnImaginaryFriendGetRecipients);
     }
 
     private void OnMarineAfterGetRecipients(Entity<MarineComponent> ent, ref ChatMessageAfterGetRecipients args)
@@ -86,35 +81,14 @@ public sealed class CMChatSystem : SharedCMChatSystem
                 if (data.Observer)
                     continue;
 
-            // `data.Observer` only indicates whether the recipient has `GhostHearingComponent`.
-            // Disabling ghost hearing removes this component, so the `GhostComponent` check is needed to keep ghosts included.
-            if (!HasComp<XenoComponent>(session.AttachedEntity) && !HasComp<GhostComponent>(session.AttachedEntity))
-                _toRemove.Add(session);
-        }
+                if (!HasComp<XenoComponent>(session.AttachedEntity))
+                    _toRemove.Add(session);
+            }
 
             foreach (var session in _toRemove)
             {
                 args.Recipients.Remove(session);
             }
-        }
-    }
-
-    private void OnImaginaryFriendGetRecipients(Entity<ImaginaryFriendComponent> ent, ref ChatMessageAfterGetRecipients args)
-    {
-        _toRemove.Clear();
-
-        foreach (var (session, data) in args.Recipients)
-        {
-            if (data.Observer)
-                continue;
-
-            if (ent.Comp.Imaginer != session.AttachedEntity)
-                _toRemove.Add(session);
-        }
-
-        foreach (var session in _toRemove)
-        {
-            args.Recipients.Remove(session);
         }
     }
 
@@ -191,38 +165,29 @@ public sealed class CMChatSystem : SharedCMChatSystem
         );
     }
 
-    private bool IsValidRadioPrefix(EntityUid headset, string prefixPart)
+    public override void Emote(
+        EntityUid source,
+        string message,
+        string? nameOverride = null,
+        bool checkRadioPrefix = true,
+        bool ignoreActionBlocker = false)
     {
-        if (prefixPart.Length != 2)
-            return false;
+        ICommonSession? player = null;
+        if (TryComp(source, out ActorComponent? actor))
+            player = actor.PlayerSession;
 
-        if (!TryComp(headset, out EncryptionKeyHolderComponent? keys))
-            return false;
-
-        var prefix = prefixPart[0];
-        if (prefix == SharedChatSystem.RadioChannelAltPrefix)
-            prefix = SharedChatSystem.RadioChannelPrefix;
-
-        var keycode = char.ToLowerInvariant(prefixPart[1]);
-
-        if (keycode == SharedChatSystem.DefaultChannelKey && keys.DefaultChannel != null)
-            return true;
-
-        foreach (var ch in _proto.EnumeratePrototypes<RadioChannelPrototype>())
-        {
-            if (!keys.Channels.Contains(ch.ID))
-                continue;
-
-            if (ch.RadioPrefix == prefix && ch.KeyCode == keycode)
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool IsValidRadioKey(EntityUid headset, char prefix, char keycode)
-    {
-        return IsValidRadioPrefix(headset, $"{prefix}{char.ToLowerInvariant(keycode)}");
+        _chatSystem.TrySendInGameICMessage(
+            source,
+            message,
+            InGameICChatType.Emote,
+            ChatTransmitRange.Normal,
+            false,
+            null,
+            player,
+            nameOverride,
+            checkRadioPrefix,
+            ignoreActionBlocker
+        );
     }
 
     // cursed code
@@ -290,10 +255,23 @@ public sealed class CMChatSystem : SharedCMChatSystem
 
     public List<string>? TryMultiBroadcast(EntityUid source, string message)
     {
-        if (string.IsNullOrEmpty(message) || message.Length < 2)
+        if (!message.StartsWith(SharedChatSystem.RadioChannelPrefix))
             return null;
 
+        if (message.Length < 3)
+            return null;
+
+        if (!_chatSystem._keyCodes.ContainsKey(char.ToLowerInvariant(message[1])) ||
+            !_chatSystem._keyCodes.ContainsKey(char.ToLowerInvariant(message[2])))
+        {
+            return null;
+        }
+
         if (!HasComp<InventoryComponent>(source))
+            return null;
+
+        var matches = PrefixesRegex.Matches(message);
+        if (matches.Count == 0)
             return null;
 
         var time = _timing.CurTime;
@@ -314,44 +292,28 @@ public sealed class CMChatSystem : SharedCMChatSystem
         if (headset == null)
             return null;
 
-        var validPrefixes = new List<string>();
-        var prefixLength = 0;
-        var sharedPrefix = message[0];
-
-        if (sharedPrefix != SharedChatSystem.RadioChannelPrefix &&
-            sharedPrefix != SharedChatSystem.RadioChannelAltPrefix)
-            return null;
-
-        for (var i = 1; i < message.Length; i++)
+        var messages = new List<string>();
+        var replace = new List<string>();
+        var captures = matches[0].Groups[1].Captures;
+        var count = Math.Min(captures.Count, headset.Value.Comp.Maximum);
+        for (var i = 0; i < count; i++)
         {
-            var keycode = char.ToLowerInvariant(message[i]);
-            if (char.IsWhiteSpace(keycode))
-            {
-                prefixLength = i;
-                break;
-            }
-
-            if (!IsValidRadioKey(headset.Value, sharedPrefix, keycode))
-            {
-                prefixLength = i;
-                break;
-            }
-
-            validPrefixes.Add($"{sharedPrefix}{keycode}");
-            prefixLength = i + 1;
+            replace.Add(captures[i].Value);
         }
 
-        var count = Math.Min(validPrefixes.Count, headset.Value.Comp.Maximum);
-        validPrefixes = validPrefixes.Take(count).ToList();
+        for (var i = 0; i < replace.Count; i++)
+        {
+            var subMsg = message;
+            for (var j = 0; j < replace.Count; j++)
+            {
+                if (i == j)
+                    continue;
 
-        if (validPrefixes.Count < 2)
-            return null;
+                subMsg = subMsg.Remove(subMsg.IndexOf(replace[j], StringComparison.Ordinal), 1);
+            }
 
-        var messages = new List<string>(validPrefixes.Count);
-        var messageBody = message[prefixLength..];
-
-        for (var idx = 0; idx < validPrefixes.Count; idx++)
-            messages.Add($"{validPrefixes[idx]}{messageBody}");
+            messages.Add(subMsg);
+        }
 
         if (messages.Count < 2)
             return null;

@@ -5,10 +5,10 @@ using Robust.Shared.GameStates;
 using Robust.Shared.Map;
 using Robust.Shared.Maths;
 
-namespace Content.Shared._RMC14.Vehicle;
+namespace Content.Shared.Vehicle.Components;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(GridVehicleMoverSystem), Other = AccessPermissions.ReadWrite)]
+[Access(typeof(Content.Shared.Vehicle.GridVehicleMoverSystem), Other = AccessPermissions.ReadWrite)]
 public sealed partial class GridVehicleMoverComponent : Component
 {
     /// <summary>
@@ -252,18 +252,6 @@ public sealed partial class GridVehicleMoverComponent : Component
     public EntityUid? SyncedGrid;
 
     /// <summary>
-    /// number of fixed steps to skip turn nudge queries after a failed search
-    /// </summary>
-    [NonSerialized]
-    public int TurnNudgeSkipSteps;
-
-    /// <summary>
-    /// desired facing direction that triggered the current turn nudge skip
-    /// </summary>
-    [NonSerialized]
-    public Vector2i TurnNudgeCacheDir;
-
-    /// <summary>
     /// active multiplier applied to movement speed after smashing objects
     /// </summary>
     [AutoNetworkedField]
@@ -274,4 +262,8 @@ public sealed partial class GridVehicleMoverComponent : Component
     /// </summary>
     [AutoNetworkedField]
     public TimeSpan SmashSlowdownUntil;
+    // CCM14-start
+    [DataField, AutoNetworkedField]
+    public double MobCollisionDamage = 8;
+    // CCM14-end
 }

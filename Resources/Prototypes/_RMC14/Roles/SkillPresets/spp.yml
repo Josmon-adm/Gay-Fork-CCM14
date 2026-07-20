@@ -1,8 +1,7 @@
 ﻿# SPP
 # todo
 
-# Survivor skills
-
+# Survivor Roles
 - type: entity
   parent: RMCSkillPresetSurvivor
   id: RMCSkillPresetSurvivorSPPPrivate

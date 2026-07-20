@@ -27,9 +27,4 @@ public sealed class RMCPvsSystem : SharedRMCPvsSystem
     {
         _pvsOverride.AddSessionOverride(ent, session);
     }
-
-    public override void RemoveSessionOverride(EntityUid ent, ICommonSession session)
-    {
-        _pvsOverride.RemoveSessionOverride(ent, session);
-    }
 }

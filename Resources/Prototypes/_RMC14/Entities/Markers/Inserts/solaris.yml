@@ -298,28 +298,60 @@
 # Regular Surv Spawns
 - type: entity
   parent: RMCMapInsertSolarisBaseScenario
-  id: RMCMapInsertSolarisSurvSpawnTogether
-  name: Together Surv Spawn
+  id: RMCMapInsertSolarisSurvSpawnAdmin
+  name: Admin Surv Spawn
   suffix: Insert Solaris
   components:
   - type: MapInsert
     variations:
     - spawn: "/Maps/_RMC14/Inserts/Solaris/surv_spawn_admin.yml"
-      probability: 0.2
-      nightmareScenario: none
+      probability: 1
+      nightmareScenario: solaris_surv_spawn_admin
+
+- type: entity
+  parent: RMCMapInsertSolarisBaseScenario
+  id: RMCMapInsertSolarisSurvSpawnBar
+  name: Bar Surv Spawn
+  suffix: Insert Solaris
+  components:
+  - type: MapInsert
+    variations:
     - spawn: "/Maps/_RMC14/Inserts/Solaris/surv_spawn_bar.yml"
-      probability: 0.2
-      nightmareScenario: none
-      offset: 36,1
+      probability: 1
+      nightmareScenario: solaris_surv_spawn_bar
+
+- type: entity
+  parent: RMCMapInsertSolarisBaseScenario
+  id: RMCMapInsertSolarisSurvSpawnOffice
+  name: Office Surv Spawn
+  suffix: Insert Solaris
+  components:
+  - type: MapInsert
+    variations:
     - spawn: "/Maps/_RMC14/Inserts/Solaris/surv_spawn_office.yml"
-      probability: 0.2
-      nightmareScenario: none
-      offset: 50,-19
+      probability: 1
+      nightmareScenario: solaris_surv_spawn_office
+
+- type: entity
+  parent: RMCMapInsertSolarisBaseScenario
+  id: RMCMapInsertSolarisSurvSpawnSouthMarshals
+  name: South Marshals Surv Spawn
+  suffix: Insert Solaris
+  components:
+  - type: MapInsert
+    variations:
     - spawn: "/Maps/_RMC14/Inserts/Solaris/surv_spawn_south_marshals.yml"
-      probability: 0.2
-      nightmareScenario: none
-      offset: 14,20
+      probability: 1
+      nightmareScenario: solaris_surv_spawn_south_marshals
+
+- type: entity
+  parent: RMCMapInsertSolarisBaseScenario
+  id: RMCMapInsertSolarisSurvSpawnStorage
+  name: Storage Surv Spawn
+  suffix: Insert Solaris
+  components:
+  - type: MapInsert
+    variations:
     - spawn: "/Maps/_RMC14/Inserts/Solaris/surv_spawn_storage.yml"
-      probability: 0.2
-      nightmareScenario: none
-      offset: 10,-31
+      probability: 1
+      nightmareScenario: solaris_surv_spawn_storage

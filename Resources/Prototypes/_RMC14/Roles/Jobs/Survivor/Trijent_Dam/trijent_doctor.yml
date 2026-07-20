@@ -14,7 +14,13 @@
     - type: TacticalMapLayerTracked
       layers: [FactionSurvivor]
     - type: Skills
-      preset: RMCSkillPresetSurvivorDoctor
+      skills:
+        RMCSkillConstruction: 1
+        RMCSkillEndurance: 2
+        RMCSkillFireman: 1
+        RMCSkillFirearms: 1
+        RMCSkillMedical: 3
+        RMCSkillSurgery: 2
     - type: RMCSurvivor
     - type: MotionDetectorTracked
     - type: NpcFactionMember

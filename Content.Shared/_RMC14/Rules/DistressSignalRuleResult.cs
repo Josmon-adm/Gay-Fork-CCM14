@@ -8,5 +8,4 @@ public enum DistressSignalRuleResult
     MajorXenoVictory,
     MinorXenoVictory,
     AllDied,
-    SelfDestruct,
 }

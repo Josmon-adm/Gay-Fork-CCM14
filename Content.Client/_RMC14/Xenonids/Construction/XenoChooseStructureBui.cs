@@ -46,7 +46,6 @@ public sealed class XenoChooseStructureBui : BoundUserInterface
 
                 var control = new XenoChoiceControl();
                 control.Button.ToggleMode = true;
-                control.Button.Mode = 0;
 
                 var displayId = structureId;
                 var displayName = structure.Name;

@@ -1,3 +1,3 @@
-ent-CCMRandomHumanoidREVSynthHostile = гост-роль синтетика петрищевцев
-    .suffix = Спавнер, Игрок, Враждебный
+ent-CCMRandomHumanoidREVSynthHostile = rev synth ghost role
+    .suffix = Spawner, Player, Hostile
     .desc = { "" }

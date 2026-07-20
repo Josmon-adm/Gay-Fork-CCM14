@@ -65,7 +65,7 @@ public sealed class HeadsetSystem : SharedHeadsetSystem
                 args.Channel = null;
                 return;
             }
-            _radio.SendRadioMessage(uid, args.Message, args.Channel, component.Headset, args.Language);
+            _radio.SendRadioMessage(uid, args.Message, args.Channel, component.Headset);
             args.Channel = null; // prevent duplicate messages from other listeners.
         }
     }

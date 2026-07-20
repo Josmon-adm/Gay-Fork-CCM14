@@ -6,7 +6,7 @@
   ranks:
     RMCRankSPPSerzhant: []
   icon: "RMCJobIconSPPSpecialist"
-  spawnMenuRoleName: SPP Airborne Specialist (Trijent Special Survivor)
+  spawnMenuRoleName: SPP Airborne Specialist (Survivor)
   special:
   - !type:AddComponentSpecial
     components:
@@ -25,21 +25,12 @@
         RMCSkillJtac: 1
         RMCSkillMeleeWeapons: 1
         RMCSkillSpecialistWeapons: 1
-    - type: Language
-      spokenLanguages:
-      - Russian
-      - German
-      - Chinese
-      understoodLanguages:
-      - Russian
-      - German
-      - Chinese
-      currentLanguage: Russian
-      defaultLanguage: Russian
     - type: MarineOrders
     - type: IntelRescueSurvivorObjective
     - type: AssignSquad
-      squad: SquadSPP
+      whitelist:
+        tags:
+        - RMCSquadSPP
     - type: JobPrefix
       prefix: rmc-job-prefix-crashland-spec
     - type: DemoSpecWhitelist
@@ -47,9 +38,7 @@
     - type: ScoutWhitelist
     - type: SniperWhitelist
     - type: PyroWhitelist
-    - type: QYJWhitelist
     - type: RMCSurvivor
-    - type: RMCAllowSuitStorage
   hidden: true
 
 - type: startingGear
@@ -60,7 +49,7 @@
     belt: RMCBeltHolsterPistolSPPT73
     outerClothing: RMCArmorSPPHeavySurvivorFill
     head: ArmorHelmetSPPHeavy
-  inhand:
+  inhand: 
   - RMCWeaponRifleType71Flamer
 
 - type: entity

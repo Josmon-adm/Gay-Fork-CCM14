@@ -13,23 +13,12 @@ namespace Content.Shared._RMC14.Vehicle;
 
 public sealed partial class VehicleWeaponsSystem
 {
-    internal void RefreshVehicleWeaponsUi(EntityUid vehicle)
-    {
-        if (_net.IsClient)
-            return;
-
-        if (!TryComp(vehicle, out VehicleWeaponsComponent? weapons))
-            return;
-
-        UpdateWeaponsUiForAllOperators(vehicle, weapons);
-    }
-
     private void OnWeaponsUiOpened(Entity<VehicleWeaponsSeatComponent> ent, ref BoundUIOpenedEvent args)
     {
         if (!Equals(args.UiKey, VehicleWeaponsUiKey.Key))
             return;
 
-        if (!_vehicle.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
+        if (!_vehicleSystem.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
             return;
 
         var vehicleUid = vehicle.Value;
@@ -75,7 +64,7 @@ public sealed partial class VehicleWeaponsSystem
         if (args.Actor == default || !Exists(args.Actor))
             return;
 
-        if (!_vehicle.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
+        if (!_vehicleSystem.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
             return;
 
         var vehicleUid = vehicle.Value;
@@ -100,7 +89,7 @@ public sealed partial class VehicleWeaponsSystem
         }
 
         if (!TryComp(selectedWeapon, out VehicleTurretComponent? turret) ||
-            !_turret.TryResolveRotationTarget(selectedWeapon, out var targetUid, out var targetTurret))
+            !_turretSystem.TryResolveRotationTarget(selectedWeapon, out var targetUid, out var targetTurret))
         {
             return;
         }
@@ -128,7 +117,7 @@ public sealed partial class VehicleWeaponsSystem
         if (args.Actor == default || !Exists(args.Actor))
             return;
 
-        if (!_vehicle.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
+        if (!_vehicleSystem.TryGetVehicleFromInterior(ent.Owner, out var vehicle) || vehicle == null)
             return;
 
         var vehicleUid = vehicle.Value;
@@ -156,9 +145,6 @@ public sealed partial class VehicleWeaponsSystem
         EntityUid? operatorUid = null)
     {
         if (_net.IsClient)
-            return;
-
-        if (!TryComp(seat, out VehicleWeaponsSeatComponent? seatComp))
             return;
 
         if (!Resolve(vehicle, ref weapons, logMissing: false))
@@ -219,7 +205,7 @@ public sealed partial class VehicleWeaponsSystem
             operatorSelection != null &&
             Exists(operatorSelection.Value) &&
             TryComp(operatorSelection.Value, out VehicleTurretComponent? selectedTurret) &&
-            _turret.TryResolveRotationTarget(operatorSelection.Value, out _, out var targetTurret))
+            _turretSystem.TryResolveRotationTarget(operatorSelection.Value, out _, out var targetTurret))
         {
             stabilizationEnabled = targetTurret.StabilizedRotation;
             canToggleStabilization = targetTurret.RotateToCursor;
@@ -232,14 +218,14 @@ public sealed partial class VehicleWeaponsSystem
             autoEnabled = deployable.AutoTurretEnabled;
         }
 
-        seatComp.Ui = new VehicleWeaponsUiState(
-            GetNetEntity(vehicle),
-            entries,
-            canToggleStabilization,
-            stabilizationEnabled,
-            canToggleAuto,
-            autoEnabled);
-        Dirty(seat, seatComp);
+        _ui.SetUiState(seat, VehicleWeaponsUiKey.Key,
+            new VehicleWeaponsUiState(
+                GetNetEntity(vehicle),
+                entries,
+                canToggleStabilization,
+                stabilizationEnabled,
+                canToggleAuto,
+                autoEnabled));
     }
 
     private VehicleWeaponsUiEntry CreateMountedSlotUiEntry(
@@ -338,7 +324,7 @@ public sealed partial class VehicleWeaponsSystem
 
         return new VehicleWeaponsUiEntry(
             mountedSlot.CompositeId,
-            mountedSlot.HardpointType.Id,
+            mountedSlot.HardpointType,
             installedEntity,
             installedName,
             installedEntity,

@@ -1,9 +1,9 @@
-using Robust.Shared.GameStates;
+﻿using Robust.Shared.GameStates;
 
 namespace Content.Shared._RMC14.Medical.Defibrillator;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(SharedRMCDefibrillatorSystem))]
+[Access(typeof(RMCDefibrillatorSystem))]
 public sealed partial class RMCDefibrillatorAudioComponent : Component
 {
     [DataField, AutoNetworkedField]

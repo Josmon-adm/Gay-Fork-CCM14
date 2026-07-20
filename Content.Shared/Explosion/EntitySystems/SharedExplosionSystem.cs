@@ -38,7 +38,6 @@ public abstract class SharedExplosionSystem : EntitySystem
     {
     }
 
-    // RMC14
     /// <summary>
     /// Sets explosion resistance values through the authorized explosion system.
     /// </summary>
@@ -49,5 +48,4 @@ public abstract class SharedExplosionSystem : EntitySystem
         resistance.Worn = worn;
         Dirty(uid, resistance);
     }
-    // RMC14
 }

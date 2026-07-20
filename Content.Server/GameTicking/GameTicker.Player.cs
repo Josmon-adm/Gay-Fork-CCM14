@@ -1,4 +1,3 @@
-using Content.Shared._Forge;
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
@@ -21,12 +20,9 @@ namespace Content.Server.GameTicking
     {
         [Dependency] private readonly IPlayerManager _playerManager = default!;
 
-        private bool _authEnabled = false; // Forge-Change
-
         private void InitializePlayer()
         {
             _playerManager.PlayerStatusChanged += PlayerStatusChanged;
-            _cfg.OnValueChanged(ForgeVars.DiscordAuthEnabled, v => _authEnabled = v, true); // Forge-Change
         }
 
         private async void PlayerStatusChanged(object? sender, SessionStatusEventArgs args)
@@ -59,8 +55,7 @@ namespace Content.Server.GameTicking
 
                     // Make the player actually join the game.
                     // timer time must be > tick length
-                    if (!_authEnabled) // Forge-Change
-                        Timer.Spawn(0, () => _playerManager.JoinGame(args.Session));
+                    Timer.Spawn(0, () => _playerManager.JoinGame(args.Session));
 
                     var record = await _db.GetPlayerRecordByUserId(args.Session.UserId);
                     var firstConnection = record != null &&

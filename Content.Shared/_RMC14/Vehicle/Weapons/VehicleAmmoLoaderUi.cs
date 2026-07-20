@@ -12,42 +12,18 @@ public enum VehicleAmmoLoaderUiKey : byte
     Key,
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleAmmoLoaderUiEntry
+[Serializable, NetSerializable]
+public sealed class VehicleAmmoLoaderUiEntry
 {
-    [DataField]
-    public VehicleSlotPath SlotPath;
-
-    [DataField]
-    public string HardpointType;
-
-    [DataField]
-    public string? InstalledName;
-
-    [DataField]
-    public NetEntity? InstalledEntity;
-
-    [DataField]
-    public EntProtoId? AmmoPrototype;
-
-    [DataField]
-    public int MagazineSize;
-
-    [DataField]
-    public List<VehicleAmmoLoaderUiAmmoSlot> AmmoSlots;
-
-    [DataField]
-    public bool CanLoad;
-
-    [DataField]
-    public bool CanUnload;
-
-    public VehicleAmmoLoaderUiEntry()
-    {
-        SlotPath = default;
-        HardpointType = string.Empty;
-        AmmoSlots = new List<VehicleAmmoLoaderUiAmmoSlot>();
-    }
+    public readonly VehicleSlotPath SlotPath;
+    public readonly string HardpointType;
+    public readonly string? InstalledName;
+    public readonly NetEntity? InstalledEntity;
+    public readonly EntProtoId? AmmoPrototype;
+    public readonly int MagazineSize;
+    public readonly List<VehicleAmmoLoaderUiAmmoSlot> AmmoSlots;
+    public readonly bool CanLoad;
+    public readonly bool CanUnload;
 
     public VehicleAmmoLoaderUiEntry(
         VehicleSlotPath slotPath,
@@ -72,34 +48,16 @@ public sealed partial class VehicleAmmoLoaderUiEntry
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleAmmoLoaderUiAmmoSlot
+[Serializable, NetSerializable]
+public sealed class VehicleAmmoLoaderUiAmmoSlot
 {
-    [DataField]
-    public int SlotIndex;
-
-    [DataField]
-    public string Label;
-
-    [DataField]
-    public int Rounds;
-
-    [DataField]
-    public int Capacity;
-
-    [DataField]
-    public bool CanLoad;
-
-    [DataField]
-    public bool CanUnload;
-
-    [DataField]
-    public bool IsReadySlot;
-
-    public VehicleAmmoLoaderUiAmmoSlot()
-    {
-        Label = string.Empty;
-    }
+    public readonly int SlotIndex;
+    public readonly string Label;
+    public readonly int Rounds;
+    public readonly int Capacity;
+    public readonly bool CanLoad;
+    public readonly bool CanUnload;
+    public readonly bool IsReadySlot;
 
     public VehicleAmmoLoaderUiAmmoSlot(
         int slotIndex,
@@ -120,25 +78,13 @@ public sealed partial class VehicleAmmoLoaderUiAmmoSlot
     }
 }
 
-[Serializable, NetSerializable, DataDefinition]
-public sealed partial class VehicleAmmoLoaderUiState
+[Serializable, NetSerializable]
+public sealed class VehicleAmmoLoaderUiState : BoundUserInterfaceState
 {
-    [DataField]
-    public List<VehicleAmmoLoaderUiEntry> Hardpoints;
-
-    [DataField]
-    public int AmmoAmount;
-
-    [DataField]
-    public int AmmoMax;
-
-    [DataField]
-    public EntProtoId? AmmoPrototype;
-
-    public VehicleAmmoLoaderUiState()
-    {
-        Hardpoints = new List<VehicleAmmoLoaderUiEntry>();
-    }
+    public readonly List<VehicleAmmoLoaderUiEntry> Hardpoints;
+    public readonly int AmmoAmount;
+    public readonly int AmmoMax;
+    public readonly EntProtoId? AmmoPrototype;
 
     public VehicleAmmoLoaderUiState(
         List<VehicleAmmoLoaderUiEntry> hardpoints,

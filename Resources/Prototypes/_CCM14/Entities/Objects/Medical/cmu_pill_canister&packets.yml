@@ -14,7 +14,7 @@
     - state: pill18
       map: [ "enum.DamageStateVisualLayers.Base" ]
   - type: ExamineRequiresSkill
-    skilledExamine: pill-tramadol
+    skilledExamine: Tr
 
 - type: entity
   parent: CMPill
@@ -32,7 +32,7 @@
     - state: pill9
       map: [ "enum.DamageStateVisualLayers.Base" ]
   - type: ExamineRequiresSkill
-    skilledExamine: pill-paracetamol
+    skilledExamine: Pa
 
 - type: entity
   parent: CMPill
@@ -50,7 +50,7 @@
     - state: pill19
       map: [ "enum.DamageStateVisualLayers.Base" ]
   - type: ExamineRequiresSkill
-    skilledExamine: pill-oxycodone
+    skilledExamine: Oxy
 
 - type: entity
   parent: CMPill
@@ -76,7 +76,7 @@
     - state: pill2
       map: [ "enum.DamageStateVisualLayers.Base" ]
   - type: ExamineRequiresSkill
-    skilledExamine: pill-organs-mix
+    skilledExamine: OM
 
 # Pill Packets
 
@@ -93,7 +93,7 @@
     - id: CCMPillTramadol
       amount: 4
   - type: IconLabel
-    labelTextLocId: pill-tramadol
+    labelTextLocId: Tr
 
 # Pill Canisters
 
@@ -119,7 +119,7 @@
     - id: CCMPillTramadol
       amount: 16
   - type: IconLabel
-    labelTextLocId: pill-tramadol
+    labelTextLocId: Tr
 
 - type: entity
   parent: RMCPillCanisterNoSkill
@@ -143,7 +143,7 @@
     - id: CCMPillParacetamol
       amount: 16
   - type: IconLabel
-    labelTextLocId: pill-paracetamol
+    labelTextLocId: Pr
 
 - type: entity
   parent: RMCPillCanisterNoSkill
@@ -167,7 +167,7 @@
     - id: CCMPillOxycodone
       amount: 16
   - type: IconLabel
-    labelTextLocId: pill-oxycodone
+    labelTextLocId: Oxy
 
 - type: entity
   parent: RMCPillCanisterNoSkill
@@ -191,7 +191,7 @@
     - id: CCMPillOrgansMix
       amount: 16
   - type: IconLabel
-    labelTextLocId: pill-organs-mix
+    labelTextLocId: OM
 # 2 medicine skill
 - type: entity
   parent: CCMPillCanisterTramadolNoSkill

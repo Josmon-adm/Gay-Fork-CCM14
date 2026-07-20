@@ -10,7 +10,7 @@ public sealed partial class IntelCluesComponent : Component
     public string InitialArea = string.Empty;
 
     [DataField, AutoNetworkedField]
-    public int Clues;
+    public int Clues; // TODO RMC14 implement
 
     [DataField, AutoNetworkedField]
     public LocId Clue = "rmc-intel-clue-paper-scrap";

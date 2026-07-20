@@ -94,8 +94,8 @@
           - RMCAttachmentU1GrenadeLauncher
           - RMCAttachmentU7UnderbarrelShotgun
           - RMCAttachmentVerticalGrip
-          - RMCAttachmentUnderbarrelExtinguisher
-          - RMCAttachmentMiniFlamethrower
+          - RMCAttachmentExtinguisher
+          - RMCAttachmentFlamer
   - type: ItemCamouflage
     camouflageVariations: {}
   - type: Tag
@@ -159,8 +159,8 @@
           - RMCAttachmentU1GrenadeLauncher
           - RMCAttachmentU7UnderbarrelShotgun
           - RMCAttachmentVerticalGrip
-          - RMCAttachmentUnderbarrelExtinguisher
-          - RMCAttachmentMiniFlamethrower
+          - RMCAttachmentExtinguisher
+          - RMCAttachmentFlamer
 
 - type: Tag
   id: RMCWeaponRifleM54C2

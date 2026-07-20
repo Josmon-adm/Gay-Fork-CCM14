@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using Content.Shared._CCM.Barks;
-using Content.Shared._Forge.TTS;
 using Content.Shared.CCVar;
 using Content.Shared.Decals;
 using Content.Shared.Examine;
@@ -562,12 +561,6 @@ public abstract class SharedHumanoidAppearanceSystem : EntitySystem
         };
         Dirty(uid, synthesis);
         // CCM barks - end
-
-        // Forge TTS - start
-        var tts = EnsureComp<TTSComponent>(uid);
-        tts.VoicePrototypeId = profile.Voice;
-        Dirty(uid, tts);
-        // Forge TTS - end
 
         Dirty(uid, humanoid);
     }

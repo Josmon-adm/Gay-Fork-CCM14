@@ -13,7 +13,6 @@ CMJobXenoDrone = Трутень
 cm-job-name-xeno-hivelord = Лорд улья
 CMJobXenoHivelord = Лорд улья
 cm-job-name-xeno-parasite = Паразит
-cm-job-name-xeno-parasite-royal = Королевский паразит
 cm-job-name-xeno-parasite-xeno = Дитя
 CMJobXenoParasite = Паразит
 cm-job-name-xeno-larva = Ларва

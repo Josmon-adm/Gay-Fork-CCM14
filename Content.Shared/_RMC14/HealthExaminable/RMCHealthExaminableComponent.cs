@@ -10,7 +10,4 @@ public sealed partial class RMCHealthExaminableComponent : Component
 {
     [DataField, AutoNetworkedField]
     public List<ProtoId<DamageGroupPrototype>> Groups = new() { "Brute", "Burn", "Airloss" };
-
-    [DataField, AutoNetworkedField]
-    public string? SpeciesType;
 }

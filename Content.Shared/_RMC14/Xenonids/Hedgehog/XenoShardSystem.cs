@@ -171,13 +171,14 @@ public sealed class XenoShardSystem : EntitySystem
 
         Dirty(ent);
 
-        _shield.ApplyShield(ent, XenoShieldSystem.ShieldType.Hedgehog, ent.Comp.ShieldAmount, visualState: ent.Comp.VisualState);
+        _shield.ApplyShield(ent, XenoShieldSystem.ShieldType.Hedgehog, ent.Comp.ShieldAmount);
 
         // Show CM13-style messages
         var selfMsg = Loc.GetString("rmc-spike-shield-self");
         var othersMsg = Loc.GetString("rmc-spike-shield-others", ("user", ent));
         _popup.PopupPredicted(selfMsg, othersMsg, ent, ent);
         _aura.GiveAura(ent, Color.Blue, ent.Comp.ShieldDuration, 2);
+        Spawn(ent.Comp.EffectId, ent.Owner.ToCoordinates());
 
         args.Handled = true;
     }

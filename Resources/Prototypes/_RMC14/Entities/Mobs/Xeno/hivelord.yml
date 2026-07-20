@@ -11,6 +11,8 @@
   name: Hivelord
   description: A builder of really big hives.
   components:
+  - type: GhostRole
+    name: cm-job-name-xeno-hivelord
   - type: MobState
     allowedStates:
     - Alive
@@ -284,8 +286,8 @@
     plasmaRegenOnWeeds: 5.5
     plasmaTransferDelay: 0.5
   - type: XenoPheromones
-    pheromonesMultiplier: 3.5
-    pheroSuffix: designer
+    pheromonesMultiplier: 3
+    pheroSuffix: strong
   - type: Tackle
     max: 4
     chance: 0.45

@@ -6,11 +6,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/toc_spp.rsi
-    layers:
-    - map: ["base"]
-      state: "toc0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "toc"
+    state: toc
     overrideDir: West
     enableOverrideDir: true
 

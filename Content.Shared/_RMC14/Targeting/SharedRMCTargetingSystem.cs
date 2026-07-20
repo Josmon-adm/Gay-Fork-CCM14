@@ -6,7 +6,6 @@ using Content.Shared.Hands;
 using Content.Shared.Interaction.Events;
 using Robust.Shared.Map;
 using Robust.Shared.Network;
-using Robust.Shared.Player;
 using Robust.Shared.Timing;
 
 namespace Content.Shared._RMC14.Targeting;
@@ -17,7 +16,6 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
 
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly ISharedPlayerManager _player = default!;
     [Dependency] private readonly SharedRMCPvsSystem _rmcPvs = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
 
@@ -49,10 +47,7 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
             StopTargeting((targeting, targeting), targeting.Comp.Targets[0]);
         }
 
-        foreach (var session in _player.Sessions)
-        {
-            _rmcPvs.RemoveSessionOverride(targeting.Owner, session);
-        }
+        _rmcPvs.RemoveGlobalOverride(targeting);
     }
 
     /// <summary>
@@ -60,9 +55,6 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
     /// </summary>
     private void OnTargetingDropped<T>(Entity<TargetingComponent> targeting, ref T args)
     {
-        if (_net.IsClient)
-            return;
-
         var ev = new TargetingCancelledEvent();
         RaiseLocalEvent(targeting, ref ev);
 
@@ -74,9 +66,6 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
 
     private void OnTargetedRemove<T>(Entity<RMCTargetedComponent> ent, ref T args)
     {
-        if (_net.IsClient)
-            return;
-
         foreach (var targeting in ent.Comp.TargetedBy)
         {
             if (!TryComp(targeting, out TargetingComponent? targetingComp))
@@ -88,10 +77,7 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
             Dirty(targeting, targetingComp);
         }
 
-        foreach (var session in _player.Sessions)
-        {
-            _rmcPvs.RemoveSessionOverride(ent, session);
-        }
+        _rmcPvs.RemoveGlobalOverride(ent);
     }
 
     /// <summary>
@@ -185,14 +171,8 @@ public abstract class SharedRMCTargetingSystem : EntitySystem
         targeting.LaserType = targetedEffect;
         Dirty(equipment, targeting);
 
-        foreach (var session in _player.Sessions)
-        {
-            if (session.AttachedEntity == null)
-                continue;
-
-            _rmcPvs.AddSessionOverride(target, session);
-            _rmcPvs.AddSessionOverride(equipment, session);
-        }
+        _rmcPvs.AddGlobalOverride(target);
+        _rmcPvs.AddGlobalOverride(equipment);
     }
 
     /// <summary>

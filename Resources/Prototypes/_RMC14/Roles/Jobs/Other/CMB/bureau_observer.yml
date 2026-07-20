@@ -18,17 +18,6 @@
     - type: NpcFactionMember
       factions:
       - Bureau
-    - type: Language
-      spokenLanguages:
-      - English
-      - Spanish
-      - Russian
-      understoodLanguages:
-      - English
-      - Spanish
-      - Russian
-      currentLanguage: English
-      defaultLanguage: English
     - type: Skills
       skills:
         RMCSkillEndurance: 2
@@ -81,7 +70,7 @@
   equipment:
     eyes: RMCGlassesMedicalHUDGlasses # TODO RMC14 sensormate hud
     mask: CMMaskSterile
-    back: RMCSatchelBureauObserverSecureFill
+    back: RMCSatchelBureauObserverFill
     gloves: CMHandsInsulated
     jumpsuit: CMJumpsuitLiaisonBlue
     outerClothing: RMCArmorVest

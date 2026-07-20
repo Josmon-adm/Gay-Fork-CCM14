@@ -943,17 +943,18 @@ public sealed class SharedXenoFruitSystem : EntitySystem
         comp.EndAt = null;
     }
 
-    /// <summary>
-    /// Notifies each action of an entity that their reduced use delay should be updated.
-    /// </summary>
-    /// <param name="user">Entity whose actions should be updated</param>
-    /// <param name="amount">The new delay reduction the actions should have (between 0 and 1 inclusive).</param>
-    private void SetReducedUseDelays(EntityUid user, FixedPoint2 amount)
+    private void RefreshUseDelays(EntityUid user, FixedPoint2 amount)
     {
+        // Reduces/resets the use-delays and cooldowns of all actions
+
         foreach (var (actionId, _) in _actions.GetActions(user))
         {
+            if (!TryComp(actionId, out ActionReducedUseDelayComponent? comp))
+                continue;
+
             var ev = new ActionReducedUseDelayEvent(amount);
             RaiseLocalEvent(actionId, ev);
+            Dirty(actionId, comp);
         }
     }
 
@@ -987,14 +988,16 @@ public sealed class SharedXenoFruitSystem : EntitySystem
 
         xeno.Comp.ReductionCurrent += xeno.Comp.ReductionPerSlash;
 
-        SetReducedUseDelays(xeno.Owner, xeno.Comp.ReductionCurrent);
+        // Reduce cooldowns and usedelays
+        RefreshUseDelays(xeno.Owner, xeno.Comp.ReductionCurrent);
     }
 
     private void OnXenoFruitEffectHasteShutdown(Entity<XenoFruitEffectHasteComponent> xeno, ref ComponentShutdown ev)
     {
         _popup.PopupClient(Loc.GetString("rmc-xeno-fruit-effect-end"), xeno.Owner, xeno.Owner, PopupType.MediumCaution);
 
-        SetReducedUseDelays(xeno.Owner, 0);
+        // Reset cooldowns and usedelays to default
+        RefreshUseDelays(xeno.Owner, 0);
     }
 
     #endregion

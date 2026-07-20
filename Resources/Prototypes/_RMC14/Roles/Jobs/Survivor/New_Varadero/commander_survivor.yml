@@ -11,7 +11,7 @@
   roleWeight: 0.25
   icon: "RMCJobIconSurvivorCommanderNewVaradero"
   hasIcon: true
-  spawnMenuRoleName: UNMC Commander (New Varadero Survivor)
+  spawnMenuRoleName: Commander (NV Survivor)
   special:
   - !type:AddComponentSpecial
     components:
@@ -53,7 +53,7 @@
     outerClothing: RMCCoatServiceFolded
     shoes: CMBootsBlackFilled
     back: CMSatchelFillSurvivor
-    belt: RMCM1911BeltFilledNVCommander
+    belt: RMCM1984BeltFilled
     id: CMIDCardGold
     pocket1: RMCPouchSurvivalFill
     pocket2: RMCPouchGeneralLargeFilledSurvivorCommanderNewVaradero

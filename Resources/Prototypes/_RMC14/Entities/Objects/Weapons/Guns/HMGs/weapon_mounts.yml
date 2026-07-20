@@ -75,8 +75,6 @@
   - type: XenoCrusherChargable
   - type: Physics
     bodyType: Dynamic
-  - type: RMCHealthExaminable
-    speciesType: Mechanical
 
 - type: entity
   parent: RMCBaseWeaponMount

@@ -4,7 +4,6 @@ using Content.Shared._RMC14.Intel.Tech;
 using Content.Shared.FixedPoint;
 using Content.Shared.GameTicking;
 using JetBrains.Annotations;
-using Robust.Client.GameObjects;
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controls;
 using Robust.Client.Utility;
@@ -63,16 +62,11 @@ public sealed class TechControlConsoleBui : BoundUserInterface
             _window.Options.AddChild(optionContainer);
 
             var options = console.Tree.Options[i];
-            var spriteSystem = _entities.System<SpriteSystem>();
-            var addedOption = false;
             for (var j = 0; j < options.Count; j++)
             {
                 var option = options[j];
-                if (option.Disabled)
-                    continue;
-
                 var optionControl = new Control();
-                var texture = spriteSystem.RsiStateLike(option.Icon).Default;
+                var texture = option.Icon.DirFrame0().TextureFor(Direction.South);
                 optionControl.AddChild(new TextureButton
                 {
                     TextureNormal = texture,
@@ -82,7 +76,7 @@ public sealed class TechControlConsoleBui : BoundUserInterface
                 var overlay = option.Purchased ? console.UnlockedRsi : console.LockedRsi;
                 var optionButton = new TextureButton
                 {
-                    TextureNormal = spriteSystem.RsiStateLike(overlay).Default,
+                    TextureNormal = overlay.DirFrame0().TextureFor(Direction.South),
                     Scale = new Vector2(2, 2),
                 };
                 optionControl.AddChild(optionButton);
@@ -93,22 +87,14 @@ public sealed class TechControlConsoleBui : BoundUserInterface
                 {
                     OpenOptionWindow(option, tier, optionIndex, console.Tree.Points, console.Tree.Tier);
                 };
-                optionButton.ToolTip = Localize(option.Name);
+                optionButton.ToolTip = option.Name;
                 optionButton.TooltipDelay = 0.1f;
 
                 optionContainer.AddChild(new Control { HorizontalExpand = true });
                 optionContainer.AddChild(optionControl);
-                addedOption = true;
 
-            }
-
-            if (addedOption)
-            {
-                optionContainer.AddChild(new Control { HorizontalExpand = true });
-            }
-            else
-            {
-                _window.Options.RemoveChild(optionContainer);
+                if (j == options.Count - 1)
+                    optionContainer.AddChild(new Control { HorizontalExpand = true });
             }
         }
     }
@@ -124,11 +110,10 @@ public sealed class TechControlConsoleBui : BoundUserInterface
         _optionWindow = new TechControlConsoleOptionWindow();
         _optionWindow.OpenCentered();
         _optionWindow.OnClose += () => _optionWindow = null;
-        var name = Localize(option.Name);
-        _optionWindow.Title = name;
+        _optionWindow.Title = option.Name;
         _optionWindow.CurrentPointsLabel.Text = Loc.GetString("rmc-ui-tech-points-value", ("value", points.Double().ToString("F1")));
-        _optionWindow.NameLabel.Text = name;
-        _optionWindow.DescriptionLabel.Text = Localize(option.Description);
+        _optionWindow.NameLabel.Text = option.Name;
+        _optionWindow.DescriptionLabel.Text = option.Description;
         _optionWindow.CostLabel.Text = $"{option.CurrentCost}";
 
         _optionWindow.Statistics.DisposeAllChildren();
@@ -156,9 +141,8 @@ public sealed class TechControlConsoleBui : BoundUserInterface
 
         var canPurchase = points >= option.CurrentCost &&
                           currentTier >= tier &&
-                          !option.Disabled &&
                           (!option.Purchased || option.Repurchasable) &&
-                          option.TimeLock < _ticker.RoundDuration();
+                          option.TimeLock  < _ticker.RoundDuration();
 
         _optionWindow.PurchaseButton.Text = Loc.GetString("rmc-ui-tech-purchase-button");
         _optionWindow.PurchaseButton.Disabled = !canPurchase;
@@ -168,10 +152,5 @@ public sealed class TechControlConsoleBui : BoundUserInterface
             SendPredictedMessage(new TechPurchaseOptionBuiMsg(tier, optionIndex));
             _optionWindow.Close();
         };
-    }
-
-    private static string Localize(string text)
-    {
-        return Loc.TryGetString(text, out var localized) ? localized : text;
     }
 }

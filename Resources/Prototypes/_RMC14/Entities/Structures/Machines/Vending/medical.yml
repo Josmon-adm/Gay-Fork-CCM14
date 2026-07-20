@@ -11,27 +11,10 @@
     anchored: true
   - type: Sprite
     sprite: _RMC14/Structures/Machines/Medical/medilink.rsi
+    state: medlink_green_clamped # TODO RMC14 change states dynamically
     drawdepth: FloorObjects
-    layers:
-    - state: medlink_green_unclamped
-      map: ["MedLinkLayerKey"]
   - type: CMMedicalSupplyLink
-    baseState: medlink_green
-  - type: RMCAnimation
   - type: RMCMesonsNonviewable
-
-- type: entity
-  parent: CMMedilinkSupplyPort
-  id: RMCMedilinkSupplyPortGrey
-  components:
-  - type: Sprite
-    sprite: _RMC14/Structures/Machines/Medical/medilink.rsi
-    drawdepth: FloorObjects
-    layers:
-    - state: medlink_unclamped
-      map: [ "MedLinkLayerKey" ]
-  - type: CMMedicalSupplyLink
-    baseState: medlink
 
 - type: entity
   parent: ColMarTechBaseAnchorable
@@ -49,7 +32,7 @@
     randomizeReagentsPlanetside: true
     current: 600
     max: 600
-    recharge: 125
+    recharge: 125 # TODO RMC14 auto-restock items as well if round is >= 20 minutes in
     rechargeCooldown: 4
     reagents:
     - CMBicaridine
@@ -76,9 +59,7 @@
       - Vial
       tags:
       - Bottle
-  - type: RMCMedLinkPortReceiver
   - type: CMAutomatedVendor # TODO RMC14 different ui style
-    canManualRestock: true
     hackable: true
     randomUnstockAmount: -1 # -1 is between 1 and the original amount
     randomEmptyChance: 0.25 # 25% chance
@@ -421,7 +402,7 @@
   - type: CMSolutionRefiller
     current: 600
     max: 600
-    recharge: 125
+    recharge: 125 # TODO RMC14 auto-restock items as well if round is >= 20 minutes in
     rechargeCooldown: 4
     reagents:
     - CMTricordrazine
@@ -432,9 +413,7 @@
     whitelist:
       components:
       - Hypospray
-  - type: RMCMedLinkPortReceiver
   - type: CMAutomatedVendor
-    canManualRestock: true
     sections:
     - name: Автоинъекторы # CCM14
       entries:
@@ -473,7 +452,7 @@
 - type: entity
   parent: ColMarTechBaseAnchorable
   id: RMCNanoMed
-  name: QuickMed
+  name: NanoMed
   description: A wall-mounted medical equipment dispenser.
   components:
   - type: Fixtures
@@ -497,7 +476,7 @@
   - type: CMSolutionRefiller
     current: 250
     max: 250
-    recharge: 125
+    recharge: 125 # TODO RMC14 auto-restock items as well if round is >= 20 minutes in
     rechargeCooldown: 4
     reagents:
 # CMU ADD
@@ -507,10 +486,7 @@
     whitelist:
       components:
       - Hypospray
-  - type: RMCMedLinkPortReceiver
-    allowSupplyLinkRestock: false
   - type: CMAutomatedVendor
-    canManualRestock: true
     hackable: true
     sections:
     - name: Медикаменты # CCM14
@@ -531,20 +507,17 @@
       entries:
       - id: CMHealthAnalyzer
         amount: 2
-  - type: ApcPowerReceiver
-    powerLoad: 0
-    needsPower: false
 
 - type: entity
   parent: RMCNanoMed
   id: RMCNanoMedLimited
-  description: A wall-mounted medical equipment dispenser. This version is more limited than standard UNMC QuickMeds.
+  description: A wall-mounted medical equipment dispenser. This version is more limited than standard UNMC NanoMeds.
   suffix: Limited
   components:
   - type: CMSolutionRefiller
     current: 150
     max: 150
-    recharge: 125
+    recharge: 125 # TODO RMC14 auto-restock items as well if round is >= 20 minutes in
     rechargeCooldown: 4
     reagents:
     - CMTricordrazine
@@ -614,8 +587,8 @@
 - type: entity
   parent: ColMarTechBaseAnchorable
   id: CMVendorBlood
-  name: Avant Blood Dispenser
-  description: The Avant Biomedical Blood Pack Dispensary is the premier, top-of-the-line blood dispenser! Get yours today! Made by Avant Biomedical.
+  name: MM Blood Dispenser
+  description: The Marine Med Brand Blood Pack Dispensary is the premier, top-of-the-line blood dispenser of 2105! Get yours today! #dont update year, that`s a joke from cm13
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/VendingMachines/blood.rsi
@@ -635,9 +608,7 @@
   - type: AccessReader
     access:
     - [ "CMAccessMedical" ]
-  - type: RMCMedLinkPortReceiver
   - type: CMAutomatedVendor
-    canManualRestock: true
     hackable: true
     sections:
     - name: Blood Packs

@@ -117,10 +117,7 @@
       map: ["enum.GunVisualLayers.Base"]
     - state: mag-1
       map: ["enum.GunVisualLayers.Mag"]
-  - type: InteractedBlacklist
-    blacklist:
-      components:
-      - Xeno
+  - type: Corrodible
 
 - type: entity
   abstract: true

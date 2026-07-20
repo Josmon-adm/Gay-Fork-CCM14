@@ -14,24 +14,8 @@
   - type: Sprite
     drawdepth: SmallObjects
     sprite: _RMC14/Structures/Machines/computer.rsi
-    layers:
-    - state: "terminal0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "terminal"
-  - type: Appearance
-  - type: GenericVisualizer
-    visuals:
-      enum.PowerDeviceVisuals.Powered:
-        enum.PowerDeviceVisualLayers.Powered:
-          True: { visible: true }
-          False: { visible: false }
-  - type: ApcPowerReceiver
-    powerLoad: 250
-    needsPower: true
-  - type: RMCPowerReceiver
-    idleLoad: 300
-    activeLoad: 300
-    channel: Equipment
+    state: terminal
+    layers: [ ]
   - type: Clickable
   - type: Corrodible
     isCorrodible: false
@@ -64,10 +48,6 @@
   components:
   - type: Sprite
     state: comm
-    layers:
-    - state: "comm0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "comm"
 
 - type: entity
   parent: RMCPropCommunicationsConsole
@@ -75,10 +55,7 @@
   suffix: Prop, Alt
   components:
   - type: Sprite
-    layers:
-    - state: "comm_alt0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "comm_alt"
+    state: comm_alt
 
 - type: entity
   parent: RMCPropComputerBase
@@ -86,10 +63,7 @@
   name: personal desktop
   components:
   - type: Sprite
-    layers:
-    - state: "terminal10"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "terminal1"
+    state: terminal1
 
 - type: entity
   parent: RMCPropComputerBase
@@ -97,10 +71,7 @@
   name: security cameras console
   components:
   - type: Sprite
-    layers:
-    - state: "security_cam0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "security_cam"
+    state: security_cam
 
 - type: entity
   parent: RMCSecurityCameraConsole
@@ -140,10 +111,7 @@
   name: security records
   components:
   - type: Sprite
-    layers:
-    - state: "jas0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "jas"
+    state: jas
 
 - type: entity
   parent: RMCPropComputerBase
@@ -151,10 +119,7 @@
   name: security records
   components:
   - type: Sprite
-    layers:
-    - state: "security0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "security"
+    state: security
 
 - type: entity
   parent: RMCPropComputerBase
@@ -162,10 +127,7 @@
   name: identification computer
   components:
   - type: Sprite
-    layers:
-    - state: "id0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "id"
+    state: engineering_terminal
 
 - type: entity
   parent: RMCPropComputerBase
@@ -173,10 +135,7 @@
   name: station alert computer
   components:
   - type: Sprite
-    layers:
-    - state: "atmos0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "atmos"
+    state: atmos
 
 - type: entity
   parent: RMCPropComputerBase
@@ -184,7 +143,4 @@
   name: systems computer
   components:
   - type: Sprite
-    layers:
-    - state: "terminal0"
-    - map: ["enum.PowerDeviceVisualLayers.Powered"]
-      state: "terminal"
+    state: terminal

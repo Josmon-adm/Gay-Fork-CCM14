@@ -5,15 +5,15 @@
   description: cm-job-description-vc
   playTimeTracker: CMJobVehicleCrewman
   requirements:
-  - !type:DepartmentTimeRequirement
-    department: CMSquad
-    time: 36000 # 10 hours
   - !type:RoleTimeRequirement
     role: CMJobCombatTech
-    time: 18000 # 5 hours
+    time: 36000 # 10 hours
+  - !type:RoleTimeRequirement
+    role: CMJobFireteamLeader
+    time: 36000 # 10 hours
   ranks:
     RMCRankCorporal: []
-  startingGear: CMGearVehicleCrewman
+  startingGear: CMGearVC
   icon: "CMJobIconVehicleCrewman"
   joinNotifyCrew: false
   supervisors: cm-job-supervisors-co
@@ -47,19 +47,16 @@
     - type: RMCPointing
     - type: JobPrefix
       prefix: cm-job-prefix-vc
-    - type: SquadArmorWearer
-    - type: SquadNameOverride
-      name: cm-job-name-vc
     - type: TacticalMapIcon
       icon:
         sprite: /Textures/_RMC14/Interface/map_blips.rsi
         state: vc
       background:
         sprite: /Textures/_RMC14/Interface/map_blips.rsi
-        state: background_shipside
+        state: background
 
 - type: startingGear
-  id: CMGearVehicleCrewman
+  id: CMGearVC
   equipment:
     jumpsuit: CMJumpsuitMarineTanker
     shoes: CMBootsBlackFilled

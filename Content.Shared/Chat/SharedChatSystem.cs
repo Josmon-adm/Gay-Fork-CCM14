@@ -39,10 +39,10 @@ public abstract class SharedChatSystem : EntitySystem
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly XenoEvolutionSystem _xenoEvolution = default!;
 
-    // RMC14
-    public FrozenDictionary<string, RadioChannelPrototype> _channelLookup = default!;
-    public FrozenSet<char> _validPrefixes = default!;
-    // RMC14
+    /// <summary>
+    /// Cache of the keycodes for faster lookup.
+    /// </summary>
+    public FrozenDictionary<char, RadioChannelPrototype> _keyCodes = default!;
 
     public override void Initialize()
     {
@@ -60,26 +60,8 @@ public abstract class SharedChatSystem : EntitySystem
 
     private void CacheRadios()
     {
-        // RMC14
-        var channelDict = new Dictionary<string, RadioChannelPrototype>();
-        var prefixSet = new HashSet<char>();
-
-        foreach (var radioChannel in _prototypeManager.EnumeratePrototypes<RadioChannelPrototype>())
-        {
-            var keyCode = char.ToLowerInvariant(radioChannel.KeyCode);
-            channelDict[$"{radioChannel.RadioPrefix}{keyCode}"] = radioChannel;
-            prefixSet.Add(radioChannel.RadioPrefix);
-
-            if (radioChannel.RadioPrefix == RadioChannelPrefix)
-            {
-                channelDict[$"{RadioChannelAltPrefix}{keyCode}"] = radioChannel;
-                prefixSet.Add(RadioChannelAltPrefix);
-            }
-        }
-
-        _channelLookup = channelDict.ToFrozenDictionary();
-        _validPrefixes = prefixSet.ToFrozenSet();
-        // RMC14
+        _keyCodes = _prototypeManager.EnumeratePrototypes<RadioChannelPrototype>()
+            .ToFrozenDictionary(x => x.KeyCode);
     }
 
     /// <summary>
@@ -125,14 +107,11 @@ public abstract class SharedChatSystem : EntitySystem
         if (input.Length <= 2)
             return;
 
-        // RMC14
-        if (!_validPrefixes.Contains(input[0]))
+        if (!(input.StartsWith(RadioChannelPrefix) || input.StartsWith(RadioChannelAltPrefix)))
             return;
 
-        var lookupKey = $"{input[0]}{char.ToLowerInvariant(input[1])}";
-        if (!_channelLookup.ContainsKey(lookupKey))
+        if (!_keyCodes.TryGetValue(char.ToLower(input[1]), out _))
             return;
-        // RMC14
 
         prefix = input[..2];
         output = input[2..];
@@ -169,8 +148,7 @@ public abstract class SharedChatSystem : EntitySystem
                 ? _prototypeManager.Index<RadioChannelPrototype>(HivemindChannel)
                 : _prototypeManager.Index<RadioChannelPrototype>(CommonChannel);
 
-            // RMC14
-            if (channel?.ID == HivemindChannel.Id &&
+            if (channel.ID == HivemindChannel &&
                 !_xenoEvolution.HasLiving<XenoEvolutionGranterComponent>(1))
             {
                 if (!quiet)
@@ -179,15 +157,12 @@ public abstract class SharedChatSystem : EntitySystem
                 output = SanitizeMessageCapital(input[1..].TrimStart());
                 return false;
             }
-            // RMC14
 
             return true;
         }
 
-        // RMC14
-        if (!_validPrefixes.Contains(input[0]))
+        if (!(input.StartsWith(RadioChannelPrefix) || input.StartsWith(RadioChannelAltPrefix)))
             return false;
-        // RMC14
 
         if (input.Length < 2 || char.IsWhiteSpace(input[1]))
         {
@@ -200,15 +175,11 @@ public abstract class SharedChatSystem : EntitySystem
             return true;
         }
 
-        // RMC14
-        var prefix = input[0];
         var channelKey = input[1];
-        var lookupKey = $"{prefix}{char.ToLowerInvariant(channelKey)}";
-        var isDefaultChannel = channelKey == DefaultChannelKey || char.ToLowerInvariant(channelKey) == DefaultChannelKey;
-        var foundChannel = _channelLookup.TryGetValue(lookupKey, out channel);
+        channelKey = char.ToLower(channelKey);
         output = SanitizeMessageCapital(input[2..].TrimStart());
 
-        if (isDefaultChannel)
+        if (channelKey == DefaultChannelKey)
         {
             var ev = new GetDefaultRadioChannelEvent();
             RaiseLocalEvent(source, ev);
@@ -228,22 +199,11 @@ public abstract class SharedChatSystem : EntitySystem
             return true;
         }
 
-        if (!foundChannel && !quiet)
+        if (!_keyCodes.TryGetValue(channelKey, out channel) && !quiet)
         {
             var msg = Loc.GetString("chat-manager-no-such-channel", ("key", channelKey));
             _popup.PopupEntity(msg, source, source);
         }
-
-        // RMC14
-        if (channel?.ID == HivemindChannel.Id &&
-            !_xenoEvolution.HasLiving<XenoEvolutionGranterComponent>(1))
-        {
-            if (!quiet)
-                _popup.PopupEntity(Loc.GetString("rmc-no-queen-hivemind-chat"), source, source, PopupType.LargeCaution);
-
-            return false;
-        }
-        // RMC14
 
         var prefixEv = new ChatGetPrefixEvent(channel);
         RaiseLocalEvent(source, ref prefixEv);
@@ -251,7 +211,6 @@ public abstract class SharedChatSystem : EntitySystem
 
         if (HasComp<XenoComponent>(source) && !IsHivebrokenXeno(source) && channel == null)
             return false;
-        // RMC14
 
         return true;
     }

@@ -15,7 +15,7 @@ concurrency:
 jobs:
   validate_rsis:
     name: Validate RSIs
-    runs-on:  ubuntu-latest
+    runs-on:  self-hosted
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Setup Submodule

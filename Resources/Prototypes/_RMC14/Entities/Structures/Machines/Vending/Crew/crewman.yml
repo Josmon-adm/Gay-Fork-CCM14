@@ -1,4 +1,4 @@
-﻿# RMC14 TODO: Vehicle parts delivery system
+﻿# TODO: Vehicle parts delivery system
 
 # Weapons rack
 - type: entity
@@ -149,7 +149,7 @@
       - id: RMCPouchMagazinePistolLarge
       - id: RMCPouchShotgunLarge
       - id: RMCPouchPistol
-      - id: RMCPouchSling
+        #- id: RMCPouchSling # TODO RMC14 Sling Pouch
       - id: RMCPouchToolsFill
     - name: Аксессуары # CCM14
       choices: { CMAccessories: 1 }
@@ -220,7 +220,7 @@
       - id: RMCBinoculars
         points: 10
       - id: CMFireExtinguisherPortable
-        name: огнетушитель (портативный) # CCM14
+#        name: Fire Extinguisher (Portable)
         points: 5
       - id: RMCPouchFuelTank
         points: 5

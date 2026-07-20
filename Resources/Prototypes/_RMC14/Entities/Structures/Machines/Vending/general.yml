@@ -11,7 +11,6 @@
     - state: "off"
     - state: "normal-unshaded"
   - type: CMAutomatedVendor
-    canManualRestock: true
     hackable: true
     sections:
     - name: Cassettes
@@ -39,9 +38,7 @@
       - id: RMCCassetteTapeCustom
         amount: 20
     - name: Cards
-      entries:
-      - id: RMCPlayingCardDeck
-        amount: 10
+      entries: []
     - name: Magazines
       entries:
       - id: RMCMagazineBootsN160

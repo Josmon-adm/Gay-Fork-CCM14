@@ -19,7 +19,7 @@
     - id: RMCCigarettePackWeYaGold
     - id: RMCZippo
     - id: RMCSpaceCash1000
-    - id: RMCUniversalRecorder
+    - id: RMCSpaceCash1000 # TODO RMC14 tape recorder
 
 - type: entity
   parent: RMCPouchGeneralLarge

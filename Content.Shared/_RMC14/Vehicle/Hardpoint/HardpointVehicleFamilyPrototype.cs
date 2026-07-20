@@ -1,8 +1,10 @@
-using Robust.Shared.GameObjects;
+using Robust.Shared.Prototypes;
 
 namespace Content.Shared._RMC14.Vehicle;
 
-[RegisterComponent]
-public sealed partial class HardpointVehicleFamilyComponent : Component
+[Prototype]
+public sealed partial class HardpointVehicleFamilyPrototype : IPrototype
 {
+    [IdDataField]
+    public string ID { get; private set; } = string.Empty;
 }

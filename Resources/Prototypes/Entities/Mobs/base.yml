@@ -45,7 +45,6 @@
   - type: MovementSpeedModifier
   - type: RequireProjectileTarget
     active: False
-  - type: TTS # Forge TTS
 
 - type: entity
   save: false
@@ -111,7 +110,6 @@
 #    - Asphyxiation
 #    - Radiation
   - type: RMCHealthExaminable # RMC14
-    speciesType: Humanoid
   - type: DamageOnHighSpeedImpact
     damage:
       types:

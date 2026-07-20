@@ -68,7 +68,6 @@
     outlineColor: "#000000FF"
   - type: RMCMesonsNonviewable
     xenoVisible: true
-  - type: XenoChargeDontHit
 
 - type: entity
   parent: XenoFruitBase

@@ -88,7 +88,6 @@
   parent: RMCArmoredUniformBase
   id: RMCMarineUniformBase
   components:
-  - type: RMCCryoUnavailableOnStore
   - type: Tag
     tags:
     - RMCUniformMarine

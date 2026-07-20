@@ -18,14 +18,6 @@
   - MarineLeatherSatchel
 
 - type: loadoutGroup
-  id: LiaisonBackpackRMC
-  name: rmc-loadout-group-backpack
-  minLimit: 1
-  hidden: true
-  loadouts:
-  - LiaisonSecureSatchel
-
-- type: loadoutGroup
   id: MarineTechnicianBackpack
   name: rmc-loadout-group-backpack
   minLimit: 1
@@ -56,14 +48,6 @@
   hidden: true
   loadouts:
   - ProvostSecuritySatchel
-
-- type: loadoutGroup
-  id: ExecutiveSecurityGuardBackpack
-  name: rmc-loadout-group-backpack
-  minLimit: 1
-  hidden: true
-  loadouts:
-  - ExecutiveSecurityGuardSatchel
 
 - type: loadoutGroup
   id: RoyalBackpack
@@ -409,13 +393,7 @@
   loadouts:
   - UNMCSquadPatchRMC
   - SquadArmbandRMC
-  - PonchoRMC
-  - PonchoJungleRMC
-  - PonchoDesertRMC
-  - PonchoUrbanRMC
-  - PonchoSnowRMC
   - PatchPeaceRMC
-  - PDTLKitRMC
 
 - type: loadoutGroup
   id: AccessoriesRMCPVE
@@ -536,7 +514,7 @@
   minLimit: 0
   maxLimit: 7
   loadouts:
-  # - HoldoutPistolRMC # Forge-Change : CLF Pistol
+  - HoldoutPistolRMC
   - CustomM1984RMC
   - CustomM44RMC
   - HG45AguilaCaseRMC
@@ -732,11 +710,10 @@
   id: LiaisonRoleSpecificRMC
   name: rmc-loadout-group-role-specific
   minLimit: 0
-  maxLimit: 4
+  maxLimit: 3
   loadouts:
   - RMCWeYaClipboard
   - RMCWeYaThermos
-  - WEYABagPhoneSatchel
   - RMCJacketWindbreakerWEYA
 
 # Chief MP
@@ -924,64 +901,6 @@
   - NeckerchiefWhiteRMC
   - NeckerchiefRedRMC
 
-- type: loadoutGroup
-  id: SynthGenRMC
-  name: rmc-loadout-group-synth
-  maxLimit: 1
-  minLimit: 1
-  loadouts:
-  - RMCSynthGenOne
-  - RMCSynthGenTwo
-  - RMCSynthGenThree
-# Watches
-- type: loadoutGroup
-  id: WatchesBasicRMC
-  name: rmc-loadout-group-watches
-  minLimit: 0
-  maxLimit: 1
-  loadouts:
-  - WatchCheapRMC
-  - WatchBasicRMC
-  - WatchSurvRMC
-  - WatchPilotRMC
-
-- type: loadoutGroup
-  id: WatchesSynthRMC
-  name: rmc-loadout-group-watches
-  minLimit: 0
-  maxLimit: 1
-  loadouts:
-  - WatchCheapRMC
-  - WatchBasicRMC
-  - WatchSurvRMC
-  - WatchPilotRMC
-  - WatchSynthRMC
-
-- type: loadoutGroup
-  id: WatchesLiaisonRMC
-  name: rmc-loadout-group-watches
-  minLimit: 0
-  maxLimit: 1
-  loadouts:
-  - WatchCheapRMC
-  - WatchBasicRMC
-  - WatchSurvRMC
-  - WatchPilotRMC
-  - WatchLiaisonRMC
-
-- type: loadoutGroup
-  id: WatchesCommandingOfficerRMC
-  name: rmc-loadout-group-watches
-  minLimit: 0
-  maxLimit: 1
-  loadouts:
-  - WatchCheapRMC
-  - WatchBasicRMC
-  - WatchSurvRMC
-  - WatchPilotRMC
-  - WatchLiaisonRMC
-  - WatchSynthRMC
-
 # Civilian
 - type: loadoutGroup
   id: CivilianOnlyRMC
@@ -997,8 +916,7 @@
   - PatchMSCRMC
   - PatchOliveBranch
   # - PatchCLFRMC # RMC14 - Disabled intentionally to reduce admin burden.
-  - PatchHalcyon
-  - PatchNovaris
+  # TODO Halcyon Dynamics patch
   - HeadCowboyHatLightRMC
   - HeadCowboyHatDarkRMC
   - HeadBandRebelRMC
@@ -1010,6 +928,17 @@
   - ShoesYellowRMC
   - ShoesRedRMC
   - ShoesPurpleRMC
+  - PlushieFarwaRMC
+  - PlushieBarricadeRMC
+  - PlushieBeeRMC
+  - PlushieSharkGreyRMC
+  - PlushieSharkBlueRMC
+  - PlushieSharkPinkRMC
+  - PlushieMothRMC
+  - PlushieRockRMC
+  - PlushieTherapyRMC
+  - PlushieGnarpGnarpRMC
+  - PlushieGnarpGnarpAltRMC
 
 # Provost Inspector
 - type: loadoutGroup

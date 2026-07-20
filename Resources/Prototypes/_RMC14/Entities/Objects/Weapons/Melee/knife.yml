@@ -10,10 +10,6 @@
     angle: 0
   - type: CMArmorPiercing
     amount: 20
-  - type: InteractedBlacklist
-    blacklist:
-      components:
-      - Xeno
 
 - type: entity
   parent: [ RMCBaseMeleeWeapon, BaseKnife, RMCAttachableBase ]
@@ -223,12 +219,12 @@
   - type: MeleeWeapon
     damage:
       types:
-        Slash: 15 # Forge-Change : 5->15
+        Slash: 5
   - type: LandAtCursor
   - type: DamageOtherOnHit
     damage:
       types:
-        Slash: 75 # Forge-Change : 50->75
+        Slash: 50
   - type: UsableWhileDevoured
   - type: Item
     size: Small
@@ -240,15 +236,6 @@
     - Knife
     - ThrowingKnife
   - type: DeleteOnExplosion
-  # Forge-Change
-  - type: ThrowingAngle
-    angle: 225
-  - type: EmbeddableProjectile
-    deleteOnRemove: false
-    removalTime: 0.75
-    sound: /Audio/Weapons/star_hit.ogg
-    offset: -0.15,0.0
-  # Forge-Change
 
 - type: entity
   name: Fairbairn-Sykes fighting knife

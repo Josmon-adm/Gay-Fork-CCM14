@@ -10,10 +10,10 @@
   - type: Item
     size: Large
   - type: HardpointItem
-    hardpointType: HardpointTypeSecondary
-    vehicleFamily: HardpointVehicleFamilyVan
-    slotType: HardpointSlotTypeLauncher
-    compatibilityId: HardpointCompatibilitySPPVan
+    hardpointType: Secondary
+    vehicleFamily: Van
+    slotType: Launcher
+    compatibilityId: SPPVan
     damageMultiplier: 0.15
     repairRate: 0.0125
   - type: HardpointIntegrity
@@ -26,7 +26,6 @@
     showOverlay: true
     overlayRsi: _RMC14/Structures/Vehicles/sppvan.rsi
     overlayState: van_turret_0
-    overlayDamagedState: van_turret_1
     pixelOffsetNorth: "0,4"
     pixelOffsetEast: "-6,16"
     pixelOffsetSouth: "0,15"
@@ -40,12 +39,12 @@
           components:
           - HardpointItem
   - type: HardpointSlots
-    vehicleFamily: HardpointVehicleFamilyVan
+    vehicleFamily: Van
     slots:
     - id: turret-cannon
-      hardpointType: HardpointTypeCannon
-      slotType: HardpointSlotTypeCannon
-      compatibilityId: HardpointCompatibilitySPPVan
+      hardpointType: Cannon
+      slotType: Cannon
+      compatibilityId: SPPVan
       required: false
       insertDelay: 2.0
 
@@ -59,10 +58,10 @@
     sprite: _RMC14/Structures/Vehicles/sppvan.rsi
     state: t60p3m_0
   - type: HardpointItem
-    hardpointType: HardpointTypeCannon
-    vehicleFamily: HardpointVehicleFamilyVan
-    slotType: HardpointSlotTypeCannon
-    compatibilityId: HardpointCompatibilitySPPVan
+    hardpointType: Cannon
+    vehicleFamily: Van
+    slotType: Cannon
+    compatibilityId: SPPVan
     damageMultiplier: 0.0
     repairRate: 0.01
   - type: HardpointIntegrity
@@ -71,8 +70,7 @@
     showOverlay: true
     overlayRsi: _RMC14/Structures/Vehicles/sppvan.rsi
     overlayState: t60p3m_0
-    overlayDamagedState: t60p3m_1
-    fireWhileRotatingGraceDegrees: 180
+    fireWhileRotatingGraceDegrees: 20
     useBarrelDirectionForShots: true
     maxShotCurvatureDegrees: 10
   - type: Gun
@@ -101,7 +99,6 @@
     useContainerOwner: false
   - type: HardpointVisual
     vehicleState: t60p3m_0
-    damagedVehicleState: t60p3m_1
 
 - type: entity
   parent: RMCVanWheel
@@ -113,7 +110,5 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppvan.rsi
     state: spp_tires
   - type: HardpointItem
-    compatibilityId: HardpointCompatibilitySPPVan
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
+    compatibilityId: SPPVan
 

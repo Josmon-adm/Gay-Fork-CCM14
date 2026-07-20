@@ -8,8 +8,3 @@
   - WeYa
   - TSE
 
-- type: npcFaction
-  id: Serene
-  hostile:
-  - RMCXeno
-  - WeYa

@@ -74,7 +74,6 @@
       - RMCDetector
       - RMCMatebaHolster
       - CCMGuitarBag # CCM14
-      - RMCFoldingBarricade
 
 - type: entity
   abstract: true
@@ -95,7 +94,6 @@
       - RMCGeneralPistolHolster
       - RMCGeneralRevolverHolster
       - CCMGuitarBag # CCM14
-      - RMCFoldingBarricade
 
 - type: entity
   abstract: true
@@ -124,7 +122,6 @@
       - RMCScabbardKatana
       - RMCDetector
       - CCMGuitarBag # CCM14
-      - RMCFoldingBarricade
 
 - type: entity
   abstract: true
@@ -142,7 +139,6 @@
       - RMCG8Pouch
       #TODO mines
       - RMCDetector
-      - RMCFoldingBarricade
       #Note should get all magazines and ignore guns
       - CMMagazineSmg
       - CMMagazinePistol
@@ -184,7 +180,6 @@
       - RMCCeremonialSword
       - RMCDetector
       - CCMGuitarBag # CCM14
-      - RMCFoldingBarricade
 
 - type: entity
   abstract: true
@@ -209,7 +204,6 @@
       - Machete
       - RMCDetector
       - CCMGuitarBag # CCM14
-      - RMCFoldingBarricade
 
 # TODO: Add separate whitelists for 'safari jacket' and 'bureau deputy jacket'
 

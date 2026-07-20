@@ -8,9 +8,6 @@
   },
   "states": [
     {
-      "name": "defender"
-    },
-    {
       "name": "defender_fortify_0",
       "directions": 4
     },

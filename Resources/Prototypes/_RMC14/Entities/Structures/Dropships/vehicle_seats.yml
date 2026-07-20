@@ -127,7 +127,7 @@
   - type: VehicleDriverSeat
     skills:
       all:
-        RMCSkillVehicles: 2
+        RMCSkillVehicles: 2 # CCM14
 
 - type: entity
   parent: RMCSeatArmoredBase
@@ -137,7 +137,7 @@
   - type: VehicleWeaponsSeat
     skills:
       all:
-        RMCSkillVehicles: 2
+        RMCSkillVehicles: 2 # CCM14
     isPrimaryOperatorSeat: true
     allowUiSelection: true
     allowHotbarSelection: true
@@ -153,7 +153,8 @@
   components:
   - type: VehiclePortGunSeat
     skills:
-      all: {}
+      all:
+        RMCSkillVehicles: 2 # CCM14
 
 - type: entity
   parent: RMCSeatArmoredBase
@@ -165,15 +166,16 @@
   - type: VehicleDriverSeat
     skills:
       all:
-        RMCSkillVehicles: 3
+        RMCSkillVehicles: 3 # CCM14
   - type: VehicleWeaponsSeat
     skills:
-      all: {}
+      all:
+        RMCSkillVehicles: 3 # CCM14
     isPrimaryOperatorSeat: false
     allowUiSelection: false
     allowHotbarSelection: true
     allowedHardpointTypes:
-    - HardpointTypeSupport
+    - Support
   - type: UserInterface
     interfaces:
       enum.VehicleWeaponsUiKey.Key:
@@ -189,7 +191,7 @@
   - type: VehicleWeaponsSeat
     skills:
       all:
-        RMCSkillVehicles: 3
+        RMCSkillVehicles: 3 # CCM14
     isPrimaryOperatorSeat: true
     allowUiSelection: true
     allowHotbarSelection: true
@@ -207,7 +209,8 @@
   components:
   - type: VehicleWeaponsSeat
     skills:
-      all: {}
+      all:
+        RMCSkillVehicles: 3 # CCM14
     isPrimaryOperatorSeat: false
     allowUiSelection: true
     allowHotbarSelection: true
@@ -215,8 +218,8 @@
     baseViewCursorMaxOffset: 5
     baseViewCursorPvsIncrease: 0.5
     allowedHardpointTypes:
-    - HardpointTypeSecondary
-    - HardpointTypeLauncher
+    - Secondary
+    - Launcher
   - type: UserInterface
     interfaces:
       enum.VehicleWeaponsUiKey.Key:
@@ -236,8 +239,6 @@
     sprite: _RMC14/Structures/Vehicles/Interiors/general_humvee.rsi
     state: car_seat
     drawdepth: BelowMobs
-  - type: Strap
-    modifyBuckleDrawDepth: false
   - type: RMCStrapNoDrawDepthChange
   - type: RemoveComponents
     components:
@@ -260,16 +261,6 @@
     skills:
       all:
         RMCSkillVehicles: 1 # CCM14
-
-- type: entity
-  parent: RMCSeatHumveeBase
-  id: RMCSeatHumveeARCDriver
-  name: ARC driver seat
-  components:
-  - type: VehicleDriverSeat
-    skills:
-      all:
-        RMCSkillVehicles: 2
 
 - type: entity
   parent: RMCSeatHumveeBase

@@ -18,15 +18,6 @@
     - type: NpcFactionMember
       factions:
       - Bureau
-    - type: Language
-      spokenLanguages:
-      - English
-      - Japanese
-      understoodLanguages:
-      - English
-      - Japanese
-      currentLanguage: English
-      defaultLanguage: English
     - type: Skills
       skills:
         RMCSkillPolice: 2
@@ -103,9 +94,6 @@
     pocket1: RMCPouchFirstAidERTFill
     pocket2: RMCPouchShotgunLargeBuckshot
     suitstorage: RMCWeaponShotgunM3717
-  storage:
-    back:
-    - RMCUniversalRecorder
 
 - type: playTimeTracker
   id: RMCJobBureauMarshal

@@ -1,4 +1,4 @@
-using Content.Shared._RMC14.Actions; // RMC14
+using Content.Shared._RMC14.Actions;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 

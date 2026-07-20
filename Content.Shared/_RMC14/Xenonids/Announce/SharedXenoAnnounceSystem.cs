@@ -31,18 +31,18 @@ public abstract class SharedXenoAnnounceSystem : EntitySystem
             locationName = areaProto.Name;
 
         if (HasComp<ParasiteSpentComponent>(ent))
-            AnnounceSameHive(ent.Owner, Loc.GetString("rmc-xeno-parasite-announce-infect", ("xeno", ent.Owner), ("location", locationName)), color: ent.Comp.Color, useHiveAsSource: true);
+            AnnounceSameHive(ent.Owner, Loc.GetString("rmc-xeno-parasite-announce-infect", ("xeno", ent.Owner), ("location", locationName)), color: ent.Comp.Color);
         else
         {
             if (HasComp<XenoEvolutionGranterComponent>(ent) || _xenoEvolution.HasLiving<XenoEvolutionGranterComponent>(1))
-                AnnounceSameHive(ent.Owner, Loc.GetString(ent.Comp.Message, ("xeno", ent.Owner), ("location", locationName)), color: ent.Comp.Color, useHiveAsSource: true);
+                AnnounceSameHive(ent.Owner, Loc.GetString(ent.Comp.Message, ("xeno", ent.Owner), ("location", locationName)), color: ent.Comp.Color);
         }
     }
 
     public string WrapHive(string message, Color? color = null)
     {
         color ??= Color.FromHex("#921992");
-        return $"[color={color.Value.ToHex()}][font size=16][bold]{message}[/bold][/font][/color]\n";
+        return $"[color={color.Value.ToHex()}][font size=16][bold]{message}[/bold][/font][/color]\n\n";
     }
 
     /// <summary>
@@ -82,13 +82,12 @@ public abstract class SharedXenoAnnounceSystem : EntitySystem
         SoundSpecifier? sound = null,
         PopupType? popup = null,
         Color? color = null,
-        bool needsQueen = false,
-        bool useHiveAsSource = false)
+        bool needsQueen = false)
     {
-        if (Hive.GetHive(xeno) is not { } hive)
+        if (Hive.GetHive(xeno) is not {} hive)
             return;
 
-        AnnounceToHive(useHiveAsSource ? hive : xeno, hive, message, sound, popup, color, needsQueen);
+        AnnounceToHive(xeno, hive, message, sound, popup, color, needsQueen);
     }
 
     public void AnnounceSameHiveDefaultSound(Entity<HiveMemberComponent?> xeno,

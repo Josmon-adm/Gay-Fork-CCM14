@@ -255,21 +255,16 @@ public abstract class SharedWebbingSystem : EntitySystem
         return true;
     }
 
-    public bool TryDetachWebbing(Entity<WebbingClothingComponent?> clothing, out Entity<WebbingComponent> webbing)
+    private void Detach(Entity<WebbingClothingComponent> clothing, EntityUid user)
     {
-        webbing = default;
-        if (TerminatingOrDeleted(clothing) ||
-            !Resolve(clothing, ref clothing.Comp, false) ||
-            !clothing.Comp.Running)
-        {
-            return false;
-        }
+        if (TerminatingOrDeleted(clothing) || !clothing.Comp.Running)
+            return;
 
-        if (!HasWebbing((clothing.Owner, clothing.Comp), out webbing))
-            return false;
+        if (!HasWebbing((clothing, clothing), out var webbing))
+            return;
 
-        if (!_container.TryRemoveFromContainer(webbing.Owner))
-            return false;
+        _container.TryRemoveFromContainer(webbing.Owner);
+        _hands.TryPickupAnyHand(user, webbing);
 
         EntityManager.AddComponents(webbing, webbing.Comp.Components);
 
@@ -283,16 +278,6 @@ public abstract class SharedWebbingSystem : EntitySystem
             clothing.Comp.UnequippedSize = null;
             _item.SetSize(clothing, size);
         }
-
-        return true;
-    }
-
-    private void Detach(Entity<WebbingClothingComponent> clothing, EntityUid user)
-    {
-        if (!TryDetachWebbing((clothing.Owner, clothing.Comp), out var webbing))
-            return;
-
-        _hands.TryPickupAnyHand(user, webbing);
     }
 
     public override void Update(float frameTime)

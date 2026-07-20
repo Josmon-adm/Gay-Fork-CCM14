@@ -10,9 +10,9 @@
   - type: Item
     size: Large
   - type: HardpointItem
-    hardpointType: HardpointTypeWheel
-    vehicleFamily: HardpointVehicleFamilyVan
-    slotType: HardpointSlotTypeWheel
+    hardpointType: Wheel
+    vehicleFamily: Van
+    slotType: Wheel
     damageMultiplier: 0.15
     repairRate: 0.0165
   - type: HardpointIntegrity

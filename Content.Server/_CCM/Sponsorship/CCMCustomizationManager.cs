@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Database;
-using Content.Server._Forge.Sponsor;
 using Content.Shared._CCM.Sponsorship;
-using Content.Shared._Forge.Sponsor;
 using Content.Shared.Preferences;
 using Robust.Shared.IoC;
 using Robust.Shared.Network;
@@ -20,7 +18,7 @@ public sealed class CCMCustomizationManager : IPostInjectInit
 
     [Dependency] private readonly UserDbDataManager _userDb = default!;
     [Dependency] private readonly IServerDbManager _db = default!;
-    [Dependency] private readonly SponsorManager _sponsorship = default!;
+    [Dependency] private readonly CCMSponsorshipManager _sponsorship = default!;
 
     public async Task<CCMCustomizationSnapshot> GetSnapshot(NetUserId userId)
     {
@@ -111,28 +109,23 @@ public sealed class CCMCustomizationManager : IPostInjectInit
         var selections = new List<CCMCustomizationSelectionData>(snapshot.Selections.Length);
         foreach (var selection in snapshot.Selections)
         {
-            var valueId = NormalizeSelectionValue(selection.SlotId, selection.ValueId, customizationUnlocked, status.Level);
+            var valueId = NormalizeSelectionValue(selection.SlotId, selection.ValueId, customizationUnlocked);
             selections.Add(new CCMCustomizationSelectionData(selection.SlotId, valueId));
         }
 
-        // Готовые OOC-теги доступны с Level2, кастомный текстовый тег - только с Level3.
         var selectedTagId = NormalizeTagId(snapshot.SelectedOocTagId);
         var customTagText = string.Empty;
-        if (selectedTagId == CCMOocTags.Custom)
+        if (selectedTagId == CCMOocTags.Custom && status.Tier >= CCMSponsorshipTier.SponsorIII)
         {
-            if (status.Level >= SponsorLevel.Level3)
-                customTagText = NormalizeCustomTag(snapshot.CustomOocTagText);
-            else
-                selectedTagId = CCMOocTags.None;
+            customTagText = NormalizeCustomTag(snapshot.CustomOocTagText);
         }
-        else if (selectedTagId != CCMOocTags.None && status.Level < SponsorLevel.Level2)
+        else if (selectedTagId == CCMOocTags.Custom)
         {
             selectedTagId = CCMOocTags.None;
         }
 
-        // OOC-цвет открыт с Level1, LOOC-цвет - с Level2.
-        var selectedOocColorId = NormalizeChatColorId(snapshot.SelectedOocColorId, status.Level, looc: false);
-        var selectedLoocColorId = NormalizeChatColorId(snapshot.SelectedLoocColorId, status.Level, looc: true);
+        var selectedOocColorId = NormalizeChatColorId(snapshot.SelectedOocColorId, status.Tier);
+        var selectedLoocColorId = NormalizeChatColorId(snapshot.SelectedLoocColorId, status.Tier);
 
         return new CCMCustomizationSnapshot(
             selections.ToArray(),
@@ -142,24 +135,12 @@ public sealed class CCMCustomizationManager : IPostInjectInit
             selectedLoocColorId);
     }
 
-    private static string NormalizeSelectionValue(string slotId, string valueId, bool customizationUnlocked, SponsorLevel level)
+    private static string NormalizeSelectionValue(string slotId, string valueId, bool customizationUnlocked)
     {
         if (!customizationUnlocked &&
             slotId is not "armor_palette" &&
             slotId is not "armor_variant" &&
             slotId is not "weapon_spray")
-        {
-            return "default";
-        }
-
-        // Скин призрака и скины ксеноморфов входят в "расширенную" кастомизацию (Level3+).
-        if (level < SponsorLevel.Level3 &&
-            slotId is "ghost"
-                  or "xeno_defender"
-                  or "xeno_drone"
-                  or "xeno_queen"
-                  or "xeno_runner"
-                  or "xeno_sentinel")
         {
             return "default";
         }
@@ -239,7 +220,7 @@ public sealed class CCMCustomizationManager : IPostInjectInit
         return sanitized;
     }
 
-    private static string NormalizeChatColorId(string? colorId, SponsorLevel level, bool looc)
+    private static string NormalizeChatColorId(string? colorId, CCMSponsorshipTier tier)
     {
         if (string.IsNullOrWhiteSpace(colorId))
             return CCMChatColorPresets.Default;
@@ -247,13 +228,9 @@ public sealed class CCMCustomizationManager : IPostInjectInit
         if (!CCMChatColorPresets.IsValidPreset(colorId))
             return CCMChatColorPresets.Default;
 
-        if (colorId == CCMChatColorPresets.Default)
-            return CCMChatColorPresets.Default;
-
-        // OOC-цвет открывается с Level1, LOOC-цвет - с Level2. Все пресеты доступны,
-        // как только открыт сам канал.
-        var requiredLevel = looc ? SponsorLevel.Level2 : SponsorLevel.Level1;
-        return level >= requiredLevel ? colorId : CCMChatColorPresets.Default;
+        return CCMChatColorPresets.CanUsePreset(colorId, tier)
+            ? colorId
+            : CCMChatColorPresets.Default;
     }
 
     private async Task LoadData(ICommonSession session, CancellationToken cancel)
@@ -266,16 +243,6 @@ public sealed class CCMCustomizationManager : IPostInjectInit
     private void ClientDisconnected(ICommonSession session)
     {
         _cache.Remove(session.UserId);
-    }
-
-    /// <summary>
-    ///     Drops the cached snapshot for a user. Called when the resolved sponsorship tier
-    ///     changes (e.g. after Discord auth) so the next snapshot is re-normalized against
-    ///     the new tier instead of a stale tier-None cache.
-    /// </summary>
-    public void InvalidateCache(NetUserId userId)
-    {
-        _cache.Remove(userId);
     }
 
     void IPostInjectInit.PostInject()

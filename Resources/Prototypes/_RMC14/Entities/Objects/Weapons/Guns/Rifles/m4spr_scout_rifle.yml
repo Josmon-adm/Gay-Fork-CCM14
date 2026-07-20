@@ -90,7 +90,7 @@
           - RMCAttachmentLaserSight
           - RMCAttachmentVerticalGrip
           - RMCAttachmentU7UnderbarrelShotgun
-          - RMCAttachmentUnderbarrelExtinguisher
+          - RMCAttachmentExtinguisher
   - type: ItemSlots
     slots:
       gun_magazine:

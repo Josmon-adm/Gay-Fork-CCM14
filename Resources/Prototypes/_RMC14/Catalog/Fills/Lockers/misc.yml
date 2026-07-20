@@ -127,11 +127,10 @@
     - id: RMCWeaponPistolPK7
     - id: RMCMagazinePistolPK7
     - id: RMCMagazinePistolPK7
-    - id: RMCBackpackRTOBagPhone
 
 - type: entity
-  parent: RMCLockerFieldDoctor
-  id: RMCLockerFieldDoctorFilled
+  parent: CMLockerBase
+  id: RMCLockerFieldDoctor
   suffix: Filled, Field Doctor
   components:
   - type: StorageFill

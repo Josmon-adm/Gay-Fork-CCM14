@@ -13,7 +13,7 @@
   hasIcon: true
   greeting: rmc-job-greeting-soro-sof
   playTimeTracker: RMCJobSurvivorMilitary
-  spawnMenuRoleName: SPP SOF (Sorokyne Special Survivor - Base)
+  spawnMenuRoleName: SPP SOF Survivor (Base)
   useLoadoutOfJob: CMSurvivor
   basePlaytimeTracker: true
   abstract: true
@@ -28,12 +28,12 @@
     shoes: RMCBootsSPPFilled
     head: RMCArmorHelmetSPPSOF
     gloves: RMCHandsVeteranSPP
-    suitstorage: RMCWeaponRifleType77
+    suitstorage: RMCWeaponRifleAK4047
     belt: RMCBeltHolsterPistolSPPT73
     id: RMCIDSPP
     ears: RMCHeadsetDistressSPP # TODO RMC14 replace this with a 121/RECON headset after 8602 is merged
     pocket1: RMCPouchFirstAidSplintsGauzeOintment
-    pocket2: RMCPouchFlareR44Filled
+    pocket2: RMCPouchFlareFilled
   storage:
     back:
     - CMSheetMetal20

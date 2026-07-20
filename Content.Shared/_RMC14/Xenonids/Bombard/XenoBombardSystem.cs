@@ -6,7 +6,6 @@ using Content.Shared._RMC14.Xenonids.Hive;
 using Content.Shared._RMC14.Xenonids.Plasma;
 using Content.Shared.Actions.Components;
 using Content.Shared.DoAfter;
-using Content.Shared.IdentityManagement;
 using Content.Shared.Popups;
 using Content.Shared.Weapons.Ranged.Systems;
 using Robust.Shared.Audio.Systems;
@@ -59,19 +58,11 @@ public sealed class XenoBombardSystem : EntitySystem
         if (_doAfter.TryStartDoAfter(doAfter))
         {
             _rmcActions.DisableSharedCooldownEvents(args.Action.Owner, ent);
+            var selfMessage = Loc.GetString("rmc-glob-start-self");
+            _popup.PopupClient(selfMessage, ent, ent);
 
-            var selfMsg = Loc.GetString("rmc-glob-start-self");
-            _popup.PopupClient(selfMsg, ent, ent);
-
-            foreach (var session in Filter.PvsExcept(ent, entityManager: EntityManager).Recipients)
-            {
-                if (session.AttachedEntity is not { } viewer)
-                    continue;
-
-                var name = Identity.Name(ent, EntityManager, viewer);
-                var othersMsg = Loc.GetString("rmc-glob-start-others", ("user", name));
-                _popup.PopupEntity(othersMsg, ent, session, PopupType.MediumCaution);
-            }
+            var othersMessage = Loc.GetString("rmc-glob-start-others", ("user", ent));
+            _popup.PopupEntity(othersMessage, ent, Filter.PvsExcept(ent), true, PopupType.MediumCaution);
         }
     }
 
@@ -121,15 +112,8 @@ public sealed class XenoBombardSystem : EntitySystem
         var selfMessage = Loc.GetString("rmc-glob-shoot-self");
         _popup.PopupClient(selfMessage, ent, ent);
 
-        foreach (var session in Filter.PvsExcept(ent, entityManager: EntityManager).Recipients)
-        {
-            if (session.AttachedEntity is not { } viewer)
-                continue;
-
-            var name = Identity.Name(ent, EntityManager, viewer);
-            var othersMessage = Loc.GetString("rmc-glob-shoot-others", ("user", name));
-            _popup.PopupEntity(othersMessage, ent, session, PopupType.MediumCaution);
-        }
+        var othersMessage = Loc.GetString("rmc-glob-shoot-others", ("user", ent));
+        _popup.PopupEntity(othersMessage, ent, Filter.PvsExcept(ent), true, PopupType.MediumCaution);
     }
 
     private void OnToggleType(Entity<XenoBombardComponent> ent, ref XenoGasToggleActionEvent args)

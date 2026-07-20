@@ -27,7 +27,6 @@
     - Burst
     soundGunshot:
       path: /Audio/_RMC14/Weapons/Guns/Gunshots/su6_shoot.ogg
-  - type: GunClickToFire
   - type: RMCSelectiveFire
     baseFireModes:
     - SemiAuto

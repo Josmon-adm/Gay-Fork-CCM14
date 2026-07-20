@@ -157,9 +157,6 @@
     - state: smallshell_empty
       map: [ "empty" ]
       color: "#5786be"
-  - type: GuideHelp
-    guides:
-    - RMCGuideRoleMilitaryPolice
 
 - type: entity
   parent: RMCBoxShotgunBase

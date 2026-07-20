@@ -67,23 +67,23 @@
 - type: entity
   id: VehicleLTBCannonImpact
   name: LTB cannon impact
-  categories: [ HideSpawnMenu, Spawner ]
+  categories: [ HideSpawnMenu ]
   components:
   - type: TriggerOnSpawn
   - type: ExplodeOnTrigger
   - type: DeleteOnTrigger
   - type: CMExplosionEffect
-    minShrapnel: 20
-    maxShrapnel: 60
+    minShrapnel: 20 # CCM14
+    maxShrapnel: 50 # CCM14
     shrapnelSpeed: 8
   - type: RMCScorchEffect
     radius: 3
     centerRadius: 1
   - type: Explosive
     explosionType: RMCLTBCannon
-    maxIntensity: 38 # CCM: 40>38
+    maxIntensity: 40
     intensitySlope: 18
-    totalIntensity: 350 # CCM: 350>650
+    totalIntensity: 650
     tileBreakScale: 4
     maxTileBreak: 12
 
@@ -108,19 +108,26 @@
     soundHit:
       path: /Audio/Weapons/Guns/Hits/bullet_hit.ogg
   - type: RMCProjectileAccuracy
-    accuracy: 125
+    accuracy: 130
     thresholds:
     - range: 32
-      falloff: 10
+      falloff: 5
   - type: RMCProjectileDamageFalloff
     thresholds:
     - range: 32
       falloff: 9999
       ignoreModifiers: true
+  - type: ProjectileGrenade
+    evenSpread: true
+    minVelocity: 0.4
+    maxVelocity: 1.8
+    fillPrototype: RMCShrapnelJagged
+    rebounds: true
+    capacity: 10
+    spreadAngle: 28
   - type: RMCAreaDamage
-    damageArea: 2
-    falloffDistance: 0.67
-    xenoDamageMultiplier: 2
+    damageArea: 2.5
+    falloffDistance: 1.5
   - type: CMArmorPiercing
     amount: 30
   - type: IgnorePredictionHide
@@ -136,6 +143,7 @@
     fixtureID: projectile
     ignoreOtherNonHard: false
   - type: IgniteOnProjectileHit
+  - type: RMCFireProjectile
   - type: Sprite
     sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Projectiles/firesentry_projectile.rsi
     drawdepth: Effects
@@ -155,7 +163,7 @@
   - type: DeleteOnTrigger
   - type: SpawnOnTerminate
     spawn: VehicleDragonFlameImpact
-    spawnOffset: 0.5
+    projectileAdjust: false
   - type: IgnoreArc
   - type: IgnorePredictionHide
   - type: Fixtures
@@ -181,16 +189,11 @@
         Piercing: 40
   - type: CMArmorPiercing
     amount: 30
-  - type: RMCProjectileAccuracy
-    accuracy: 80
-    thresholds:
-    - range: 12
-      falloff: 10
 
 - type: entity
   id: VehicleDragonFlameImpact
   name: DRGN flame impact
-  categories: [ HideSpawnMenu, Spawner ]
+  categories: [ HideSpawnMenu ]
   components:
   - type: TriggerOnSpawn
   - type: SpawnOnTrigger
@@ -208,6 +211,7 @@
   categories: [ HideSpawnMenu ]
   components:
   - type: IgniteOnProjectileHit
+  - type: RMCFireProjectile
   - type: Sprite
     sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Projectiles/firesentry_projectile.rsi
     drawdepth: Effects
@@ -247,6 +251,7 @@
   categories: [ HideSpawnMenu ]
   components:
   - type: IgniteOnProjectileHit
+  - type: RMCFireProjectile
   - type: Sprite
     sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Projectiles/firesentry_projectile.rsi
     drawdepth: Effects
@@ -282,7 +287,7 @@
 - type: entity
   id: VehicleTankFlamerImpact
   name: tank flamer impact
-  categories: [ HideSpawnMenu, Spawner ]
+  categories: [ HideSpawnMenu ]
   components:
   - type: TriggerOnSpawn
   - type: SpawnOnTrigger

@@ -7,8 +7,6 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppapc.rsi
   - type: Item
     size: Large
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
 
 - type: entity
   parent: VehicleSPPAPCHardpointBase
@@ -19,10 +17,10 @@
   - type: Sprite
     state: spp_tires
   - type: HardpointItem
-    hardpointType: HardpointTypeWheel
-    vehicleFamily: HardpointVehicleFamilyAPC
-    slotType: HardpointSlotTypeWheel
-    compatibilityId: HardpointCompatibilitySPPAPC
+    hardpointType: Wheel
+    vehicleFamily: APC
+    slotType: Wheel
+    compatibilityId: SPPAPC
     damageMultiplier: 0.15
     repairRate: 0.0165
   - type: HardpointIntegrity
@@ -39,10 +37,10 @@
     sprite: _RMC14/Structures/Vehicles/sppapc.rsi
     state: apc_turret_0
   - type: HardpointItem
-    hardpointType: HardpointTypeTurret
-    vehicleFamily: HardpointVehicleFamilyAPC
-    slotType: HardpointSlotTypeTurret
-    compatibilityId: HardpointCompatibilitySPPAPC
+    hardpointType: Turret
+    vehicleFamily: APC
+    slotType: Turret
+    compatibilityId: SPPAPC
     damageMultiplier: 0.2
     repairRate: 0.008
   - type: HardpointIntegrity
@@ -55,7 +53,6 @@
     useDirectionalOffsets: true
     overlayRsi: _RMC14/Structures/Vehicles/sppapc.rsi
     overlayState: apc_turret_0
-    overlayDamagedState: apc_turret_1
     pixelOffsetNorth: "0,4"
     pixelOffsetEast: "-1,28"
     pixelOffsetSouth: "0,6"
@@ -69,17 +66,16 @@
           components:
           - HardpointItem
   - type: HardpointSlots
-    vehicleFamily: HardpointVehicleFamilyAPC
+    vehicleFamily: APC
     slots:
     - id: turret-cannon
-      hardpointType: HardpointTypeCannon
-      slotType: HardpointSlotTypeCannon
-      compatibilityId: HardpointCompatibilitySPPAPCTurret
+      hardpointType: Cannon
+      slotType: Cannon
+      compatibilityId: SPPAPCTurret
       required: false
       insertDelay: 2.0
   - type: HardpointVisual
     vehicleState: apc_turret_0
-    damagedVehicleState: apc_turret_1
 
 - type: entity
   parent: RMCAPCDualCannon
@@ -91,10 +87,10 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppapc.rsi
     state: apc_minigun
   - type: HardpointItem
-    hardpointType: HardpointTypeCannon
-    vehicleFamily: HardpointVehicleFamilyAPC
-    slotType: HardpointSlotTypeCannon
-    compatibilityId: HardpointCompatibilitySPPAPCTurret
+    hardpointType: Cannon
+    vehicleFamily: APC
+    slotType: Cannon
+    compatibilityId: SPPAPCTurret
     damageMultiplier: 0.2
     repairRate: 0.01
   - type: VehicleTurretAttachment
@@ -104,8 +100,7 @@
     useDirectionalOffsets: true
     overlayRsi: _RMC14/Structures/Vehicles/sppapc.rsi
     overlayState: apc_minigun_0
-    overlayDamagedState: apc_minigun_1
-    fireWhileRotatingGraceDegrees: 180
+    fireWhileRotatingGraceDegrees: 20
     useBarrelDirectionForShots: true
     maxShotCurvatureDegrees: 10
   - type: GunMuzzleOffset
@@ -119,9 +114,6 @@
     useAimDirection: true
   - type: HardpointVisual
     vehicleState: apc_minigun_0
-    damagedVehicleState: apc_minigun_1
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
 
 - type: entity
   parent: RMCAPCFrontCannon
@@ -133,7 +125,7 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppapc.rsi
     state: apc_autocannon
   - type: HardpointItem
-    compatibilityId: HardpointCompatibilitySPPAPC
+    compatibilityId: SPPAPC
   - type: GunMuzzleOffset
     useDirectionalOffsets: true
     rotateDirectionalOffsets: true
@@ -145,9 +137,6 @@
     useAimDirection: true
   - type: HardpointVisual
     vehicleState: apc_autocannon_0
-    damagedVehicleState: apc_autocannon_1
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
 
 - type: entity
   parent: VehicleTankTowLauncher
@@ -159,18 +148,15 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppapc.rsi
     state: hj35launcher
   - type: HardpointItem
-    hardpointType: HardpointTypeCannon
-    vehicleFamily: HardpointVehicleFamilyAPC
-    slotType: HardpointSlotTypeCannon
-    compatibilityId: HardpointCompatibilitySPPAPC
+    hardpointType: Cannon
+    vehicleFamily: APC
+    slotType: Cannon
+    compatibilityId: SPPAPC
     damageMultiplier: 0.11
   - type: HardpointIntegrity
     maxIntegrity: 350
   - type: HardpointVisual
     vehicleState: apc_hj35_0
-    damagedVehicleState: apc_hj35_1
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
 
 - type: entity
   parent: RMCAPCFlareLauncher
@@ -182,10 +168,7 @@
     sprite: _RMC14/Structures/Vehicles/hardpoints/sppapc.rsi
     state: spp_flare_launcher
   - type: HardpointItem
-    compatibilityId: HardpointCompatibilitySPPAPC
+    compatibilityId: SPPAPC
   - type: HardpointVisual
     vehicleState: spp_flare_launcher_0
-    damagedVehicleState: spp_flare_launcher_1
-  - type: VehicleFabricatorPrintable # CCM14
-    enabled: false
 

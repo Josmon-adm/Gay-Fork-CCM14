@@ -13,14 +13,6 @@
 
 - type: entity
   parent: CMIDCardStandardDogtag
-  id: CMDogtagCombatCorrespondent
-  name: Combat Correspondent's dogtags
-  components:
-  - type: PresetIdCard
-    job: CMCombatCorrespondent
-
-- type: entity
-  parent: CMIDCardStandardDogtag
   id: CMDogtagCombatTech
   name: Combat Tech's dogtags
   components:

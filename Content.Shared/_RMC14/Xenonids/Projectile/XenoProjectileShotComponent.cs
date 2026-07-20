@@ -1,7 +1,6 @@
-using Robust.Shared.GameStates;
+﻿using Robust.Shared.GameStates;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
-using Robust.Shared.Timing;
 
 namespace Content.Shared._RMC14.Xenonids.Projectile;
 
@@ -16,6 +15,4 @@ public sealed partial class XenoProjectileShotComponent : Component
 
     [DataField, AutoNetworkedField]
     public EntityUid? ShooterEnt;
-
-    public GameTick ShotAtTick;
 }

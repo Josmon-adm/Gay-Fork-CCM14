@@ -59,9 +59,9 @@
   - /Audio/_RMC14/Weapons/Guns/Gunshots/gun_ssg45_2.ogg
 
 - type: soundCollection
-  id: RMCType77Shoot
+  id: RMCAK4047Shoot
   files:
-  - /Audio/_RMC14/Weapons/Guns/Gunshots/gun_type77.ogg
+  - /Audio/_RMC14/Weapons/Guns/Gunshots/gun_ak4047.ogg
 
 - type: soundCollection
   id: RMCFlamerFL3Shoot

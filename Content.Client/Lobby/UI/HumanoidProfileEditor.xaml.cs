@@ -20,7 +20,6 @@ using Content.Client.UserInterface.Systems.Guidebook;
 using Content.Shared._CCM.Preferences;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._RMC14.LinkAccount;
-using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Shared._RMC14.Marines.Squads;
 using Content.Shared._RMC14.NamedItems;
 using Content.Shared._RMC14.Prototypes;
@@ -134,8 +133,6 @@ namespace Content.Client.Lobby.UI
 
         private List<(string, RequirementsSelector)> _jobPriorities = new();
 
-        private List<(string JobId, OptionButton Button, List<ProtoId<RankPrototype>?> RankIds)> _rankPriorities = new();
-
         private readonly Dictionary<string, BoxContainer> _jobCategories;
         private readonly Dictionary<string, RichTextLabel> _jobChanceLabels = new();
         private readonly Dictionary<string, PanelContainer> _jobChanceUnderlines = new();
@@ -160,9 +157,6 @@ namespace Content.Client.Lobby.UI
         private static readonly ProtoId<GuideEntryPrototype> JobPriorityWeightingGuidebook = "JobPriorityWeighting";
         private static readonly FileDialogFilters ProfileImportExportFilters =
             new(new FileDialogFilters.Group("yml", "yaml"));
-        // RMC14
-        private static readonly ProtoId<TraitCategoryPrototype> SpeechTraitsCategory = "SpeechTraits";
-        // RMC14
 
         public event Action<List<ProtoId<GuideEntryPrototype>>>? OnOpenGuidebook;
 
@@ -257,7 +251,6 @@ namespace Content.Client.Lobby.UI
             AlwaysRandomNameButton.OnPressed += _ => SetAlwaysRandomName(AlwaysRandomNameButton.Pressed);
             AlwaysRandomAppearanceButton.OnPressed += _ => SetAlwaysRandomAppearance(AlwaysRandomAppearanceButton.Pressed);
             InitializeBarkSettings();
-            RefreshTTS(); // Forge TTS
 
             #endregion Name
 
@@ -334,7 +327,6 @@ namespace Content.Client.Lobby.UI
             };
 
             BackgroundInfoButton.OnPressed += _ => OpenBackgroundInfoWindow();
-            
             BackgroundCommendationsButton.OnPressed += _ => OpenCommendationsWindow();
             // CCM rework lobby - end
 
@@ -919,9 +911,7 @@ namespace Content.Client.Lobby.UI
                     });
                 }
 
-                // RMC14
-                var selectors = new List<(TraitPreferenceSelector Selector, bool IsLanguageTrait)>();
-                // RMC14
+                List<TraitPreferenceSelector?> selectors = new();
                 var selectionCount = 0;
 
                 foreach (var traitProto in categoryTraits)
@@ -947,9 +937,7 @@ namespace Content.Client.Lobby.UI
                         SetDirty();
                         RefreshTraits(); // If too many traits are selected, they will be reset to the real value.
                     };
-                    // RMC14
-                    selectors.Add((selector, trait.Language != null));
-                    // RMC14
+                    selectors.Add(selector);
                 }
 
                 // Selection counter
@@ -962,52 +950,13 @@ namespace Content.Client.Lobby.UI
                     });
                 }
 
-                // RMC14
-                if (categoryId == SpeechTraitsCategory)
+                foreach (var selector in selectors)
                 {
-                    var languageSelectors = selectors
-                        .Where(selector => selector.IsLanguageTrait)
-                        .Select(selector => selector.Selector)
-                        .ToList();
-                    var otherSelectors = selectors
-                        .Where(selector => !selector.IsLanguageTrait)
-                        .Select(selector => selector.Selector)
-                        .ToList();
+                    if (selector == null)
+                        continue;
 
-                    AddTraitSelectors(languageSelectors, selectionCount, category, "rmc-trait-group-languages");
-                    AddTraitSelectors(otherSelectors, selectionCount, category, "rmc-trait-group-other-speech");
-                }
-                else
-                {
-                    AddTraitSelectors(selectors.Select(selector => selector.Selector).ToList(), selectionCount, category);
-                }
-                // RMC14
-            }
-
-            // RMC14
-            void AddTraitSelectors(
-                List<TraitPreferenceSelector> selectorsToAdd,
-                int currentSelectionCount,
-                TraitCategoryPrototype? currentCategory,
-                string? groupLabel = null)
-            {
-                if (selectorsToAdd.Count == 0)
-                    return;
-
-                if (groupLabel != null)
-                {
-                    TraitsList.AddChild(new Label
-                    {
-                        Text = Loc.GetString(groupLabel),
-                        Margin = new Thickness(8, 6, 0, 0),
-                        FontColorOverride = Color.LightGray
-                    });
-                }
-
-                foreach (var selector in selectorsToAdd)
-                {
-                    if (currentCategory is { MaxTraitPoints: >= 0 } &&
-                        selector.Cost + currentSelectionCount > currentCategory.MaxTraitPoints)
+                    if (category is { MaxTraitPoints: >= 0 } &&
+                        selector.Cost + selectionCount > category.MaxTraitPoints)
                     {
                         selector.Checkbox.Label.FontColorOverride = Color.Red;
                     }
@@ -1015,7 +964,6 @@ namespace Content.Client.Lobby.UI
                     TraitsList.AddChild(selector);
                 }
             }
-            // RMC14
         }
 
         /// <summary>
@@ -1027,7 +975,7 @@ namespace Content.Client.Lobby.UI
             _species.Clear();
 
             // Only allow specific species
-            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf", "Yautja" };
+            var allowedSpecies = new[] { "Human", "Avali", "Arachnid", "Moth", "Felinid", "Dwarf" };
             _species.AddRange(_prototypeManager.EnumeratePrototypes<SpeciesPrototype>()
                 .Where(o => o.RoundStart && allowedSpecies.Contains(o.ID)));
             var speciesIds = _species.Select(o => o.ID).ToList();
@@ -1211,7 +1159,6 @@ namespace Content.Client.Lobby.UI
             UpdateSexControls();
             UpdateGenderControls();
             UpdateSkinColor();
-            UpdatePlaytimeRankPreferenceControls();
             UpdateSquadPreferenceControls();
             UpdateAgeEdit();
             UpdateEyePickers();
@@ -1227,7 +1174,6 @@ namespace Content.Client.Lobby.UI
             UpdateXenoPostfix();
             UpdateAlwaysRandomToggles();
             UpdateBarkSettings();
-            UpdateTTSControls(); // Forge TTS
             UpdateOriginButton();
             UpdateReligionButton();
             ImportExportStateChanged?.Invoke();
@@ -1313,8 +1259,6 @@ namespace Content.Client.Lobby.UI
             JobListOther.DisposeAllChildren();
             _jobCategories.Clear();
             _jobPriorities.Clear();
-            _rankPriorities.Clear();
-            var firstCategory = true;
             _jobChanceLabels.Clear();
             _jobChanceUnderlines.Clear();
             var firstMarinesCategory = true;
@@ -1644,61 +1588,11 @@ namespace Content.Client.Lobby.UI
                             jobContainer
                         }
                     });
-                    // RMC14
-                    var rankOptions = new OptionButton()
-                    {
-                        Name = "RankOptionsButton",
-                        HorizontalAlignment = HAlignment.Right,
-                        VerticalAlignment = VAlignment.Center,
-                        Margin = new Thickness(3f, 3f, 0f, 0f)
-                    };
-
-                    // index 0 = Auto (null), subsequent entries map 1:1 to job.Ranks in definition order.
-                    var rankProtoIds = new List<ProtoId<RankPrototype>?> { null };
-
-                    // If the job has ranks we will add the options as buttons.
-                    if (job.Ranks != null && job.SetRankPreference)
-                    {
-                        rankOptions.AddItem(Loc.GetString("humanoid-profile-editor-rank-auto"));
-
-                        foreach (var rank in job.Ranks)
-                        {
-                            if (_prototypeManager.TryIndex(rank.Key, out var rankPrototype))
-                            {
-                                rankOptions.AddItem(rankPrototype.Name);
-                                rankProtoIds.Add(rank.Key);
-
-                                if (rank.Value != null && !_requirements.CheckRoleRequirements(rank.Value, Profile, out _))
-                                    rankOptions.SetItemDisabled(rankOptions.ItemCount - 1, true);
-                            }
-                        }
-
-                        rankOptions.SetItemDisabled(rankOptions.ItemCount - 1, true);
-                        // If the job only has 1 rank there is nothing to choose.
-                        if (rankProtoIds.Count <= 2)
-                            rankOptions.Disabled = true;
-
-                        rankOptions.OnItemSelected += args =>
-                        {
-                            rankOptions.SelectId(args.Id);
-                            SetRankPreference(job.ID, rankProtoIds[args.Id]);
-                        };
-                    }
-                    // Else if the job does not contain ranks we do not show it (Xenos as an example).
-                    else
-                    {
-                        rankOptions.Visible = false;
-                    }
-                    // RMC14
-
-                    _rankPriorities.Add((job.ID, rankOptions, rankProtoIds));
-                    jobContainer.AddChild(rankOptions);
                 }
             }
 
             UpdateJobPriorities();
             ApplyJobPriorityChances();
-            UpdatePlaytimeRankPreferenceControls();
         }
 
         private void OpenLoadout(JobPrototype? jobProto, RoleLoadout roleLoadout, RoleLoadoutPrototype roleLoadoutProto)
@@ -1893,7 +1787,6 @@ namespace Content.Client.Lobby.UI
 
             UpdateGenderControls();
             UpdateBarkSettings();
-            UpdateTTSControls(); // Forge TTS
             Markings.SetSex(newSex);
             UpdateEyePickers();
             UpdateMarkings();
@@ -2056,12 +1949,6 @@ namespace Content.Client.Lobby.UI
                 : "humanoid-profile-editor-background-info-open");
         }
         // CCM rework lobby - end
-
-        private void SetRankPreference(string jobId, ProtoId<RankPrototype>? rankId)
-        {
-            Profile = Profile?.WithRankPreference(jobId, rankId);
-            SetDirty();
-        }
 
         private void SetSquadPreference(EntProtoId<SquadTeamComponent>? newSquadPreference)
         {
@@ -2446,36 +2333,6 @@ namespace Content.Client.Lobby.UI
             }
 
             PronounsButton.SelectId((int) Profile.Gender);
-        }
-
-        private void UpdatePlaytimeRankPreferenceControls()
-        {
-            var preferenceAdjusted = false;
-            foreach (var (jobID, optionsButton, rankIds) in _rankPriorities)
-            {
-                if (!_prototypeManager.TryIndex(jobID, out JobPrototype? job) || job == null)
-                    continue;
-
-                if (job.Ranks == null || !job.SetRankPreference)
-                    continue;
-
-                ProtoId<RankPrototype>? preferredRank = null;
-                Profile?.RankPreferences.TryGetValue(jobID, out preferredRank);
-                var selectedIndex = rankIds.IndexOf(preferredRank);
-                if (selectedIndex < 0)
-                    selectedIndex = 0;
-
-                if (preferredRank is { } rank && rank == rankIds.Last())
-                {
-                    Profile = Profile?.WithRankPreference(jobID, null);
-                    preferenceAdjusted = true;
-                }
-
-                optionsButton.Select(selectedIndex);
-            }
-
-            if (preferenceAdjusted)
-                Save?.Invoke();
         }
 
         private void UpdateSquadPreferenceControls()

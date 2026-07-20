@@ -133,7 +133,8 @@
   id: RMCMagazinePistolMK80Empty
   suffix: Empty
   components:
-  - type: RMCEmptyMag
+  - type: BallisticAmmoProvider
+    proto: null
 
 - type: entity
   id: RMCCartridgePistol9mmSquashHead

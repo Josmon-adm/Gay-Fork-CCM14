@@ -120,7 +120,7 @@
   - type: EntityPreset
     randomGear:
     - [ RMCGrenadeMolotov ]
-    - [ CMPackFlareColonist ]
+    - [ CMPackFlare ]
     - [ WeaponNailgun ]
     - [ RMCFireAxe ]
     - [ RMCWelderIndustrial ]
@@ -142,7 +142,7 @@
     primaryWeapons:
     - [ CMBeltMarineHunting, RMCWeaponBoltActionRifle ]
     - [ RMCBeltMarineUZI, RMCWeaponSMGUZI ]
-    - [ CMBeltMarineBuckshot, RMCWeaponShotgunM12 ]
+    - [ CMBeltMarineBuckshot, RMCWeaponShotgunHG3712 ]
     - [ CMBeltMarineAR10, WeaponRifleAR10 ]
     primaryWeaponChance: 0.6
 

@@ -46,20 +46,14 @@ public sealed class TargetingOverlay : Overlay
 
         while (query.MoveNext(out var uid, out var targeted))
         {
-            if (!xformQuery.TryGetComponent(uid, out var xform))
-                continue;
-
-            var viewportEye = args.Viewport.Eye;
-            if (viewportEye != null && viewportEye.Position.MapId != xform.MapID)
-                continue;
-
             // Laser visuals
             foreach (var targeter in targeted.TargetedBy)
             {
                 if (!targetingLaserQuery.TryGetComponent(targeter, out var targetingLaser) || !targetingLaser.ShowLaser)
                     continue;
 
-                if (!xformQuery.TryGetComponent(targeter, out var gunXform))
+                if (!xformQuery.TryGetComponent(targeter, out var gunXform) ||
+                    !xformQuery.TryGetComponent(uid, out var xform))
                     continue;
 
                 if (xform.MapID != gunXform.MapID)
@@ -94,7 +88,10 @@ public sealed class TargetingOverlay : Overlay
                 worldHandle.DrawTextureRect(laserRsi, rotated, Color.White.WithAlpha(alpha));
             }
 
-            var worldPosCross = _transform.GetWorldPosition(xform, xformQuery);
+            if (!xformQuery.TryGetComponent(uid, out var targetXform))
+                continue;
+
+            var worldPosCross = _transform.GetWorldPosition(targetXform, xformQuery);
 
             if (targeted.TargetType == TargetedEffects.None)
                 continue;

@@ -38,6 +38,3 @@
   - type: RequiresSkill
     skills:
       RMCSkillPolice: 1
-  - type: GuideHelp
-    guides:
-    - RMCGuideRoleMilitaryPolice

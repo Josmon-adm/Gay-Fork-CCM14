@@ -2,7 +2,6 @@
   parent: RMCJobRibbonBase
   id: CMFreePressResponder
   name: rmc-job-name-free-press-responder
-  spawnMenuRoleName: Free Press (Fax Responder)
   description: rmc-job-description-free-press-responder
   playTimeTracker: CMJobFreePressResponder
   ranks:

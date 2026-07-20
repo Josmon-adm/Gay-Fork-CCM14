@@ -54,10 +54,3 @@
   sprite:
     sprite: _RMC14/Decals/oil_floor.rsi
     state: mfloor7
-
-- type: decal
-  parent: RMCDecalOilBase
-  id: RMCDecalFuelResidue
-  sprite:
-    sprite: _RMC14/Decals/oil_floor.rsi
-    state: fuel
