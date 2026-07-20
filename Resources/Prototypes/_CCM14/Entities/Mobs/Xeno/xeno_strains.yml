@@ -699,7 +699,7 @@
         hard: false
         shape:
           !type:PhysShapeAabb
-          bounds: "-0.1,-0.1,0.1,0.1"
+          bounds: "10,10,10,10"
         mask:
         - FullTileLayer
         layer:
