@@ -48,7 +48,7 @@
                                         <TextureRect Name="CenterFacehuggerPortrait" MinSize="96 96"
                                                      VerticalAlignment="Center"
                                                      Stretch="KeepAspectCentered"
-                                                     TexturePath="/Textures/_RMC14/Mobs/Xenonids/Larva/larva.rsi/larva.png" />
+                                                     TexturePath="/Textures/_RMC14/Interface/larva.png" />
                                     </BoxContainer>
                                     <PanelContainer Name="ReadyDivider" StyleClasses="LobbyMenuDivider"
                                                     MinSize="0 2" HorizontalExpand="True" Margin="0 6" />
