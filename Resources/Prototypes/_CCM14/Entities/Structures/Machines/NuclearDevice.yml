@@ -115,5 +115,3 @@
     whitelist:
       components:
       - XenoTunnel
-  - type: SpawnOnTerminate
-    spawn: RMCOrbitalCannonExplosionAegis
