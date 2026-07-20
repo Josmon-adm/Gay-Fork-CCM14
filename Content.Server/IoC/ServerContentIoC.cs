@@ -104,6 +104,9 @@ namespace Content.Server.IoC
             IoCManager.Register<ICCMSponsorshipSecretsProvider, CCMSponsorshipSecretsStubProvider>();
             IoCManager.Register<CCMSponsorshipManager>();
             IoCManager.Register<CCMCustomizationManager>();
+
+            // Forge
+            IoCManager.Register<Content.Server._Forge.TTS.TTSManager>();
         }
     }
 }
