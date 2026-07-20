@@ -5,6 +5,7 @@ using System.Linq;
 using Content.Client._RMC14.PlayTimeTracking;
 using Content.Shared.CCVar;
 using Content.Shared._CCM.Sponsorship;
+using Content.Shared._Forge.Sponsor;
 using Content.Shared.Localizations;
 using Content.Shared.Players;
 using Content.Shared.Players.JobWhitelist;
@@ -305,7 +306,7 @@ public sealed class JobRequirementsManager : ISharedPlaytimeManager
     {
         var _ = EnsureCCMSponsorshipHook();
         return _ccmSponsorshipStatusReady &&
-               _sponsorshipSystem?.LatestStatus?.Tier >= CCMSponsorshipTier.SponsorII;
+               _sponsorshipSystem?.LatestStatus?.Level >= SponsorLevel.Level2;
     }
 
     public void RequestSponsorshipStatus()

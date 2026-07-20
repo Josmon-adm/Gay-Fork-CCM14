@@ -8,6 +8,7 @@ using Content.Client.Resources;
 using Content.Client.Stylesheets;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._CCM.Sponsorship;
+using Content.Shared._Forge.Sponsor;
 using Robust.Shared.Configuration;
 using Robust.Client.Graphics;
 using Robust.Client.ResourceManagement;
@@ -722,8 +723,9 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
         };
         grid.AddChild(BuildGhostCard());
         grid.AddChild(BuildTagCard());
-        grid.AddChild(BuildChatColorCard("ccm-customization-slot-ooc-color", _oocColorSelector, _oocColorPreviewLabel, "OOC"));
-        grid.AddChild(BuildChatColorCard("ccm-customization-slot-looc-color", _loocColorSelector, _loocColorPreviewLabel, "LOOC"));
+        // OOC-цвет открывается с SponsorI, LOOC-цвет - с SponsorII (см. NormalizeChatColorId на сервере).
+        grid.AddChild(BuildChatColorCard("ccm-customization-slot-ooc-color", _oocColorSelector, _oocColorPreviewLabel, "OOC", SponsorLevel.Level1));
+        grid.AddChild(BuildChatColorCard("ccm-customization-slot-looc-color", _loocColorSelector, _loocColorPreviewLabel, "LOOC", SponsorLevel.Level2));
 
         stack.AddChild(BuildSectionBlock("ccm-customization-tab-misc", grid));
         return stack;
@@ -865,7 +867,8 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
             BuildCardHeader(Loc.GetString(titleKey), Loc.GetString("ccm-customization-badge-xeno"), accentProvider),
             BuildXenoCurrentPreview(slotId, accent),
             selector);
-        return WrapWithAvailabilityOverlay(card, () => !(_status?.CustomizationUnlocked ?? false));
+        // Скины ксено входят в "расширенную" кастомизацию (Level3+), как и на сервере.
+        return WrapWithAvailabilityOverlay(card, () => (_status?.Level ?? SponsorLevel.None) < SponsorLevel.Level3);
     }
 
     private Control BuildXenoCurrentPreview(string slotId, Color accent)
@@ -963,7 +966,8 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
             BuildCardHeader(Loc.GetString("ccm-customization-slot-ghost"), Loc.GetString("ccm-customization-badge-misc"), accentProvider),
             BuildGhostPreview(),
             selector);
-        return WrapWithAvailabilityOverlay(card, () => (_status?.Tier ?? CCMSponsorshipTier.None) < CCMSponsorshipTier.SponsorII);
+        // Скин призрака входит в "расширенную" кастомизацию (Level3+), как и на сервере.
+        return WrapWithAvailabilityOverlay(card, () => (_status?.Level ?? SponsorLevel.None) < SponsorLevel.Level3);
     }
 
     private Control BuildTagCard()
@@ -1017,8 +1021,8 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
             customTagContainer,
             () =>
             {
-                var tier = _status?.Tier ?? CCMSponsorshipTier.None;
-                return tier >= CCMSponsorshipTier.SponsorII && tier < CCMSponsorshipTier.SponsorIII;
+                var level = _status?.Level ?? SponsorLevel.None;
+                return level >= SponsorLevel.Level2 && level < SponsorLevel.Level3;
             });
 
         var tagControls = new BoxContainer
@@ -1032,7 +1036,7 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
 
         var tagControlsGuard = WrapWithAvailabilityOverlay(
             tagControls,
-            () => (_status?.Tier ?? CCMSponsorshipTier.None) < CCMSponsorshipTier.SponsorII);
+            () => (_status?.Level ?? SponsorLevel.None) < SponsorLevel.Level2);
 
         var card = BuildDecoratedCard(accentProvider, 332,
             BuildCardHeader(Loc.GetString("ccm-customization-slot-ooc-tag"), "OOC", accentProvider),
@@ -1058,7 +1062,7 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
         return card;
     }
 
-    private Control BuildChatColorCard(string titleKey, CCMOptionButton selector, Label previewLabel, string previewChannel)
+    private Control BuildChatColorCard(string titleKey, CCMOptionButton selector, Label previewLabel, string previewChannel, SponsorLevel minLevel)
     {
         var card = BuildDecoratedCard(() => GetThemeAccent(0.18f), 142,
             new Label
@@ -1069,7 +1073,7 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
             },
             selector,
             BuildPreviewBubble(previewLabel, () => GetThemeAccent(0.18f).WithAlpha(0.26f), previewChannel, minHeight: 38, verticalExpand: false));
-        return WrapWithAvailabilityOverlay(card, () => !(_status?.CustomizationUnlocked ?? false));
+        return WrapWithAvailabilityOverlay(card, () => (_status?.Level ?? SponsorLevel.None) < minLevel);
     }
 
     private Control BuildPreviewBubble(Label content, Func<Color> borderColorProvider, string? prefix = null, float minHeight = 82, bool verticalExpand = true)
@@ -1591,9 +1595,9 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
 
     private void UpdateStatusText()
     {
-        var tier = _status?.Tier ?? CCMSponsorshipTier.None;
+        var level = _status?.Level ?? SponsorLevel.None;
         _statusLabel.Text = Loc.GetString("ccm-sponsorship-current-tier",
-            ("tier", Loc.GetString(GetTierTitleKey(tier))));
+            ("tier", GetLevelDisplayName(level)));
         _statusHintLabel.Text = _status?.CustomizationUnlocked ?? false
             ? Loc.GetString("ccm-customization-status-enabled")
             : Loc.GetString("ccm-customization-status-locked");
@@ -1615,10 +1619,11 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
 
     private void UpdateOocTagControls()
     {
-        var tier = _status?.Tier ?? CCMSponsorshipTier.None;
+        var level = _status?.Level ?? SponsorLevel.None;
         var selectedTagId = OocTagOptions[Math.Clamp(_oocTagSelector.SelectedId, 0, OocTagOptions.Length - 1)].Id;
-        var canUsePresetTag = tier >= CCMSponsorshipTier.SponsorI;
-        var canUseCustomTag = tier >= CCMSponsorshipTier.SponsorIII;
+        // Готовый OOC-тег - перк Level2, кастомный текстовый тег - Level3 (как и на сервере).
+        var canUsePresetTag = level >= SponsorLevel.Level2;
+        var canUseCustomTag = level >= SponsorLevel.Level3;
 
         if (!canUsePresetTag && selectedTagId != CCMOocTags.None)
         {
@@ -1990,15 +1995,11 @@ public sealed partial class CCMCustomizationWindow : DefaultCMWindow
         }
     }
 
-    private string GetTierTitleKey(CCMSponsorshipTier tier)
+    private static string GetLevelDisplayName(SponsorLevel level)
     {
-        return tier switch
-        {
-            CCMSponsorshipTier.SponsorI => "ccm-sponsorship-tier-1-title",
-            CCMSponsorshipTier.SponsorII => "ccm-sponsorship-tier-2-title",
-            CCMSponsorshipTier.SponsorIII => "ccm-sponsorship-tier-3-title",
-            _ => "ccm-sponsorship-tier-none-title",
-        };
+        return level == SponsorLevel.None
+            ? Loc.GetString("ccm-sponsorship-tier-none-title")
+            : SponsorData.SponsorNames.GetValueOrDefault(level, level.ToString());
     }
 
     private Color GetSlotAccent(string slotId)

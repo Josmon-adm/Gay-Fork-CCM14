@@ -1,6 +1,6 @@
 ﻿// CM14 rework: non-RMC edit marker.
 using System.Linq;
-using Content.Server._CCM.Sponsorship;
+using Content.Server._Forge.Sponsor;
 using Content.Server._RMC14.PlayTimeTracking;
 using Content.Server.Administration;
 using Content.Server.Administration.Managers;
@@ -42,7 +42,7 @@ public sealed class PlayTimeTrackingSystem : EntitySystem
     [Dependency] private readonly PlayTimeTrackingManager _tracking = default!;
     [Dependency] private readonly RMCPlayTimeManager _rmcPlayTime = default!;
     // CCM sponsorship playtime bypass context.
-    [Dependency] private readonly CCMSponsorshipManager _ccmSponsorship = default!;
+    [Dependency] private readonly SponsorManager _ccmSponsorship = default!;
 
     public override void Initialize()
     {

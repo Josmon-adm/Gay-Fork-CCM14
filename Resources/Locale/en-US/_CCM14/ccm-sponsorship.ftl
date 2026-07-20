@@ -27,6 +27,12 @@ ccm-sponsorship-perk-job-whitelist = Unlocks whitelisted roles.
 ccm-sponsorship-perk-discord-role = Sponsor role and access to the sponsor Discord channel.
 ccm-sponsorship-perk-thanks = Thanks for contributing to the project's development.
 ccm-sponsorship-perk-queue = Priority queue bypass when queue support is enabled.
+ccm-sponsorship-perk-ooc-color = Custom OOC chat color.
+ccm-sponsorship-perk-looc-color = Custom LOOC chat color.
+ccm-sponsorship-perk-ooc-tag-preset = Choose a preset OOC tag.
+ccm-sponsorship-perk-ooc-tag-custom = Set a custom OOC tag (up to 12 characters).
+ccm-sponsorship-perk-ghost-skin = Custom ghost skin.
+ccm-sponsorship-perk-xeno-skin = Custom xeno skins.
 
 ccm-customization-header = Customization
 ccm-customization-save = Save customization

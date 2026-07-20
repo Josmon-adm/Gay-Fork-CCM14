@@ -431,7 +431,6 @@ namespace Content.Server.Database
         Task<CCMPlayerAchievementStatsSnapshot> GetCCMPlayerAchievementStats(Guid player);
 
         Task<CCMCustomizationSnapshot> GetCCMCustomization(Guid player);
-        Task<CCMStoredSponsorshipRecord?> GetCCMStoredSponsorship(Guid player);
 
         Task AdjustCCMPlayerAchievementStats(
             Guid player,
@@ -446,7 +445,6 @@ namespace Content.Server.Database
         Task SetCCMUnlockedAchievementIds(Guid player, string unlockedAchievementIds);
 
         Task SaveCCMCustomization(Guid player, CCMCustomizationSnapshot snapshot);
-        Task SaveCCMStoredSponsorship(Guid player, CCMSponsorshipTier tier, long expirationUnixSeconds);
 
         Task SaveCCMRoundStats(
             Guid player,
@@ -1470,12 +1468,6 @@ namespace Content.Server.Database
             return RunDbCommand(() => _db.GetCCMCustomization(player));
         }
 
-        public Task<CCMStoredSponsorshipRecord?> GetCCMStoredSponsorship(Guid player)
-        {
-            DbReadOpsMetric.Inc();
-            return RunDbCommand(() => _db.GetCCMStoredSponsorship(player));
-        }
-
         public Task AdjustCCMPlayerAchievementStats(
             Guid player,
             int friendlyFireDamageDelta = 0,
@@ -1508,12 +1500,6 @@ namespace Content.Server.Database
         {
             DbWriteOpsMetric.Inc();
             return RunDbCommand(() => _db.SaveCCMCustomization(player, snapshot));
-        }
-
-        public Task SaveCCMStoredSponsorship(Guid player, CCMSponsorshipTier tier, long expirationUnixSeconds)
-        {
-            DbWriteOpsMetric.Inc();
-            return RunDbCommand(() => _db.SaveCCMStoredSponsorship(player, tier, expirationUnixSeconds));
         }
 
         public Task SaveCCMRoundStats(

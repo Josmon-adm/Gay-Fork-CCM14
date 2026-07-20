@@ -1,40 +1,34 @@
+// Forge port: this manager used to back patron/sponsor state with its own DB tier
+// and a custom Discord OAuth flow. After porting the Monolith _Forge Discord auth
+// (run at connect time, see DiscordAuthManager) and SponsorManager (level-driven),
+// tier flags now come straight from SponsorLevel. Per-user customization
+// (ghost color, lobby message, marine/xeno shoutouts) and the patron list used by
+// figurines/credits keep using the existing RMCPatron DB rows.
 using System.Threading;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+using Content.Server._Forge.Sponsor;
 using Content.Server.Database;
-using Content.Shared.CCVar;
-using Content.Shared._RMC14.CCVar;
+using Content.Shared._Forge.Sponsor;
 using Content.Shared._RMC14.LinkAccount;
 using Robust.Server.Player;
-using Robust.Shared.Configuration;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
-using Robust.Shared.Timing;
 
 namespace Content.Server._RMC14.LinkAccount;
 
 public sealed class LinkAccountManager : IPostInjectInit
 {
     [Dependency] private readonly ILogManager _log = default!;
-    [Dependency] private readonly INetConfigurationManager _config = default!;
     [Dependency] private readonly INetManager _net = default!;
     [Dependency] private readonly IPlayerManager _player = default!;
     [Dependency] private readonly IServerDbManager _db = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly UserDbDataManager _userDb = default!;
+    [Dependency] private readonly SponsorManager _sponsors = default!;
 
     private ISawmill _sawmill = default!;
-    private readonly Dictionary<NetUserId, TimeSpan> _lastRequest = new();
-    private readonly TimeSpan _minimumWait = TimeSpan.FromSeconds(0.5);
     private readonly Dictionary<NetUserId, SharedRMCPatronFull> _connected = new();
     private readonly Dictionary<NetUserId, SharedRMCPatron> _allPatrons = [];
     private readonly HashSet<Guid> _figurines = [];
-    private static readonly JsonSerializerOptions StateJsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
 
     public event Action? PatronsReloaded;
     public event Action<(NetUserId Id, SharedRMCPatronFull Patron)>? PatronUpdated;
@@ -66,35 +60,6 @@ public sealed class LinkAccountManager : IPostInjectInit
     {
         if (_player.TryGetSessionById(user, out var session))
             SendPatronStatus(session);
-    }
-
-    private void OnRequest(LinkAccountRequestMsg message)
-    {
-        _net.ServerSendMessage(new LinkAccountCodeMsg { Code = Guid.Empty }, message.MsgChannel);
-    }
-
-    private void OnDiscordOAuthLinkRequest(RMCDiscordOAuthLinkRequestMsg message)
-    {
-        var time = _timing.RealTime;
-        var userId = message.MsgChannel.UserId;
-        if (_lastRequest.TryGetValue(userId, out var last) &&
-            last + _minimumWait > time)
-        {
-            return;
-        }
-
-        _lastRequest[userId] = time;
-
-        try
-        {
-            var url = BuildDiscordOAuthLink(message);
-            _net.ServerSendMessage(new RMCDiscordOAuthLinkMsg { Url = url }, message.MsgChannel);
-        }
-        catch (Exception e)
-        {
-            _sawmill.Error($"Failed to generate Discord OAuth link:\n{e}");
-            _net.ServerSendMessage(new RMCDiscordOAuthLinkMsg { Error = "oauth-link-failed" }, message.MsgChannel);
-        }
     }
 
     private async void OnClearGhostColor(RMCClearGhostColorMsg message)
@@ -201,6 +166,9 @@ public sealed class LinkAccountManager : IPostInjectInit
 
     public string GetPatronOOCHexColor(NetUserId userId)
     {
+        if (_sponsors.TryGetSponsor(userId, out var level) && SponsorData.SponsorColor.TryGetValue(level, out var color))
+            return color;
+
         return "#FFFFFF";
     }
 
@@ -218,29 +186,27 @@ public sealed class LinkAccountManager : IPostInjectInit
         }
         catch (Exception e)
         {
-            _sawmill.Error($"Failed to update Discord account data:\n{e}");
+            _sawmill.Error($"Failed to update patron data:\n{e}");
         }
     }
 
     private async Task RefreshConnected(NetUserId userId, CancellationToken cancel)
     {
-        var linked = await _db.HasLinkedAccount(userId.UserId, cancel);
         var patron = await _db.GetPatron(userId.UserId, cancel);
-        _connected[userId] = ToSharedPatronFull(linked, patron);
+        var full = ToSharedPatronFull(userId, patron);
+        _connected[userId] = full;
+        PatronUpdated?.Invoke((userId, full));
     }
 
-    private static SharedRMCPatronFull ToSharedPatronFull(bool linked, RMCPatron? patron)
+    private SharedRMCPatronFull ToSharedPatronFull(NetUserId userId, RMCPatron? patron)
     {
-        var tier = patron?.Tier == null
-            ? null
-            : new SharedRMCPatronTier(
-                patron.Tier.ShowOnCredits,
-                patron.Tier.GhostColor,
-                patron.Tier.NamedItems,
-                patron.Tier.Figurines,
-                patron.Tier.LobbyMessage,
-                patron.Tier.RoundEndShoutout,
-                patron.Tier.Name);
+        // Tier flags come from Forge SponsorLevel; the DB patron row (if present)
+        // only provides the displayed tier name and per-user customization storage.
+        _sponsors.TryGetSponsor(userId, out var level);
+        var linked = level != SponsorLevel.None;
+
+        var dbTierName = patron?.Tier?.Name;
+        var tier = BuildTierFromLevel(level, dbTierName);
 
         Color? ghostColor = patron?.GhostColor == null
             ? null
@@ -261,59 +227,51 @@ public sealed class LinkAccountManager : IPostInjectInit
         return new SharedRMCPatronFull(tier, linked, ghostColor, lobbyMessage, shoutouts);
     }
 
+    /// <summary>
+    ///     Maps a Forge sponsor level onto the patron feature flags consumed by client UI,
+    ///     figurine/named-item systems and chat. Levels stack — each tier unlocks the
+    ///     previous tier's perks plus its own.
+    /// </summary>
+    private static SharedRMCPatronTier? BuildTierFromLevel(SponsorLevel level, string? dbTierName)
+    {
+        if (level == SponsorLevel.None)
+            return null;
+
+        SponsorData.SponsorNames.TryGetValue(level, out var defaultName);
+        var name = dbTierName ?? defaultName ?? level.ToString();
+
+        var showOnCredits = true;
+        var lobbyMessage = level >= SponsorLevel.Level1;
+        var roundEndShoutout = level >= SponsorLevel.Level2;
+        var ghostColor = level >= SponsorLevel.Level3;
+        var namedItems = level >= SponsorLevel.Level4;
+        var figurines = level >= SponsorLevel.Level5;
+
+        return new SharedRMCPatronTier(
+            showOnCredits,
+            ghostColor,
+            namedItems,
+            figurines,
+            lobbyMessage,
+            roundEndShoutout,
+            name);
+    }
+
     private static SharedRMCPatron ToSharedPatron(RMCPatron patron)
     {
         return new SharedRMCPatron(patron.Player.LastSeenUserName, patron.Tier.Name);
     }
 
-    private string BuildDiscordOAuthLink(RMCDiscordOAuthLinkRequestMsg message)
+    private void OnSponsorChanged(NetUserId userId)
     {
-        var baseUrl = _config.GetCVar(RMCCVars.RMCDiscordOAuthBaseUrl).Trim().TrimEnd('/');
-        if (string.IsNullOrWhiteSpace(baseUrl))
-            throw new InvalidOperationException($"{RMCCVars.RMCDiscordOAuthBaseUrl.Name} is not configured.");
-
-        var secret = _config.GetCVar(RMCCVars.RMCDiscordOAuthStateSecret);
-        if (string.IsNullOrWhiteSpace(secret))
-            throw new InvalidOperationException($"{RMCCVars.RMCDiscordOAuthStateSecret.Name} is not configured.");
-
-        var lifetime = Math.Max(30, _config.GetCVar(RMCCVars.RMCDiscordOAuthStateLifetimeSeconds));
-        var locale = _config.GetClientCVar(message.MsgChannel, CCVars.ClientLocale);
-        var payload = new DiscordOAuthStatePayload(
-            message.MsgChannel.UserId.UserId,
-            DateTimeOffset.UtcNow.AddSeconds(lifetime).ToUnixTimeSeconds(),
-            Base64UrlEncode(RandomNumberGenerator.GetBytes(16)),
-            locale);
-
-        var payloadJson = JsonSerializer.Serialize(payload, StateJsonOptions);
-        var payloadBase64 = Base64UrlEncode(Encoding.UTF8.GetBytes(payloadJson));
-        byte[] signature;
-        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret)))
-        {
-            signature = hmac.ComputeHash(Encoding.UTF8.GetBytes(payloadBase64));
-        }
-
-        var state = $"{payloadBase64}.{Base64UrlEncode(signature)}";
-        return $"{baseUrl}/auth/login?state={Uri.EscapeDataString(state)}";
+        // Refresh tier flags when SponsorManager learns a new level (e.g. after Discord auth).
+        _ = RefreshAndSend(userId);
     }
-
-    private static string Base64UrlEncode(byte[] bytes)
-    {
-        return Convert.ToBase64String(bytes)
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
-    }
-
-    private sealed record DiscordOAuthStatePayload(Guid PlayerId, long Expires, string Nonce, string Locale);
 
     void IPostInjectInit.PostInject()
     {
         _sawmill = _log.GetSawmill("rmc.link_account");
-        _net.RegisterNetMessage<LinkAccountRequestMsg>(OnRequest);
-        _net.RegisterNetMessage<LinkAccountCodeMsg>();
         _net.RegisterNetMessage<LinkAccountStatusMsg>();
-        _net.RegisterNetMessage<RMCDiscordOAuthLinkRequestMsg>(OnDiscordOAuthLinkRequest);
-        _net.RegisterNetMessage<RMCDiscordOAuthLinkMsg>();
         _net.RegisterNetMessage<RMCPatronListMsg>();
         _net.RegisterNetMessage<RMCClearGhostColorMsg>(OnClearGhostColor);
         _net.RegisterNetMessage<RMCChangeGhostColorMsg>(OnChangeGhostColor);
@@ -323,5 +281,7 @@ public sealed class LinkAccountManager : IPostInjectInit
         _userDb.AddOnLoadPlayer(LoadData);
         _userDb.AddOnFinishLoad(FinishLoad);
         _userDb.AddOnPlayerDisconnect(ClientDisconnected);
+
+        _sponsors.SponsorChanged += OnSponsorChanged;
     }
 }

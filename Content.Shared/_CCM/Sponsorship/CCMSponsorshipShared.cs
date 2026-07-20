@@ -1,19 +1,11 @@
 ﻿// CM14 rework: non-RMC edit marker.
 using System;
 using System.Collections.Generic;
+using Content.Shared._Forge.Sponsor;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._CCM.Sponsorship;
-
-[Serializable, NetSerializable]
-public enum CCMSponsorshipTier : byte
-{
-    None = 0,
-    SponsorI,
-    SponsorII,
-    SponsorIII,
-}
 
 public static class CCMCustomizationConstants
 {
@@ -45,33 +37,22 @@ public static class CCMChatColorPresets
 {
     public const string Default = "default";
 
-    public sealed record Preset(string DisplayKey, string Hex, CCMSponsorshipTier MinimumTier);
+    public sealed record Preset(string DisplayKey, string Hex);
 
     public static readonly IReadOnlyDictionary<string, Preset> Presets = new Dictionary<string, Preset>
     {
-        [Default] = new("ccm-customization-color-default", string.Empty, CCMSponsorshipTier.None),
-        ["mint"] = new("ccm-customization-color-mint", "#6EFFB7", CCMSponsorshipTier.SponsorI),
-        ["azure"] = new("ccm-customization-color-azure", "#77D7FF", CCMSponsorshipTier.SponsorI),
-        ["amber"] = new("ccm-customization-color-amber", "#FFC766", CCMSponsorshipTier.SponsorII),
-        ["rose"] = new("ccm-customization-color-rose", "#FF8CA8", CCMSponsorshipTier.SponsorII),
-        ["violet"] = new("ccm-customization-color-violet", "#D88BFF", CCMSponsorshipTier.SponsorIII),
-        ["crimson"] = new("ccm-customization-color-crimson", "#FF6D7A", CCMSponsorshipTier.SponsorIII),
+        [Default] = new("ccm-customization-color-default", string.Empty),
+        ["mint"] = new("ccm-customization-color-mint", "#6EFFB7"),
+        ["azure"] = new("ccm-customization-color-azure", "#77D7FF"),
+        ["amber"] = new("ccm-customization-color-amber", "#FFC766"),
+        ["rose"] = new("ccm-customization-color-rose", "#FF8CA8"),
+        ["violet"] = new("ccm-customization-color-violet", "#D88BFF"),
+        ["crimson"] = new("ccm-customization-color-crimson", "#FF6D7A"),
     };
 
     public static bool IsValidPreset(string? id)
     {
         return !string.IsNullOrWhiteSpace(id) && Presets.ContainsKey(id);
-    }
-
-    public static bool CanUsePreset(string? id, CCMSponsorshipTier tier)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-            return false;
-
-        if (!Presets.TryGetValue(id, out var preset))
-            return false;
-
-        return tier >= preset.MinimumTier;
     }
 
     public static string GetHex(string id)
@@ -116,32 +97,26 @@ public static class CCMOocTags
 [Serializable, NetSerializable]
 public sealed class CCMSponsorshipStatusSnapshot
 {
-    public CCMSponsorshipTier Tier { get; }
+    public SponsorLevel Level { get; }
     public string DonateUrl { get; }
     public long ExpirationUnixSeconds { get; }
     public string OocColorHex { get; }
     public string LoocColorHex { get; }
-    public float RoleWeightBonus { get; }
-    public bool QueueBypass { get; }
     public bool CustomizationUnlocked { get; }
 
     public CCMSponsorshipStatusSnapshot(
-        CCMSponsorshipTier tier,
+        SponsorLevel level,
         string donateUrl,
         long expirationUnixSeconds,
         string oocColorHex,
         string loocColorHex,
-        float roleWeightBonus,
-        bool queueBypass,
         bool customizationUnlocked)
     {
-        Tier = tier;
+        Level = level;
         DonateUrl = donateUrl;
         ExpirationUnixSeconds = expirationUnixSeconds;
         OocColorHex = oocColorHex;
         LoocColorHex = loocColorHex;
-        RoleWeightBonus = roleWeightBonus;
-        QueueBypass = queueBypass;
         CustomizationUnlocked = customizationUnlocked;
     }
 }

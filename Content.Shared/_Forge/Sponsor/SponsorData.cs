@@ -1,0 +1,88 @@
+using System;
+using System.Collections.Generic;
+using Robust.Shared.Serialization;
+
+namespace Content.Shared._Forge.Sponsor;
+
+public sealed class SponsorData
+{
+    /// <summary>
+    ///     Discord role IDs mapped to sponsor levels. Edit to match the server's Discord roles.
+    /// </summary>
+    public static readonly Dictionary<string, SponsorLevel> RolesMap = new()
+    {
+        { "1228412355705307148", SponsorLevel.Level1 },
+        { "1388838190009290932", SponsorLevel.Level1 },
+        { "1388839804375924736", SponsorLevel.Level2 },
+        { "1388839967475634176", SponsorLevel.Level3 },
+        { "1388840103966933003", SponsorLevel.Level4 },
+        { "1388840314860736512", SponsorLevel.Level5 },
+        { "1388840456921550942", SponsorLevel.Level6 },
+
+        { "1487709251777331220", SponsorLevel.Level1 },
+        { "1226554881398280272", SponsorLevel.Level2 },
+        { "1257637477196370000", SponsorLevel.Level3 },
+        { "1257628115988119562", SponsorLevel.Level3 },
+        { "1227934528442728498", SponsorLevel.Level4 },
+        { "1229422799362195577", SponsorLevel.Level4 },
+        { "1351127483432570910", SponsorLevel.Level4 },
+        { "1228659342668988416", SponsorLevel.Level4 },
+        { "1381007703425679522", SponsorLevel.Level6 },
+        { "1228303275833425992", SponsorLevel.Level6 },
+    };
+
+    public static readonly Dictionary<SponsorLevel, string> SponsorColor = new()
+    {
+        { SponsorLevel.Level1, "#6bb9f0" },
+        { SponsorLevel.Level2, "#8a9eff" },
+        { SponsorLevel.Level3, "#6b8e23" },
+        { SponsorLevel.Level4, "#bdbe6b" },
+        { SponsorLevel.Level5, "#ff9e2c" },
+        { SponsorLevel.Level6, "#ffd700" },
+    };
+
+    public static readonly Dictionary<SponsorLevel, string> SponsorNames = new()
+    {
+        { SponsorLevel.Level1, "Подмастерье Форжа" },
+        { SponsorLevel.Level2, "Оружейник" },
+        { SponsorLevel.Level3, "Мастер Кузни" },
+        { SponsorLevel.Level4, "Великий Кузнец" },
+        { SponsorLevel.Level5, "Архитектор Горна" },
+        { SponsorLevel.Level6, "Демиург Форжа" },
+    };
+
+    public static readonly Dictionary<SponsorLevel, string> SponsorGhost = new()
+    {
+        { SponsorLevel.Level3, "MobObserver" },
+        { SponsorLevel.Level4, "MobObserver" },
+        { SponsorLevel.Level5, "MobObserver" },
+        { SponsorLevel.Level6, "MobObserver" },
+    };
+
+    public static SponsorLevel ParseRoles(List<string> roles)
+    {
+        var highestRole = SponsorLevel.None;
+        foreach (var role in roles)
+        {
+            if (RolesMap.TryGetValue(role, out var level))
+            {
+                if ((byte) level > (byte) highestRole)
+                    highestRole = level;
+            }
+        }
+
+        return highestRole;
+    }
+}
+
+[Serializable, NetSerializable]
+public enum SponsorLevel : byte
+{
+    None = 0,
+    Level1 = 1,
+    Level2 = 2,
+    Level3 = 3,
+    Level4 = 4,
+    Level5 = 5,
+    Level6 = 6,
+}

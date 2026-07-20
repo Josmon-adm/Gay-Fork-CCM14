@@ -1,3 +1,6 @@
+using Content.Server._Forge.Discord;
+using Content.Server._Forge.JoinQueue;
+using Content.Server._Forge.Sponsor;
 using Content.Server._RMC14.Actions;
 using Content.Server._RMC14.Admin;
 using Content.Server._RMC14.Commendations;
@@ -6,6 +9,7 @@ using Content.Server._RMC14.LinkAccount;
 using Content.Server._RMC14.Mentor;
 using Content.Server._RMC14.PlayTimeTracking;
 using Content.Server._CCM.Sponsorship;
+using Content.Shared._Forge.Sponsor;
 using Content.Server.Administration;
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
@@ -30,7 +34,6 @@ using Content.Server.Players.RateLimiting;
 using Content.Server.Preferences.Managers;
 using Content.Server.ServerInfo;
 using Content.Server.ServerUpdates;
-using Content.Server.Secrets.CCM.Sponsorship;
 using Content.Server.Voting.Managers;
 using Content.Server.Worldgen.Tools;
 using Content.Shared.Administration.Logs;
@@ -100,9 +103,14 @@ namespace Content.Server.IoC
             IoCManager.Register<RMCActionsManager>();
             IoCManager.Register<RMCChatBansManager>();
 
+            // Forge (Sponsor / Discord auth / Join queue / TTS)
+            IoCManager.Register<SponsorManager>();
+            IoCManager.Register<ISharedSponsorManager, SponsorManager>();
+            IoCManager.Register<DiscordAuthManager>();
+            IoCManager.Register<JoinQueueManager>();
+            IoCManager.Register<Content.Server._Forge.TTS.TTSManager>();
+
             // CCM
-            IoCManager.Register<ICCMSponsorshipSecretsProvider, CCMSponsorshipSecretsStubProvider>();
-            IoCManager.Register<CCMSponsorshipManager>();
             IoCManager.Register<CCMCustomizationManager>();
         }
     }

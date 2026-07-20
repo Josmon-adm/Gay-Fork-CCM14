@@ -10,6 +10,7 @@ using Content.Client.Resources;
 using Robust.Client.ResourceManagement;
 using Content.Client.Stylesheets;
 using Content.Shared._CCM.Sponsorship;
+using Content.Shared._Forge.Sponsor;
 using Content.Shared._CCM.Stats;
 using Content.Shared.GameTicking;
 using Robust.Client.Graphics;
@@ -927,34 +928,36 @@ namespace Content.Client.RoundEnd
                 },
             });
 
-            AddSponsorTierSection(root, sponsors, CCMSponsorshipTier.SponsorIII);
-            AddSponsorTierSection(root, sponsors, CCMSponsorshipTier.SponsorII);
-            AddSponsorTierSection(root, sponsors, CCMSponsorshipTier.SponsorI);
+            // По одной секции на каждую присутствующую роль, от старшей к младшей.
+            foreach (var level in sponsors.Select(entry => entry.Level).Distinct().OrderByDescending(level => level))
+            {
+                AddSponsorLevelSection(root, sponsors, level);
+            }
 
             panel.AddChild(root);
             return panel;
         }
 
-        private void AddSponsorTierSection(BoxContainer root, List<SponsorCreditEntry> sponsors, CCMSponsorshipTier tier)
+        private void AddSponsorLevelSection(BoxContainer root, List<SponsorCreditEntry> sponsors, SponsorLevel level)
         {
-            var tierEntries = sponsors.Where(entry => entry.Tier == tier).Select(entry => entry.Ckey).ToList();
-            if (tierEntries.Count == 0)
+            var levelEntries = sponsors.Where(entry => entry.Level == level).Select(entry => entry.Ckey).ToList();
+            if (levelEntries.Count == 0)
                 return;
 
-            var accent = GetSponsorTierColor(tier);
+            var accent = GetSponsorTierColor(level);
             var tierTitle = new Label
             {
-                Text = Loc.GetString(GetSponsorTierLocKey(tier)),
+                Text = GetSponsorLevelName(level),
                 FontColorOverride = accent,
                 HorizontalAlignment = HAlignment.Center,
                 HorizontalExpand = true,
-                FontOverride = GetSponsorTierFont(tier),
-                Margin = new Thickness(0, tier == CCMSponsorshipTier.SponsorIII ? 6 : 4, 0, 0),
+                FontOverride = GetSponsorTierFont(level),
+                Margin = new Thickness(0, level >= SponsorLevel.Level3 ? 6 : 4, 0, 0),
             };
 
             root.AddChild(tierTitle);
 
-            foreach (var ckey in tierEntries)
+            foreach (var ckey in levelEntries)
             {
                 root.AddChild(new Label
                 {
@@ -962,7 +965,7 @@ namespace Content.Client.RoundEnd
                     FontColorOverride = accent.WithAlpha(0.96f),
                     HorizontalAlignment = HAlignment.Center,
                     HorizontalExpand = true,
-                    FontOverride = GetSponsorTierNameFont(tier),
+                    FontOverride = GetSponsorTierNameFont(level),
                 });
             }
         }
@@ -976,9 +979,10 @@ namespace Content.Client.RoundEnd
                 return result;
 
             var sponsorHeader = Loc.GetString("ccm-sponsorship-endgame-header");
-            var tierOneTitle = Loc.GetString("ccm-sponsorship-tier-1-title");
-            var tierTwoTitle = Loc.GetString("ccm-sponsorship-tier-2-title");
-            var tierThreeTitle = Loc.GetString("ccm-sponsorship-tier-3-title");
+            // Имя роли (из SponsorData.SponsorNames) -> уровень, для обратного разбора строки кредитов.
+            var nameToLevel = SponsorData.SponsorNames
+                .GroupBy(pair => pair.Value)
+                .ToDictionary(group => group.Key, group => group.First().Key);
             var sponsorLineRegex = new Regex(@"^(?<ckey>.+?)\s+\((?<tier>[^)]+)\)$",
                 RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
@@ -1003,15 +1007,10 @@ namespace Content.Client.RoundEnd
                     if (match.Success)
                     {
                         var ckey = match.Groups["ckey"].Value.Trim();
-                        var tierText = match.Groups["tier"].Value.Trim();
-                        var tier = tierText switch
-                        {
-                            var t when t == tierThreeTitle => CCMSponsorshipTier.SponsorIII,
-                            var t when t == tierTwoTitle => CCMSponsorshipTier.SponsorII,
-                            _ => CCMSponsorshipTier.SponsorI,
-                        };
+                        var roleName = match.Groups["tier"].Value.Trim();
+                        var level = nameToLevel.GetValueOrDefault(roleName, SponsorLevel.Level1);
 
-                        result.Add(new SponsorCreditEntry(ckey, tier));
+                        result.Add(new SponsorCreditEntry(ckey, level));
                         continue;
                     }
 
@@ -1030,47 +1029,46 @@ namespace Content.Client.RoundEnd
             return Regex.Replace(markup, @"\[[^\]]+\]", string.Empty);
         }
 
-        private Font GetSponsorTierFont(CCMSponsorshipTier tier)
+        private Font GetSponsorTierFont(SponsorLevel level)
         {
-            return tier switch
+            return level switch
             {
-                CCMSponsorshipTier.SponsorIII => _sponsorTierThreeFont,
-                CCMSponsorshipTier.SponsorII => _sponsorTierTwoFont,
+                >= SponsorLevel.Level3 => _sponsorTierThreeFont,
+                SponsorLevel.Level2 => _sponsorTierTwoFont,
                 _ => _sponsorTierOneFont,
             };
         }
 
-        private Font GetSponsorTierNameFont(CCMSponsorshipTier tier)
+        private Font GetSponsorTierNameFont(SponsorLevel level)
         {
-            return tier switch
+            return level switch
             {
-                CCMSponsorshipTier.SponsorIII => _sponsorTierThreeNameFont,
-                CCMSponsorshipTier.SponsorII => _sponsorTierTwoNameFont,
+                >= SponsorLevel.Level3 => _sponsorTierThreeNameFont,
+                SponsorLevel.Level2 => _sponsorTierTwoNameFont,
                 _ => _sponsorTierOneNameFont,
             };
         }
 
-        private static string GetSponsorTierLocKey(CCMSponsorshipTier tier)
+        private static string GetSponsorLevelName(SponsorLevel level)
         {
-            return tier switch
-            {
-                CCMSponsorshipTier.SponsorIII => "ccm-sponsorship-tier-3-title",
-                CCMSponsorshipTier.SponsorII => "ccm-sponsorship-tier-2-title",
-                _ => "ccm-sponsorship-tier-1-title",
-            };
+            return SponsorData.SponsorNames.GetValueOrDefault(level, level.ToString());
         }
 
-        private static Color GetSponsorTierColor(CCMSponsorshipTier tier)
+        private static Color GetSponsorTierColor(SponsorLevel level)
         {
-            return tier switch
+            // Цвет роли из SponsorData с откатом на пороговый цвет перков.
+            if (SponsorData.SponsorColor.TryGetValue(level, out var roleColor))
+                return Color.FromHex(roleColor);
+
+            return level switch
             {
-                CCMSponsorshipTier.SponsorIII => Color.FromHex("#F6C453"),
-                CCMSponsorshipTier.SponsorII => Color.FromHex("#D96CFF"),
+                >= SponsorLevel.Level3 => Color.FromHex("#F6C453"),
+                SponsorLevel.Level2 => Color.FromHex("#D96CFF"),
                 _ => Color.FromHex("#61C9FF"),
             };
         }
 
-        private sealed record SponsorCreditEntry(string Ckey, CCMSponsorshipTier Tier);
+        private sealed record SponsorCreditEntry(string Ckey, SponsorLevel Level);
 
         private Control BuildCampaignScoreSide(string title, string score, Color accent, bool highlighted)
         {

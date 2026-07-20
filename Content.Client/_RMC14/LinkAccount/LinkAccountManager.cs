@@ -1,4 +1,7 @@
-﻿using Content.Shared._RMC14.LinkAccount;
+// Forge port: Discord OAuth flow was removed in favour of the Forge DiscordAuthManager
+// (handled at connect time). This client manager keeps the patron status + customization
+// surface used by UI, lobby and chat, but no longer round-trips an OAuth link.
+using Content.Shared._RMC14.LinkAccount;
 using Robust.Shared.Network;
 
 namespace Content.Client._RMC14.LinkAccount;
@@ -15,16 +18,7 @@ public sealed class LinkAccountManager : IPostInjectInit
     public SharedRMCLobbyMessage? LobbyMessage { get; private set; }
     public SharedRMCRoundEndShoutouts? RoundEndShoutout { get; private set; }
 
-    public event Action<Guid>? CodeReceived;
-    // RMC discord oauth rework start
-    public event Action<string, string>? OAuthLinkReceived;
-    // RMC discord oauth rework end
     public event Action? Updated;
-
-    private void OnCode(LinkAccountCodeMsg message)
-    {
-        CodeReceived?.Invoke(message.Code);
-    }
 
     private void OnStatus(LinkAccountStatusMsg ev)
     {
@@ -34,11 +28,6 @@ public sealed class LinkAccountManager : IPostInjectInit
         LobbyMessage = ev.Patron?.LobbyMessage;
         RoundEndShoutout = ev.Patron?.RoundEndShoutout;
         Updated?.Invoke();
-    }
-
-    private void OnOAuthLink(RMCDiscordOAuthLinkMsg ev)
-    {
-        OAuthLinkReceived?.Invoke(ev.Url, ev.Error);
     }
 
     private void OnPatronList(RMCPatronListMsg ev)
@@ -57,20 +46,9 @@ public sealed class LinkAccountManager : IPostInjectInit
         return Tier is { } tier && (tier.GhostColor || tier.NamedItems || tier.Figurines || tier.LobbyMessage || tier.RoundEndShoutout);
     }
 
-    public void RequestDiscordOAuthLink()
-    {
-        _net.ClientSendMessage(new RMCDiscordOAuthLinkRequestMsg());
-    }
-
     void IPostInjectInit.PostInject()
     {
-        _net.RegisterNetMessage<LinkAccountCodeMsg>(OnCode);
-        _net.RegisterNetMessage<LinkAccountRequestMsg>();
         _net.RegisterNetMessage<LinkAccountStatusMsg>(OnStatus);
-        // RMC discord oauth rework start
-        _net.RegisterNetMessage<RMCDiscordOAuthLinkRequestMsg>();
-        _net.RegisterNetMessage<RMCDiscordOAuthLinkMsg>(OnOAuthLink);
-        // RMC discord oauth rework end
         _net.RegisterNetMessage<RMCPatronListMsg>(OnPatronList);
         _net.RegisterNetMessage<RMCClearGhostColorMsg>();
         _net.RegisterNetMessage<RMCChangeGhostColorMsg>();

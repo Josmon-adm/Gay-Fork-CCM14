@@ -27,6 +27,12 @@ ccm-sponsorship-perk-job-whitelist = Открывает доступ к роля
 ccm-sponsorship-perk-discord-role = Спонсорская роль и доступ в спонсорский канал в Discord.
 ccm-sponsorship-perk-thanks = Благодарность за вклад в развитие проекта.
 ccm-sponsorship-perk-queue = Приоритетный вход при включенной системе очереди.
+ccm-sponsorship-perk-ooc-color = Свой цвет сообщений в OOC.
+ccm-sponsorship-perk-looc-color = Свой цвет сообщений в LOOC.
+ccm-sponsorship-perk-ooc-tag-preset = Выбор готового OOC-тега.
+ccm-sponsorship-perk-ooc-tag-custom = Свой OOC-тег (до 12 символов).
+ccm-sponsorship-perk-ghost-skin = Кастомный скин призрака.
+ccm-sponsorship-perk-xeno-skin = Кастомные скины ксеноморфов.
 
 ccm-customization-header = Кастомизация
 ccm-customization-save = Сохранить кастомизацию

@@ -1,9 +1,13 @@
 ﻿// CM14 rework: non-RMC edit marker.
+using Content.Client._Forge.DiscordAuth;
+using Content.Client._Forge.JoinQueue;
+using Content.Client._Forge.Sponsor;
 using Content.Client._RMC14.Explosion;
 using Content.Client._RMC14.Xenonids.Screech;
 using Content.Client.Administration.Managers;
 using Content.Client.Changelog;
 using Content.Client.Chat.Managers;
+using Content.Client.Corvax.ExportSprites;
 using Content.Client.DebugMon;
 using Content.Client.Eui;
 using Content.Client.Fullscreen;
@@ -53,6 +57,7 @@ namespace Content.Client.Entry
         [Dependency] private readonly IComponentFactory _componentFactory = default!;
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
         [Dependency] private readonly IClientAdminManager _adminManager = default!;
+        [Dependency] private readonly EntityScreenshotGenerator _entityScreenshotGenerator = default!; // Corvax-Wiki
         [Dependency] private readonly IParallaxManager _parallaxManager = default!;
         [Dependency] private readonly IConfigurationManager _configManager = default!;
         [Dependency] private readonly IStylesheetManager _stylesheetManager = default!;
@@ -80,6 +85,9 @@ namespace Content.Client.Entry
         [Dependency] private readonly TitleWindowManager _titleWindowManager = default!;
         [Dependency] private readonly IEntitySystemManager _entitySystemManager = default!;
         [Dependency] private readonly ClientsidePlaytimeTrackingManager _clientsidePlaytimeManager = default!;
+        [Dependency] private readonly SponsorManager _sponsorManager = default!;
+        [Dependency] private readonly DiscordAuthManager _discordAuthManager = default!;
+        [Dependency] private readonly JoinQueueManager _joinQueueManager = default!;
 
         public override void Init()
         {
@@ -135,6 +143,7 @@ namespace Content.Client.Entry
 
             _componentFactory.GenerateNetIds();
             _adminManager.Initialize();
+            _entityScreenshotGenerator.Initialize(); // Corvax-Wiki
             _screenshotHook.Initialize();
             _fullscreenHook.Initialize();
             _changelogManager.Initialize();
@@ -144,6 +153,9 @@ namespace Content.Client.Entry
             _jobRequirements.Initialize();
             _playbackMan.Initialize();
             _clientsidePlaytimeManager.Initialize();
+            _sponsorManager.Initialize();
+            _discordAuthManager.Initialize();
+            _joinQueueManager.Initialize();
 
             //AUTOSCALING default Setup!
             _configManager.SetCVar("interface.resolutionAutoScaleUpperCutoffX", 1080);
@@ -195,6 +207,9 @@ namespace Content.Client.Entry
             // Disable engine-default viewport since we use our own custom viewport control.
             _userInterfaceManager.MainViewport.Visible = false;
 
+            if (_entityScreenshotGenerator.PostInit()) // Corvax-Wiki
+                return;
+
             SwitchToDefaultState();
         }
 
@@ -234,6 +249,8 @@ namespace Content.Client.Entry
 
         public override void Update(ModUpdateLevel level, FrameEventArgs frameEventArgs)
         {
+             _entityScreenshotGenerator.Update(); // Corvax-Wiki
+
             if (level == ModUpdateLevel.FramePreEngine)
             {
                 _debugMonitorManager.FrameUpdate();

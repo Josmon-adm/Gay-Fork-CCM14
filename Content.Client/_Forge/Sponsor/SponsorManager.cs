@@ -1,0 +1,29 @@
+using System.Collections.Generic;
+using Content.Shared._Forge.Sponsor;
+using JetBrains.Annotations;
+using Robust.Shared.Network;
+
+namespace Content.Client._Forge.Sponsor;
+
+[UsedImplicitly]
+public sealed class SponsorManager : ISharedSponsorManager
+{
+    [Dependency] private readonly IClientNetManager _netMgr = default!;
+
+    private readonly Dictionary<NetUserId, SponsorLevel> _sponsors = new();
+
+    public void Initialize()
+    {
+        _netMgr.RegisterNetMessage<MsgSyncSponsorData>(OnSponsorDataReceived);
+    }
+
+    private void OnSponsorDataReceived(MsgSyncSponsorData message)
+    {
+        _sponsors[message.UserId] = message.Level;
+    }
+
+    public bool TryGetSponsor(NetUserId user, out SponsorLevel level)
+    {
+        return _sponsors.TryGetValue(user, out level);
+    }
+}
