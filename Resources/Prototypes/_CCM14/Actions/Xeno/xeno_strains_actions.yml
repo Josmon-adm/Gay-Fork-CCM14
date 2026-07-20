@@ -229,40 +229,11 @@
   parent: ActionXenoSprayAcid
   id: CCMActionXenoBurrowerImpale
   name: Burrowed spikes (40)
-  description: Strike with your spiked tail in ground 
+  description: Strike with your spiked tail in ground
   components:
   - type: Action
     itemIconStyle: NoItem
     icon:
       sprite: _RMC14/Actions/xeno_actions.rsi
       state: prae_impale
-    useDelay: 11
-
-- type: entity
-  parent: ActionXenoBase
-  id: CCMActionXenoBurrowerDeepImpale
-  name: Burrowed deep spike strike (70)
-  description: Strike with your spikes under ground with long range
-  components:
-  - type: Action
-    itemIconStyle: NoItem
-    icon:
-      sprite: _RMC14/Actions/xeno_actions.rsi
-      state: rav_eviscerate
-    useDelay: 15
-  - type: XenoAcidMine
-    range: 5
-    plasmaCost: 70
-    blastProto: RMCEffectXenoBurrowerDeepImpaleTelegraph
-    empoweredBlastProto: RMCEffectXenoBurrowerDeepImpaleTelegraph
-    actionIconEmpowered:
-      sprite: _RMC14/Actions/xeno_actions.rsi
-      state: rav_eviscerate
-  - type: TargetAction
-    deselectOnMiss: false
-    checkCanAccess: false
-    repeat: true
-    range: 5
-  - type: WorldTargetAction
-    event: !type:XenoAcidMineActionEvent
-  - type: ActionBlockIfResting
+    useDelay: 13
