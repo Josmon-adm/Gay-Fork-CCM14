@@ -35,10 +35,10 @@
     min: 3
   - type: XenoRage
     rageDecayTime: 1.25
-    maxRage: 25
+    maxRage: 20
     armorPerRage: 0
-    speedBuffPerRage: 0.05
-    attackSpeedPerRage: 0.165
+    speedBuffPerRage: 0.025
+    attackSpeedPerRage: 0.115
     healAmount: 0
   - type: XenoEvolution
     max: 500
