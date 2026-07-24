@@ -23,7 +23,7 @@
         - CMOintment
         - Brutepack
         - CMBloodPack
-        # - TODO RMC14 splint
+        - CMUMedicalSplint # CCM\CMU Splint Tag
         - CMAutoInjector
         - RMCSyringeCase
         - CMSurgicalCase
@@ -57,7 +57,7 @@
       - CMOintment
       - Brutepack
       - CMBloodPack
-      #      - TODO RMC14 splint
+      - CMUMedicalSplint # CCM\CMU Splint Tag
       - CMAutoInjector
       - RMCSyringeCase
       - CMSurgicalCase
@@ -85,9 +85,11 @@
     contents:
     - id: CMTraumaKit10
     - id: CMBurnKit10
-    - id: CMUSplintItem #CMU ADD
+    - id: CMUSplintItem # CCM-CMU ADD
     - id: CMBicaridineAutoInjector
     - id: CMKelotaneAutoInjector
+    - id: CCMTramadolAutoInjector # CCM-CMU ADD
+    - id: CMTricordrazineAutoInjector # CCM-CMU ADD
 
 - type: entity
   parent: RMCPouchMedkit
@@ -99,10 +101,11 @@
     - id: CMTricordrazineAutoInjector
     - id: CMTraumaKit10
     - id: CMTraumaKit10
-    - id: CMTraumaKit10
+ #   - id: CMTraumaKit10 CCM Change | For adding 1 Tramadol inj
     - id: CMBurnKit10
     - id: CMBurnKit10
-    - id: CMUSplintItem #CMU ADD
+    - id: CMUSplintItem # CCM-CMU ADD
+    - id: CCMTramadolAutoInjector # CCM-CMU ADD
 
 - type: entity
   parent: RMCPouchMedkit
@@ -115,6 +118,8 @@
     - id: CMSynthGraft
     - id: CMHealthAnalyzer
     - id: CMHyposprayFilledTricord
+    - id: CCMOxycodoneAutoInjector #CMU-CCM ADD
+      amount: 3
 
 - type: entity
   parent: RMCPouchMedkit
@@ -136,8 +141,9 @@
     - id: CMRollerBedSpawnFolded
     - id: CMSurgicalCaseFilled
     - id: CMBloodPackFull
-    - id: CMBloodPackFull
-    - id: CMUSplintItem #CMU ADD
+ #   - id: CMBloodPackFull CCM Change | For adding 1 Tramadol inj
+    - id: CMUSplintItem # CCM-CMU ADD
+    - id: CCMOxycodoneAutoInjector #CMU-CCM ADD
 
 - type: entity
   parent: RMCPouchMedkitPMC
@@ -149,10 +155,11 @@
     - id: CMTricordrazineAutoInjector
     - id: CMTraumaKit10
     - id: CMTraumaKit10
-    - id: CMTraumaKit10
+ #   - id: CMTraumaKit10 CCM Change | For adding 1 Tramadol inj
     - id: CMOintment10
     - id: CMOintment10
-    - id: CMUSplintItem #CMU ADD
+    - id: CMUSplintItem # CCM-CMU ADD
+    - id: CCMTramadolAutoInjector # CCM-CMU ADD
 
 - type: entity
   parent: RMCPouchMedkit
@@ -161,10 +168,10 @@
   components:
   - type: StorageFill
     contents:
-    - id: CMUSplintItem #CMU ADD
+    - id: CMUSplintItem # CCM-CMU ADD
     - id: CMTraumaKit10
     - id: CMBurnKit10
-    - id: CCMOxycodoneAutoInjector #CMU-CCM ADD
+    - id: CCMTramadolAutoInjector #CMU-CCM ADD
     - id: CMBicaridineAutoInjector
     - id: CMKelotaneAutoInjector
     - id: CMHealthAnalyzer
@@ -177,9 +184,10 @@
   - type: StorageFill
     contents:
     - id: CMBloodPackFull
-    - id: CMBloodPackFull
+ #   - id: CMBloodPackFull CCM Change | For adding 1 Tramadol inj
     - id: CMTraumaKit10
     - id: CMTraumaKit10
     - id: CMBurnKit10
     - id: CMBurnKit10
-    - id: CMUSplintItem #CMU ADD
+    - id: CMUSplintItem # CCM-CMU ADD
+    - id: CCMOxycodoneAutoInjector #CMU-CCM ADD
