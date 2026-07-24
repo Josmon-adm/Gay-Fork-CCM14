@@ -23,7 +23,7 @@
       - CMOintment
       - Brutepack
       - CMBloodPack
-      #      - TODO RMC14 splint
+      - CMUMedicalSplint # CCM\CMU Splint Tag
       - RMCPenlight
       - CMAutoInjector
       - CMFireExtinguisherPortable
