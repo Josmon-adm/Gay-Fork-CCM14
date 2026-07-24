@@ -31,7 +31,7 @@
       - CMOintment
       - Brutepack
       - Bloodpack
-      #      - TODO RMC14 splint
+      - CMUMedicalSplint # CCM\CMU Splint Tag
       - RMCPenlight
       - CMAutoInjector
       - RMCSyringeCase
@@ -101,7 +101,7 @@
       - CMOintment
       - Brutepack
       - Bloodpack
-      #      - TODO RMC14 splint
+      - CMUMedicalSplint # CCM\CMU Splint Tag
       - RMCPenlight
       - CMAutoInjector
       - RMCSyringeCase
@@ -127,10 +127,12 @@
     - id: CMHealthAnalyzer
     - id: CMTricordrazineAutoInjectorNoSkill
 #    - id: CMPainStopAutoInjectorNoSkill
+    - id: CCMParacetamolAutoInjector # CCM\CMU paracetamol inj
     - id: CMInaprovalineAutoInjector
     - id: CMGauze10
     - id: CMOintment10
 #    - id: CMMedicalSplint5
+    - id: CMUSplintItem # CMU ADD
 
 - type: entity
   parent: CMFirstAidKit
@@ -143,9 +145,11 @@
     - id: CMPillCanisterBicaridine
     - id: CMPillCanisterKelotane
     #    - id: CMPillCanisterTramadol # TODO RMC14
+    - id: CCMPillCanisterTramadol #CMU-CCM ADD
     - id: CMGauze10
     - id: CMBurnKit10
 #    - id: CMSplints5 # TODO RMC14
+    - id: CMUSplintItem # CMU ADD
 
 - type: entity
   parent: CMFirstAidKitSurgery
@@ -162,6 +166,8 @@
     - id: CMRetractor
 #    - id: CMOxycodoneAutoinjector # TODO RMC14
 #    - id: CMOxycodoneAutoinjector # TODO RMC14
+    - id: CCMOxycodoneAutoInjector
+      amount: 2
 
 - type: entity
   parent: CMFirstAidKit
@@ -191,6 +197,7 @@
     - id: CMKelotaneAutoInjector
       amount: 3
 #    - id: CMPainStopAutoInjectorNoSkill
+    - id: CCMParacetamolAutoInjector # CCM\CMU paracetamol inj
 
 - type: entity
   parent: CMFirstAidKit
@@ -249,6 +256,7 @@
     - id: CMBurnKit10
       amount: 2
 #    - id: CMMedicalSplints5
+    - id: CMUSplintItem # CMU ADD
 
 - type: entity
   parent: CMFirstAidKit
@@ -330,7 +338,9 @@
     - id: CMBurnKit10
     - id: CMBurnKit10
 #   - id: CMMedicalSplint5
+    - id: CMUSplintItem # CMU ADD
 #   - id: CMOxycodoneAutoInjector
+    - id: CCMOxycodoneAutoInjector
     - id: CMDexalinPlusAutoInjector
 
 - type: entity
@@ -358,6 +368,7 @@
     - id: CMTraumaKit10
     - id: CMTraumaKit10
 #   - id: CMMedicalSplint5
+    - id: CMUSplintItem # CMU ADD
     - id: CMSurgicalLine
     - id: RMCIronAutoInjector
     - id: CMBicaridineAutoInjector
@@ -390,3 +401,4 @@
     - id: RMCDermalineAutoInjector
     - id: CMKelotaneAutoInjector
 #   - id: CMOxycodoneAutoInjector
+    - id: CCMOxycodoneAutoInjector
