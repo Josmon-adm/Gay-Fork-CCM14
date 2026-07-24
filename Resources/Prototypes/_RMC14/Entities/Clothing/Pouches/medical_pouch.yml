@@ -9,7 +9,7 @@
   - type: Storage
     maxItemSize: Large
     grid:
-    - 0,0,7,1 #4 slots
+    - 0,0,11,1 #6 (4) slots | CCM-CMU Added +2 slots
     whitelist:
       tags:
       - DiscreteHealthAnalyzer
@@ -47,6 +47,8 @@
     - id: CMUSplintItem # CMU ADD
     - id: CMBurnKit10
     - id: CMTraumaKit10
+    - id: CCMTramadolAutoInjector # CCM-CMU ADD
+    - id: CMTricordrazineAutoInjector # CCM-CMU ADD
 
 - type: entity
   parent: RMCPouchMedical
@@ -59,6 +61,8 @@
     - id: CMPillCanisterBicaridine
     - id: CMPillCanisterKelotane
     - id: CMPillCanisterDexalin
+    - id: CMPillCanisterDylovene #CMU-CCM ADD
+    - id: CMPillCanisterTricordrazine #CMU-CCM ADD
 
 - type: entity
   parent: RMCPouchMedical
@@ -71,6 +75,8 @@
     - id: CMSynthGraft
     - id: CMHealthAnalyzer
     - id: CMHyposprayFilledTricord
+    - id: CCMPillCanisterTramadol #CMU-CCM ADD
+    - id: CMPillCanisterTricordrazine #CMU-CCM ADD
 
 - type: entity
   parent: RMCPouchMedical
@@ -83,3 +89,6 @@
     - id: CMSynthGraft
     - id: RMCHyposprayFilledEpi
     - id: RMCBottleEpinephrine
+    - id: CCMPillCanisterTramadol #CMU-CCM ADD
+    - id: CMPillCanisterTricordrazine #CMU-CCM ADD
+    
