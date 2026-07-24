@@ -51,7 +51,7 @@
       - Radio
       - Knife
       - PillPacket
-      # todo rmc14 splint
+      - CMUMedicalSplint # CCM\CMU Splint Tag
       components:
       - Pill
   - type: FixedItemSizeStorage
