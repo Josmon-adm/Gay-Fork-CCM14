@@ -263,3 +263,23 @@
     chatTypeOverride: null
     speechVerbOverrides: null
     messageWrapOverrides: {}
+
+- type: language
+  id: Pathogen
+  name: "Патоген"
+  description: "Обычный язык для мицелия и грибов - произовдит звонкие кликающие звуки"
+  typefaceId: null
+  languageIcon:
+    sprite: /Textures/_RMC14/Actions/xeno_actions.rsi
+    state: queen_word
+  randomizeObfuscation: true
+  expectedVocabularySize: 60
+  obfuscationMethod:
+    !type:XenoObfuscation
+    xenoSounds: ["sss", "sSs", "SSS", "Sss", "ssS", "sS", "SS"]
+    garbleChars: ['~', '*', '§', '¿']
+    intensityMultiplier: 1.2
+  speechOverride:
+    speechSoundsOverride: Xenonid
+    chatTypeOverride: null
+    speechVerbOverrides: null
