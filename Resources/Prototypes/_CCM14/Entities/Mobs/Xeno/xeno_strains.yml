@@ -955,6 +955,8 @@
   id: CCMXenoLurkerScorpion
   suffix: CCM-Scorpion
   components:
+  - type: Sprite
+    sprite: _CCM14/Mobs/Xenonids/Lurker/scorpion.rsi
   - type: XenoStrain
     name: Скорпион
     description: ccm-xeno-scorpion-description
@@ -1001,10 +1003,9 @@
     alert: XenoEnergyScorpion
     popupGain: Наш хвост наполяется ядом!
     popupNotEnough: У нас недостаточно яда!
-    max: 100
-    gain: 1
-    gainAttack: 2.5
-    gainAttackDowned: 2.5
+    max: 500
+    gainAttack: 15
+    gainAttackDowned: 15
   - type: XenoPlasma
     plasma: 0
     maxPlasma: 0

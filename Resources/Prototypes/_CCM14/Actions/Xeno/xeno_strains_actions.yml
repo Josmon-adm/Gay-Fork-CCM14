@@ -236,4 +236,59 @@
     icon:
       sprite: _RMC14/Actions/xeno_actions.rsi
       state: prae_impale
-    useDelay: 13
+    useDelay: 11
+
+- type: entity
+  parent: ActionXenoBase
+  id: CCMActionXenoBurrowerDeepImpale
+  name: Burrowed deep spike strike (70)
+  description: Strike with your spikes under ground with long range
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _RMC14/Actions/xeno_actions.rsi
+      state: rav_eviscerate
+    useDelay: 15
+  - type: XenoAcidMine
+    range: 5
+    plasmaCost: 70
+    blastProto: RMCEffectXenoBurrowerDeepImpaleTelegraph
+    empoweredBlastProto: RMCEffectXenoBurrowerDeepImpaleTelegraph
+    actionIconEmpowered:
+      sprite: _RMC14/Actions/xeno_actions.rsi
+      state: rav_eviscerate
+  - type: TargetAction
+    deselectOnMiss: false
+    checkCanAccess: false
+    repeat: true
+    range: 5
+  - type: WorldTargetAction
+    event: !type:XenoAcidMineActionEvent
+  - type: ActionBlockIfResting
+
+- type: entity
+  id: CCMActionXenoParalyzingInjection
+  parent: ActionXenoParalyzingSlash
+  name: Парализующий яд(350)
+  description: Ненадолго зарядите атаку ближнего боя, которая после небольшой задержки оглушит противника на долгое время.
+  components:
+  - type: Action
+    useDelay: 120
+  - type: XenoActionPlasma
+    cost: 0
+  - type: XenoActionEnergy
+    cost: 350
+
+- type: entity
+  id: CCMActionXenoApprehendScorpion
+  parent: ActionXenoApprehend
+  name: Ослабляющий яд (100)
+  description: Используйте яд, чтобы ускориться. Первый противник, которого вы ударите, будет замедлен.
+  components:
+  - type: Action
+    useDelay: 6
+  - type: XenoActionPlasma
+    cost: 0
+  - type: XenoActionEnergy
+    cost: 100
