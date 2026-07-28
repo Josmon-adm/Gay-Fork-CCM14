@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Content.Shared._RMC14.Chat;
 using Content.Shared._RMC14.Xenonids.Announce;
 using Content.Shared._RMC14.Xenonids.Hive;
@@ -15,20 +15,19 @@ using Robust.Shared.Utility;
 
 namespace Content.Shared._RMC14.Xenonids.Word;
 
-public sealed class XenoWordQueenSystem : EntitySystem
+public sealed partial class XenoWordQueenSystem : EntitySystem
 {
-    [Dependency] private readonly SharedActionsSystem _actions = default!;
-    [Dependency] private readonly SharedCMChatSystem _cmChat = default!;
-    [Dependency] private readonly IConfigurationManager _config = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
-    [Dependency] private readonly SharedXenoAnnounceSystem _xenoAnnounce = default!;
-    [Dependency] private readonly SharedXenoHiveSystem _hive = default!;
-    [Dependency] private readonly XenoPlasmaSystem _xenoPlasma = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private SharedCMChatSystem _cmChat = default!;
+    [Dependency] private IConfigurationManager _config = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private SharedUserInterfaceSystem _ui = default!;
+    [Dependency] private SharedXenoAnnounceSystem _xenoAnnounce = default!;
+    [Dependency] private SharedXenoHiveSystem _hive = default!;
+    [Dependency] private XenoPlasmaSystem _xenoPlasma = default!;
 
-    private readonly Regex _newLineRegex = new("\n{3,}", RegexOptions.Compiled);
     private int _characterLimit = 1000;
 
     public override void Initialize()
@@ -77,24 +76,22 @@ public sealed class XenoWordQueenSystem : EntitySystem
         if (text.Length > _characterLimit)
             text = text[.._characterLimit].Trim();
 
+        // Build filter of connected players in the hive.
+        // Note: hive members without an active player session won't appear here,
+        // but the message still reaches all connected members.
         var xenos = Filter
             .Empty()
             .AddWhereAttachedEntity(ent => _hive.IsMember(ent, hive));
 
-        if (xenos.Count <= 1)
-        {
-            _popup.PopupEntity(Loc.GetString("cm-xeno-words-of-the-queen-nobody-hear-you"), queen, queen, PopupType.LargeCaution);
-            return;
-        }
-
         _xenoPlasma.TryRemovePlasma(queen.Owner, queen.Comp.PlasmaCost);
 
-        text = _newLineRegex.Replace(text, "\n\n");
+        text = NewLineRegex.Replace(text, "\n\n");
         text = _cmChat.SanitizeMessageReplaceWords(queen, text);
-        var headerText = Loc.GetString("rmc-xeno-words-of-the-queen-header");
+        var headerText = Loc.GetString(queen.Comp.Header);
         var wrapped = FormattedMessage.EscapeText(text);
-        var header = $"{_xenoAnnounce.WrapHive(headerText)}\n";
-        var message = $"{header}[color=red][font size=14][bold]{wrapped}[/bold][/font][/color]";
+        var header = $"{_xenoAnnounce.WrapHive(headerText)}";
+        var colorHex = queen.Comp.MessageColor.ToHex();
+        var message = $"{header}[color={colorHex}][font size=14][bold]{wrapped}[/bold][/font][/color]";
 
         _xenoAnnounce.Announce(queen, xenos, text, message, queen.Comp.Sound);
 
@@ -120,4 +117,6 @@ public sealed class XenoWordQueenSystem : EntitySystem
 
         return false;
     }
+
+    private static readonly Regex NewLineRegex = new("\n{3,}");
 }
