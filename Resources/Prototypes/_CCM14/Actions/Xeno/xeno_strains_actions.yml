@@ -270,7 +270,7 @@
 - type: entity
   id: CCMActionXenoParalyzingInjection
   parent: ActionXenoParalyzingSlash
-  name: Парализующий яд(80)
+  name: Парализующий яд(350)
   description: Ненадолго зарядите атаку ближнего боя, которая после небольшой задержки оглушит противника на долгое время.
   components:
   - type: Action
@@ -278,12 +278,12 @@
   - type: XenoActionPlasma
     cost: 0
   - type: XenoActionEnergy
-    cost: 80
+    cost: 350
 
 - type: entity
   id: CCMActionXenoApprehendScorpion
   parent: ActionXenoApprehend
-  name: Ослабляющий яд (20)
+  name: Ослабляющий яд (100)
   description: Используйте яд, чтобы ускориться. Первый противник, которого вы ударите, будет замедлен.
   components:
   - type: Action
@@ -291,4 +291,4 @@
   - type: XenoActionPlasma
     cost: 0
   - type: XenoActionEnergy
-    cost: 20
+    cost: 100
