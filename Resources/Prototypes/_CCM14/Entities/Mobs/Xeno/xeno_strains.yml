@@ -933,6 +933,7 @@
       strains: # CCM Change
       - CCMXenoBurrowerImpaler
     - type: CanBeLarvaQueued
+    - type: CanBeLarvaQueued 
 # Polymorph
 - type: polymorph
   id: CCMJauntBurrow
