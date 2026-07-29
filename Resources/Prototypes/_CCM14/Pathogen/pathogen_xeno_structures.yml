@@ -6,6 +6,7 @@
   components:
   - type: Sprite
     sprite: _CCM14/Pathogen/xeno_wall.rsi
+    state: strangerwall
   - type: Icon
     sprite: _CCM14/Pathogen/xeno_wall.rsi
     state: strangerwall
@@ -159,6 +160,9 @@
   name: strange weed node
   description: A weird white one, pulsating node
   components:
+  - type: XenoWeeds
+    spawns: CCMXenoWeedsPathogen
+    level: 1
   - type: Sprite
     sprite: _CCM14/Pathogen/xeno_weeds.rsi
     drawdepth: FloorTiles

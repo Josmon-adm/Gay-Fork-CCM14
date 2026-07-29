@@ -15,6 +15,7 @@
     - state: egg_item
       map: [ "enum.XenoEggLayers.Base" ]
   - type: XenoEgg
+    state: growing
     eggOpenTime: 0.6
     knockdownTime: 0
     currentSprite: _CCM14/Pathogen/xeno_egg.rsi
@@ -75,8 +76,9 @@
   - type: Sprite
     color: '#FFFFFFAA'
     sprite: _CCM14/Pathogen/xeno_egg.rsi
+    state: egg
+    drawdepth: Items
     layers:
-    - state: egg
     - sprite: _RMC14/Interface/xeno_hud.rsi
       state: xeno_structure_node_indicator
       scale: 0.8, 0.8

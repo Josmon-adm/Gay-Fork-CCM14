@@ -20,9 +20,10 @@
     defaultLanguage: Pathogen
   # No acid blood
   - type: AcidBloodSplash
-    closeSplashRadius: 0
-    standardSplashRadius: 0
-    gibSplashRadius: 0
+    closeSplashRadius: 1
+    standardSplashRadius: 1
+    gibSplashRadius: 1
+    splashCooldown: 9999999
     damage:
       types:
         Heat: 0
@@ -37,6 +38,39 @@
     channels:
     - Hivemind
     - MyceliumLink
+  - type: UserInterface
+    interfaces:
+      enum.CMSurgeryUIKey.Key:
+        type: CMSurgeryBui
+      enum.XenoEvolutionUIKey.Key:
+        type: XenoEvolutionBui
+      enum.XenoDevolveUIKey.Key:
+        type: XenoDevolveBui
+      enum.XenoWatchUIKey.Key:
+        type: XenoWatchBui
+      enum.XenoChooseStructureUI.Key:
+        type: XenoChooseStructureBui
+      enum.XenoPheromonesUI.Key:
+        type: XenoPheromonesBui
+      enum.XenoOrderConstructionUI.Key:
+        type: XenoOrderConstructionBui
+      enum.XenoFruitChooseUI.Key:
+        type: XenoFruitChooseBui
+      enum.XenoWordQueenUI.Key:
+        type: XenoWordQueenBui
+      enum.HiveTeamUIKey.Key:
+        type: HiveTeamBui
+      enum.HiveLeaderSquadUIKey.Key:
+        type: HiveLeaderSquadBui
+      enum.TacticalMapUserUi.Key:
+        type: TacticalMapUserBui
+      enum.XenoReserveParasiteChangeUI.Key:
+        type: ReserveParasitesBoundUserInterface
+      enum.XenoParasiteGhostUI.Key:
+        type: XenoParasiteGhostBui
+        requireInputValidation: false
+      enum.DialogUiKey.Key:
+        type: DialogBui
   - type: ActiveRadio
     channels:
     - Hivemind
