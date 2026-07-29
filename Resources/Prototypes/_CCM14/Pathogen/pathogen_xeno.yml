@@ -1,0 +1,452 @@
+- type: entity
+  parent: 
+  - CCMXenoPathogenBase
+  id: CCMXenoPathogenPopper
+  name: Popper
+  description: A strange white alien thing... IS THIS KAMIKAZE?
+  components:
+  - type: GhostRole
+    name: Popper
+    description: KAMIKAZE YOUR LIFE FOR HIVE!!!
+    raffle:
+      settings: short
+  - type: FiremanCarriable
+    canThrow: true
+    carrierWhitelist:
+      components:
+      - Synth
+  - type: Tag
+    tags:
+    - DoorBumpOpener
+    - RMCSynthGrabbable
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      165: Dead # TODO RMC14 gib on death
+  - type: Sprite
+    sprite: _CMU14\Mobs\Xenonids\Pathogen\popper.rsi
+  - type: Xeno
+    role: CCMXenoPathogenPopper
+    actionIds:
+    - CCMActionXenoRestPahtogen
+    - CCMActionXenoWatchPathogen
+    - CCMActionXenoPathogenBoomLeap
+    tier: 0
+    hudOffset: -0.15,-0.03
+    contributesToVictory: false
+    countedInSlots: false
+    unlockAt: 0
+    muteOnSpawn: true
+    emoteSounds: PathogenBloodburster
+  - type: XenoPlasma
+    plasma: 0
+    maxPlasma: 0
+    plasmaRegenOnWeeds: 0
+  - type: MeleeWeapon
+    attackRate: 0
+    range: 0
+    damage:
+      groups:
+        Brute: 0
+  - type: XenoLeap
+    delay: 1
+    range: 4
+    moveDelayTime: 59
+    knockdownTime: 1
+    leapSound: /Audio/Weapons/Xeno/alien_claw_flesh3.ogg
+    hitEffect: CCMEffectXenoTelegraphInvisiblePahtogenKamikaze
+    targetJitterTime: 1
+    targetCameraShakeStrength: 1
+    damage:
+      groups:
+        Brute: 30
+  - type: RMCGibOnDeath
+    gibChance: 1.0
+  - type: RMCSpawnEntitiesOnGib
+    entities:
+    - CCMDecalGibPathogenSmallCorpse # TODO one for every caste
+    - CMU14GibEffectPathogenPopper # TODO larger gib effect for larger xenos
+  - type: XenoLight
+  - type: DamageOffWeeds
+    damage:
+      types:
+        Blunt: 2.5
+  - type: XenoHiveCoreRole
+  - type: RMCSize
+    size: VerySmallXeno
+  - type: Evasion
+    evasion: 10
+  - type: ExcludedFromKingVote
+  - type: MindTakeoverBehavior
+    ejectFromLarvaQueues: false
+  - type: RemoveComponents
+    components:
+    - type: CanBeLarvaQueued
+  - type: VentCrawler
+    ventCrawlIcon: lesser
+  - type: MovementSpeedModifier
+    baseWalkSpeed: 3.7
+    baseSprintSpeed: 5
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
+      state: popper
+  - type: RMCActionOrder
+    id: CCMXenoPathogenPopper
+  - type: FixedIdentity
+    name: ccm-job-name-xeno-pathogen-popper
+
+- type: entity
+  parent: RMCEffectXenoTelegraphGreen
+  id: CCMEffectXenoTelegraphInvisiblePahtogenKamikaze
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: TimedDespawn
+    lifetime: 0.25
+  - type: Sprite
+    layers:
+      - state: xeno_telegraph_base
+        visible: false
+  - type: Transform
+  - type: Physics
+    bodyType: Static
+  - type: Fixtures
+    fixtures:
+      fix1:
+        hard: false
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-3,-3,3,3"
+        mask:
+        - FullTileLayer
+        layer:
+        - FullTileLayer
+  - type: UncloakOnHit
+  - type: IgnorePredictionHit
+  - type: DamageOnCollide
+    acidic: true
+    acidComboDuration: 40
+    acidComboResists: 2
+    acidComboDamage:
+      types:
+        Heat: 3
+    acidComboParalyze: 2
+    damage:
+      types:
+        Heat: 165
+    chainDamage:
+      types:
+        Heat: 165
+    whitelist:
+      components:
+      - DamageOffWeeds
+  - type: SpawnOnTrigger
+    proto: CCMPathogenInfestSmoke
+  - type: TriggerOnSpawn
+
+- type: job
+  parent: CMJobXenoBase
+  id: CCMXenoPathogenPopper
+  name: ccm-job-name-xeno-pathogen-popper
+  playTimeTracker: CCMJobXenoPathogenPopper
+
+- type: playTimeTracker
+  id: CCMJobXenoPathogenPopper
+  isXeno: true
+
+#  BloodBuster
+
+- type: entity
+  parent: 
+  - CCMXenoPathogenBase
+  id: CCMXenoPathogenBloodBuster
+  name: BloodBuster
+  description: A small white one strange alien with sharp claws.
+  components:
+  - type: Sprite
+    sprite: _CMU14\Mobs\Xenonids\Pathogen\bloodbuster.rsi
+  - type: MobState
+    allowedStates:
+    - Alive
+    - Critical
+    - Dead
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      100: Critical
+      200: Dead
+  - type: Xeno
+    role: CCMXenoPathogenBloodBuster
+    actionIds:
+    - CCMActionXenoRestPahtogen
+    - CCMActionXenoWatchPathogen
+    - CCMActionXenoHidePathogen
+    - CCMActionXenoPathogenBloodBusterLeap
+    hudOffset: -0.1,0.25
+    tier: 0
+    unlockAt: 0
+    emoteSounds: PathogenBloodburster
+  - type: MCZLevelFallDamage
+    enabled: false
+    damage:
+      types: {}
+  - type: XenoRegen
+    healOffWeeds: true
+  - type: XenoLight
+  - type: XenoHide
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.25
+        density: 185
+        mask:
+        - SmallMobMask
+        - BarbedBarricade
+        - BarricadeImpassable
+        layer:
+        - SmallMobLayer
+  - type: Flammable
+    canResistFire: false
+  - type: IgnoreBlockPullingDead
+  - type: MovementSpeedModifier
+    baseWalkSpeed: 3.7
+    baseSprintSpeed: 6.7
+  - type: RestrictEvolveOffWeeds
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
+      state: bloodbuster
+  - type: VentCrawler
+    ventCrawlIcon: larva
+  - type: Tag
+    tags:
+    - RMCXenoLarva
+    - RMCSynthGrabbable
+  - type: RMCBuckleOffset
+    offset: 0, 0
+  - type: RMCSize
+    size: Small
+  - type: XenoRankNames
+    rankNames:
+      0: rmc-xeno-young-larva
+      2: rmc-xeno-mature-larva
+      3: rmc-xeno-elder-larva
+      4: rmc-xeno-elder-larva
+      5: rmc-xeno-elder-larva
+  - type: XenoLeap
+    delay: 0
+    range: 6
+    moveDelayTime: 1.25
+    knockdownTime: 1.75
+    leapSound: Audio\_CMU14\Xeno\Pathogen/aberration_hiss1.ogg
+    hitEffect: CCMEffectXenoBloodBusterRipoff
+    targetJitterTime: 1.5
+    targetCameraShakeStrength: 3
+  - type: XenoEvolution
+    canEvolveWithoutGranter: true
+    requiresGranter: false
+    max: 100
+    evolvesTo:
+    - CCMXenoPathogenNeomorph
+  - type: RMCActionOrder
+    id: CCMXenoPathogenBloodBuster
+  - type: FixedIdentity
+    name: ccm-job-name-xeno-pathogen-bloodburster
+
+- type: entity
+  parent: RMCEffectExtraSlash
+  id: CCMEffectXenoBloodBusterRipoff
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: TimedDespawn
+    lifetime: 1.5
+  - type: Transform
+  - type: Physics
+    bodyType: Static
+  - type: Fixtures
+    fixtures:
+      fix1:
+        hard: false
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.1,-0.1,0.1,0.1"
+        mask:
+        - FullTileLayer
+        layer:
+        - FullTileLayer
+  - type: UncloakOnHit
+  - type: IgnorePredictionHit
+  - type: DamageOverTime
+    damageEvery: 0.25
+    affectsDead: false
+    affectsInfectedNested: false
+    armorPiercingDamage:
+      types:
+        Slash: 10
+    damage:
+      types:
+        Slash: 15
+    barricadeDamage:
+      types:
+        Heat: 0
+    whitelist:
+      components:
+      - Marine
+  - type: TimedSpawner
+    prototypes:
+      - RMCEffectExtraSlash
+    chance: 1
+    intervalSeconds: 0.18
+    minimumEntitiesSpawned: 1
+    maximumEntitiesSpawned: 1
+
+- type: job
+  parent: CMJobXenoBase
+  id: CCMXenoPathogenBloodBuster
+  name: ccm-job-name-xeno-pathogen-bloodbuster
+  playTimeTracker: CCMJobXenoPathogenbloodbuster
+
+- type: playTimeTracker
+  id: CCMJobXenoPathogenbloodbuster
+  isXeno: true
+
+# Neomorph
+
+- type: entity
+  parent: 
+  - CCMXenoPathogenMatureBase
+  id: CCMXenoPathogenNeomorph
+  name: Neomorph
+  description: A strange white alien drone...
+  components:
+  - type: GuideHelp
+    guides:
+    - RMCGuideRoleDrone
+  - type: Sprite
+    sprite: _RMC14/Mobs/Xenonids/Drone/drone.rsi
+  - type: Xeno
+    actionIds:
+    - CCMActionXenoRestPahtogen
+    - CCMActionXenoWatchPathogen
+    - CCMActionXenoHidePathogen
+    - CCMActionXenoTailStabPathogen
+    - CCMActionXenoRegurgitatePathogen
+    - CCMActionXenoPheromonesPathogen
+    - CCMActionXenoPathogenPlantWeeds
+    - CCMActionXenoPathogenChooseStructure
+    - CCMActionXenoPathogenOrderConstruction
+    - CCMActionXenoPathogenSecreteStructure
+    role: CCMXenoPathogenNeomorph
+    hudOffset: -0.1,0.15
+    tier: 1
+    bypassTierCount: true
+    unlockAt: 0 # 1 minute
+  - type: XenoAcid
+  - type: AcidTrap
+    trapLevel: 1
+    cost: 70
+    spray: XenoAcidSprayTrapWeak
+  - type: XenoConstruction
+    canBuild:
+    - CCMDoorXenoPathogen
+    - CCMWallXenoPathogen
+  - type: VentCrawler
+    ventCrawlIcon: drone
+  - type: MobState
+    allowedStates:
+    - Alive
+    - Critical
+    - Dead
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      500: Critical
+      600: Dead
+  - type: Tag
+    tags:
+    - DoorBumpOpener
+    - RMCSynthGrabbable
+  - type: MeleeWeapon
+    damage:
+      groups:
+        Brute: 22.5
+  - type: XenoTailStab
+    tailDamage:
+      groups:
+        Brute: 30
+  - type: XenoLight
+  - type: XenoDevolve
+    devolvesTo:
+    - CCMXenoPathogenBloodBuster
+    canBeDevolvedByOther: false
+  - type: XenoDevour
+  - type: XenoPheromones
+    pheromonesMultiplier: 3.5
+  - type: XenoPlasma
+    plasma: 1000
+    maxPlasma: 1000
+    plasmaRegenOnWeeds: 4.5
+  - type: Tackle
+    max: 4
+    stunMin: 3
+    stunMax: 4
+  - type: XenoConstruction
+    buildDelay: 2
+    canOrderConstruction:
+    - CCMHiveCoreXenoPathogenConstructionNode
+    - CCMXenoPathogenCocoonConstructionNode
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
+      state: neomorph
+  - type: WhitelistPickup
+    whitelist:
+      components:
+      - XenoParasite
+      - XenoEgg
+      - XenoFruit
+      - CCMXenoRoyalParasite # CCM add
+  - type: TunnelRenamer
+  - type: EggPlantTime
+    plantTime: 2.5
+  - type: MultiHandedHolder
+    items:
+    - hands: 2
+      whitelist:
+        components:
+        - XenoEgg
+  - type: XenoEvolution
+    canEvolveWithoutGranter: true
+    max: 200
+    evolvesTo:
+    - CMXenoCarrier
+    - CMXenoBurrower
+    - CMXenoHivelord
+    earlyEvolvesTo:
+    - CMXenoLurker
+    - CMXenoSpitter
+    - CMXenoWarrior
+  - type: Evasion
+    evasion: 15
+  - type: IntelRecoverCorpseObjectiveOnDeath
+    value: 0.1
+  - type: FixedIdentity
+    name: ccm-job-name-xeno-pathogen-neomorph
+  - type: RMCActionOrder
+    id: CCMXenoPathogenNeomorph
+  - type: RMCSurgeryXenoHeart
+    item: RMCOrganXenoHeartT1
+  - type: RMCXenoDamageVisuals
+    prefix: neomorph
+
+- type: job
+  parent: CMJobXenoBase
+  id: CCMXenoPathogenNeomorph
+  name: ccm-job-name-xeno-pathogen-neomorph
+  playTimeTracker: CCMJobXenoPathogenNeomorph
+
+- type: playTimeTracker
+  id: CCMJobXenoPathogenNeomorph
+  isXeno: true

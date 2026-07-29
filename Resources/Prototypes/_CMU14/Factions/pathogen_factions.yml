@@ -1,0 +1,14 @@
+# Pathogen Walker NPC faction - hostile to marines, friendly to xenos
+- type: npcFaction
+  id: CMU14Pathogen
+  hostile:
+  - UNMC
+  - SPP
+  - Halcyon
+  - WeYa
+  - Civilian
+  - CLF
+  - TSE
+  - HEFA
+  - CMUAPE
+  - CMUYautja

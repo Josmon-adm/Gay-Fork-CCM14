@@ -1,0 +1,8 @@
+- type: radioChannel
+  id: MyceliumLink
+  name: chat-radio-mycelium-link
+  keycode: "ь" #CCM
+  frequency: 427
+  color: "#c2c38d"
+  longRange: true
+

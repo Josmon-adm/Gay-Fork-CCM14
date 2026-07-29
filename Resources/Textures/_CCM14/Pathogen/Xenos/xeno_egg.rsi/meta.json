@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "Taken from cmss13 at Pathogen and other. Some sprites made by Denlero and std The CMC Coders and spriters",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "egg"
+    },
+    {
+      "name": "egg_opening",
+      "delays": [
+        [
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ]
+      ]
+    },
+    {
+      "name": "egg_opened"
+    },
+    {
+      "name": "egg_exploding",
+      "delays": [
+        [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "egg_exploded"
+    },
+    {
+      "name": "egg_item"
+    },
+    {
+      "name": "egg_growing"
+    }
+  ]
+}

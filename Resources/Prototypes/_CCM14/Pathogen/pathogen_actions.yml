@@ -1,0 +1,218 @@
+- type: entity
+  id: CCMActionXenoPathogenPlantWeeds
+  parent: ActionXenoBase
+  name: Plant Weeds (75)
+  description: Plant a weed node that will spread more weeds.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: plant_weeds
+    useDelay: 1
+  - type: InstantAction
+    event: !type:XenoPlantWeedsActionEvent
+      prototype: CCMXenoWeedsSourcePathogen
+  - type: SwappableAction
+    swappedEventTemplate: !type:XenoExpandWeedsActionEvent
+    originalEventTemplate: !type:XenoPlantWeedsActionEvent
+
+- type: entity
+  id: CCMActionXenoPathogenChooseStructure
+  parent: ActionXenoBase
+  name: Choose Resin Structure
+  description: "Choose a structure to secrete with the 'Secrete Resin' action."
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: TEMPLATE  # no place_resin in pathogen RSI
+  - type: InstantAction
+    event: !type:XenoChooseStructureActionEvent
+  - type: XenoChooseConstructionAction
+  - type: RMCDazeableAction
+
+- type: entity
+  id: CCMActionXenoPathogenSecreteStructure
+  parent: ActionXenoBase
+  name: Secrete Resin
+  description: "Builds the structure chosen with the 'Choose Resin Structure' action."
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: secrete_resin
+  - type: TargetAction
+    deselectOnMiss: false
+    range: 0
+    repeat: true
+    checkCanAccess: false
+  - type: WorldTargetAction
+    event: !type:XenoSecreteStructureActionEvent
+  - type: XenoConstructionAction
+    checkStructureSelected: true
+    checkWeeds: true
+    canUpgrade: true
+  - type: XenoHiveInstantBuildAction
+  - type: RMCDazeableAction
+
+- type: entity
+  id: CCMActionXenoPathogenCoerceResin
+  parent: ActionXenoBase
+  name: Coerce Resin
+  description: "Builds the structure chosen with the 'Choose Resin Structure' action. You may also build within line of sight if you are on weeds."
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: secrete_resin
+  - type: TargetAction
+    deselectOnMiss: false
+    range: 0
+    repeat: true
+    checkCanAccess: false
+  - type: WorldTargetAction
+    event: !type:XenoSecreteStructureActionEvent
+  - type: XenoConstructionAction
+    checkStructureSelected: true
+    checkWeeds: true
+    canUpgrade: false
+  - type: XenoHiveInstantBuildAction
+  - type: RMCDazeableAction
+
+- type: entity
+  id: CCMActionXenoPathogenOrderConstruction
+  parent: ActionXenoBase
+  name: Order Construction
+  description: Starts construction of an important hive structure.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: morph_resin
+  - type: InstantAction
+    event: !type:XenoOrderConstructionActionEvent
+  - type: RMCDazeableAction
+
+- type: entity
+  id: CCMActionXenoPathogenResinHole
+  parent: ActionXenoBase
+  name: Plant Resin Hole (200)
+  description: Places a resin hole on weeds. It can be filled with boiler gas, acid, or parasites.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: place_trap
+    useDelay: 1
+  - type: InstantAction
+    event: !type:XenoPlaceResinHoleActionEvent
+  - type: RMCDazeableAction
+
+#
+
+- type: entity
+  id: CCMActionXenoRestPahtogen
+  parent: ActionXenoRest
+  name: Rest
+  description: Lie down to regenerate health more quickly while on weeds. [color=red]Your rest keybind will also activate this action, Shift+R by default.[/color]
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: resting
+
+- type: entity
+  id: CCMActionXenoWatchPathogen
+  parent: ActionXenoWatch
+  name: Watch Xenonid
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: watch_xeno
+
+- type: entity
+  id: CCMActionXenoPheromonesPathogen
+  parent: ActionXenoPheromones
+  name: Emit Pheromones (35) # TODO RMC14 proper plasma costs
+  description: Gives a buff to nearby xenonids. [color=cyan]Consumes 2.5 plasma per second.[/color]
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: emit_pheromones
+
+- type: entity
+  id: CCMActionXenoHidePathogen
+  parent: ActionXenoHide
+  name: Hide
+  description: Hide under tables and other objects.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: xenohide
+
+- type: entity
+  id: CCMActionXenoRegurgitatePathogen
+  parent: ActionXenoRegurgitate
+  name: Regurgitate
+  description: Eject any devoured marines.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: regurgitate
+
+- type: entity
+  id: CCMActionXenoTailStabPathogen
+  parent: ActionXenoTailStab
+  name: Tail Stab
+  description: Strikes the targeted enemy or barricade. The cooldown is faster if you miss.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: tail_attack
+
+# Popper
+
+- type: entity
+  id: CCMActionXenoPathogenBoomLeap
+  parent: ActionXenoLeap
+  name: KAMIKAZE
+  description: Jump towards a given location and blow up yourself if hitted an enemy.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: prae_acid_ball
+    useDelay: 10
+
+# BloodBuster
+
+- type: entity
+  id: CCMActionXenoPathogenBloodBusterLeap
+  parent: ActionXenoLeap
+  name: Rip off guts
+  description: Jump towards a given location and stun them for 1.5 seconds and stagger yourself for 1.5, and start do deal attacks to knocked.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _CMU14/Actions/actions_pathogen.rsi
+      state: transmute
+    useDelay: 17

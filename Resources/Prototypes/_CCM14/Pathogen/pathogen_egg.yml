@@ -1,0 +1,215 @@
+- type: entity
+  parent: XenoEgg
+  id: CCMXenoPathogenCocoon
+  name: cocoon
+  description: It looks like a weird white cocoon.
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    drawdepth: Items
+    layers:
+    - state: egg_item
+      map: [ "enum.XenoEggLayers.Base" ]
+  - type: XenoEgg
+    eggOpenTime: 0.6
+    knockdownTime: 0
+    currentSprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    normalSprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    eggDestroyed: CCMXenoPathogenCocoonDestroyed
+    eggDestroyedSustained: CCMXenoPathogenCocoonDestroyed
+    eggDestroyedFragile: CCMXenoPathogenCocoonDestroyed
+    spawn: CCMXenoPathogenInvisParasite
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 80
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+      - !type:SpawnEntitiesBehavior
+        spawn:
+          CCMPathogenDeadSmoke:
+            min: 1
+            max: 1
+    - trigger:
+        !type:DamageTypeTrigger
+        damageType: Heat
+        damage: 60
+      behaviors:
+      - !type:BurnBodyBehavior { }
+  - type: XenoWeeds
+    range: 5
+    spawns: CCMXenoHiveWeedsClusterPathogen
+    level: 3
+    blockOtherWeeds: true
+    spreadsOnSemiWeedable: true
+  - type: HiveCluster
+    towerReplaceWith: CCMHiveCoreXenoPathogen
+  - type: XenoWeedsSpreading
+  - type: HiveConstructionRequiresHiveCore
+  - type: HiveConstructionRequiresWeedableSurface
+  - type: HiveConstructionLimited
+    id: HiveClusterXeno
+  - type: RepairableXenoStructure
+    plasmaCost: 300
+    repairLength: 4
+  - type: TacticalMapLayerTracked
+    layers: [Xenos]
+  - type: TacticalMapTracked
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: cluster
+
+- type: entity
+  parent: HiveClusterXenoConstructionNode
+  id: CCMXenoPathogenCocoonConstructionNode
+  name: cocoon
+  description: It looks like a weird white cocoon. Looks like a marker for something.
+  components:
+  - type: Sprite
+    color: '#FFFFFFAA'
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    layers:
+    - state: egg_growing
+    - sprite: _RMC14/Interface/xeno_hud.rsi
+      state: xeno_structure_node_indicator
+      scale: 0.8, 0.8
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 300
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+  - type: HiveConstructionNode
+    initialPlasmaCost: 600
+    plasmaCost: 600
+    spawn: CCMXenoPathogenCocoon
+
+- type: entity
+  parent: CMXenoParasiteBase
+  id: CCMXenoPathogenInvisParasite
+  description: YepYap
+  components:
+  - type: SleepNPC
+  - type: ParasiteAI
+    maxInfectRange: 5
+  - type: RMCActionOrder
+    id: CMXenoParasite
+  - type: XenoParasite
+    paralyzeTime: 0
+    infectRange: 4
+  - type: SpawnOnTrigger
+    proto: CCMPathogenInfestSmoke
+  - type: TriggerOnSpawn
+  - type: HTN
+    rootTask:
+      task: RMCParasiteActiveCompound
+    blackboard:
+      VisionRadius: !type:Single
+        4
+  - type: Sprite
+    sprite: _RMC14/Mobs/Xenonids/Parasite/parasite.rsi
+    layers:
+      - state: alive
+        visible: false
+
+- type: entity
+  parent: MCSmoke
+  id: CCMPathogenInfestSmoke
+  components:
+  - type: Sprite
+    color: "#000000FF"
+  - type: MCEdgeSpreader
+    delay: 0.1
+    range: 4
+  - type: TimedDespawn
+    lifetime: 6
+  - type: MCTimedDespawnDisappearanceVisuals
+    maxAlpha: 0.4
+    lifetime: 6
+  - type: NeurotoxinInjector
+    neuroPerSecond: 0.3
+    affectsDead: false
+    affectsInfectedNested: false
+    toxinDamage:
+        groups:
+          Toxin: 2
+    oxygenDamage:
+        types:
+          Asphyxiation: 150
+    coughDamage:
+        groups:
+          Brute: 5
+  - type: DamageOverTime
+    affectsDead: false
+    affectsInfectedNested: false
+    damage:
+      types:
+        Asphyxiation: 5
+    whitelist:
+      components:
+      - Marine
+
+- type: entity
+  parent: MCSmoke
+  id: CCMPathogenDeadSmoke
+  components:
+  - type: Sprite
+    color: "#000000FF"
+  - type: MCEdgeSpreader
+    delay: 0.1
+    range: 2
+  - type: TimedDespawn
+    lifetime: 3
+  - type: MCTimedDespawnDisappearanceVisuals
+    maxAlpha: 0.4
+    lifetime: 3
+  - type: NeurotoxinInjector
+    neuroPerSecond: 0.3
+    affectsDead: false
+    affectsInfectedNested: false
+    toxinDamage:
+        groups:
+          Toxin: 2
+    oxygenDamage:
+        types:
+          Asphyxiation: 150
+    coughDamage:
+        groups:
+          Brute: 5
+  - type: DamageOverTime
+    affectsDead: false
+    affectsInfectedNested: false
+    damage:
+      types:
+        Asphyxiation: 5
+    whitelist:
+      components:
+      - Marine
+
+- type: entity
+  parent: XenoEggDestroyed
+  categories: [ HideSpawnMenu ]
+  id: CCMXenoPathogenCocoonDestroyed
+  name: destroyed egg
+  description: A mess of... something.
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: Sprite
+#    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    sprite: /Uploaded/Uploaded/Pathogen/xeno_egg.rsi
+    drawdepth: Items
+    layers:
+    - map: [ "egg" ]
+      state: egg_exploded

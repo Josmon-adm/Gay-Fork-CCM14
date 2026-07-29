@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "Taken from cmss13 at https://github.com/cmss13-devs/cmss13/blob/a0fcc13da4bf066a297541571a4a0f064681002f/icons/turf/walls/xeno.dmi",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "strangerwall",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall0",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall1",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall2",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall3",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall4",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall5",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall6",
+      "directions": 4
+    },
+    {
+      "name": "strangerwall7",
+      "directions": 4
+    }
+  ]
+}

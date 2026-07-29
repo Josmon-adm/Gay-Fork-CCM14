@@ -1,0 +1,341 @@
+- type: entity
+  parent: WallXenoResin
+  id: CCMWallXenoPathogen
+  name: strange resin wall
+  description: Weird strange white slime solidified into a thick wall.
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_wall.rsi
+  - type: Icon
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_wall.rsi
+    state: strangerwall
+  - type: IconSmooth
+    key: walls
+    base: strangerwall
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 1350
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+  - type: MeleeReceivedMultiplier
+    xenoDamage:
+      types:
+        Slash: 338
+  - type: XenoConstructionPlasmaCost
+    plasma: 200
+    scalingCost: true
+  - type: XenoStructureUpgradeable
+    to: null
+  - type: XenoNestSurface
+    nest: CCMXenoNestPathogen
+
+- type: entity
+  parent: DoorXenoResin
+  id: CCMDoorXenoPathogen
+  name: strange resin door
+  description: A strange white resin door, which is more durable.
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_door.rsi
+    layers:
+    - state: door_closed
+      map: ["enum.DoorVisualLayers.Base"]
+    - state: closed_unlit
+      map: ["enum.DoorVisualLayers.BaseUnlit"]
+    - state: closed_unlit
+      map: ["enum.DoorVisualLayers.BaseBolted"]
+  - type: Door
+    crushDamage:
+      types:
+        Blunt: 15
+    openSpriteState: door_opened
+    closedSpriteState: door_closed
+    openingSpriteState: door_opening
+    closingSpriteState: door_closing
+    openSound:
+      path: /Audio/_RMC14/Xeno/alien_resin_move1.ogg
+    closeSound:
+      path: /Audio/_RMC14/Xeno/alien_resin_move2.ogg
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 900
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+  - type: IconSmooth
+    key: walls
+    mode: NoSprite
+  - type: MeleeReceivedMultiplier
+    xenoDamage:
+      types:
+        Slash: 900
+  - type: XenoConstructionPlasmaCost
+    plasma: 200
+    scalingCost: true
+  - type: XenoStructureUpgradeable
+    to: null
+
+- type: entity
+  id: CCMXenoWeedsWallPathogen
+  name: strange weeds
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: Transform
+    anchored: true
+  - type: Physics
+    bodyType: Static
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.5,-0.5,0.5,0.5"
+        layer:
+        - WallLayer
+        density: 1000
+        hard: false
+  - type: Clickable
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    drawdepth: Objects
+#    layers:
+#    - state: weedwall
+  - type: IconSmooth
+    key: cm_xeno_weeds_walls
+    base: weedwall
+    mode: Corners
+  - type: XenoNestSurface
+  - type: XenoFriendly
+  - type: Damageable
+    damageContainer: StructuralXeno
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 5
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+  - type: ImmuneToUnarmed
+  - type: WallMount
+    arc: 360
+  - type: RMCNightVisionVisible
+    priority: -1
+    transparency: 0.2
+  - type: XenoChargeDontHit
+
+# Weed
+
+- type: entity # TODO RMC14 sound
+  parent: XenoWeeds
+  id: CCMXenoWeedsPathogen
+  name: strange weeds
+  description: Weird white weeds...
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: XenoWeeds
+    spawns: CCMXenoWeedsPathogen
+    level: 1
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    drawdepth: FloorTiles
+    layers:
+    - state: weed0
+
+- type: entity # TODO RMC14 sound
+  parent: XenoWeedsSource
+  id: CCMXenoWeedsSourcePathogen
+  name: strange weed node
+  description: A weird white one, pulsating node
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    drawdepth: FloorTiles
+    layers:
+    - state: weed0
+    - state: constructionnode
+
+- type: entity # TODO RMC14 sound
+  parent: XenoHiveWeeds
+  id: CCMXenoHiveWeedsPathogen
+  name: strange hive weeds
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: XenoWeeds
+    range: 7
+    spawns: CCMXenoHiveWeedsPathogen
+    level: 3
+    speedMultiplierOutsider: 0.338
+    speedMultiplierOutsiderArmor: 0.4856
+    blockOtherWeeds: true
+    spreadsOnSemiWeedable: true
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    drawdepth: FloorTiles
+    layers:
+    - state: hive_weed0
+
+- type: entity
+  parent: CCMXenoHiveWeedsPathogen
+  id: CCMXenoHiveWeedsClusterPathogen
+  components:
+  - type: XenoWeeds
+    range: 6
+    spawns: CCMXenoHiveWeedsClusterPathogen
+    level: 3
+
+- type: entity
+  parent: CCMXenoHiveWeedsPathogen
+  id: CCMXenoHiveWeedsCorePathogen
+  components:
+  - type: XenoWeeds
+    range: 8
+    spawns: CCMXenoHiveWeedsCorePathogen
+    level: 3
+
+- type: entity
+  parent: XenoNest
+  id: CCMXenoNestPathogen
+  name: strange alien white nest
+  description: It's a gruesome pile of thick, sticky resin shaped like a nest.
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: Physics
+    bodyType: Static
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    state: human_2
+    drawdepth: OverMobs
+
+# Hive Structures
+
+- type: entity
+  parent: HiveCoreXeno
+  id: CCMHiveCoreXenoPathogen
+  name: blight core
+  description: A giant pulsating white mound of mass. It looks very much alive.
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/hive_structures.rsi
+    layers:
+     - sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+       state: hive_weed0
+     - state: blight_core
+  - type: XenoWeeds
+    range: 7
+    spawns: CCMXenoHiveWeedsCorePathogen
+    level: 3
+    blockOtherWeeds: true
+    spreadsOnSemiWeedable: true
+  - type: GhostRole
+    name: Popper
+    description: Pop it
+    raffle:
+      settings: short
+  - type: GhostRoleMobSpawner
+    availableTakeovers: 2
+    deleteOnSpawn: false
+    prototype: CCMXenoPathogenPopper
+  - type: ManageHive
+  - type: HiveLeaderGranter
+  - type: XenoEvolutionGranter
+  - type: XenoOvipositorCapable
+  - type: XenoWordQueen
+  - type: XenoPsychicCommunication
+  - type: InnateCommandSpeech
+  - type: RMCInnateRadioTextIncrease
+    radioTextIncrease: 3
+    instrinsic: true
+  - type: CommendationGiver
+  - type: XenoOmitNumber
+  - type: QueenEyeAction
+  - type: RMCTrackable
+  - type: TimedSpawner
+    prototypes:
+    - CCMXenoHiveEggPathogen
+    maximumEntitiesSpawned: 3
+
+- type: entity
+  id: CCMHiveCoreXenoPathogenConstructionNode
+  parent: HiveCoreXenoConstructionNode
+  name: blight core
+  description: A giant pulsating white mound of mass. It looks very much alive. Looks like a marker for something.
+  suffix: Construction
+  components:
+  - type: Sprite
+    color: '#FFFFFFAA'
+    sprite: _CCM14/Pathogen/Structures/Xenos/hive_structures.rsi
+    layers:
+    - state: blight_core
+    - sprite: _RMC14/Interface/xeno_hud.rsi
+      state: xeno_structure_node_indicator
+      scale: 0.8, 0.8
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 300 # TODO RMC14
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+  - type: HiveConstructionNode
+    initialPlasmaCost: 400
+    plasmaCost: 1000
+    spawn: CCMHiveCoreXenoPathogen
+
+# Hive egg
+
+- type: entity
+  parent: XenoFruitLesser
+  id: CCMXenoHiveEggPathogen #This shi is not egg, thats uhh fruit
+  name: strange white egg
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/Structures/Xenos/egg.rsi
+    drawdepth: SmallMobs
+    layers:
+    - state: egg_item
+      map: [ "enum.XenoFruitLayers.Base" ]
+  - type: XenoFruit
+    itemState: egg_item
+    growingState: egg
+    grownState: egg_spraying
+    eatenState: egg_opened
+    growTime: 30
+    popup: rmc-xeno-fruit-effect-greater
+    canConsumeAtFull: false
+    color: "#17991B"
+  - type: XenoFruitHeal
+    healAmount: 75
+  - type: XenoFruitRegen
+    tickCount: 15     # 75 health over 15 seconds
+    tickPeriod: 1
+    regenPerTick: 5
+  - type: XenoFruitShield
+    duration: 60
+    shieldAmount: 200
+    shieldDecay: 10
+    shieldRatio: 0.3
+  - type: XenoFruitSpeed
+    speedModifier: 0.2
+  - type: XenoFruitPlasma
+    tickCount: 5      # 240 plasma over 15 seconds
+    tickPeriod: 3
+    regenPerTick: 48
