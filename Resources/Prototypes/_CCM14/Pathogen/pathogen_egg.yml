@@ -9,7 +9,7 @@
     - Wall
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    sprite: _CCM14/Pathogen/xeno_egg.rsi
     drawdepth: Items
     layers:
     - state: egg_item
@@ -17,8 +17,8 @@
   - type: XenoEgg
     eggOpenTime: 0.6
     knockdownTime: 0
-    currentSprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
-    normalSprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    currentSprite: _CCM14/Pathogen/xeno_egg.rsi
+    normalSprite: _CCM14/Pathogen/xeno_egg.rsi
     eggDestroyed: CCMXenoPathogenCocoonDestroyed
     eggDestroyedSustained: CCMXenoPathogenCocoonDestroyed
     eggDestroyedFragile: CCMXenoPathogenCocoonDestroyed
@@ -74,9 +74,9 @@
   components:
   - type: Sprite
     color: '#FFFFFFAA'
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
+    sprite: _CCM14/Pathogen/xeno_egg.rsi
     layers:
-    - state: egg_growing
+    - state: egg
     - sprite: _RMC14/Interface/xeno_hud.rsi
       state: xeno_structure_node_indicator
       scale: 0.8, 0.8
@@ -207,8 +207,7 @@
     - Wall
   components:
   - type: Sprite
-#    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_egg.rsi
-    sprite: /Uploaded/Uploaded/Pathogen/xeno_egg.rsi
+    sprite: _CCM14/Pathogen/xeno_egg.rsi
     drawdepth: Items
     layers:
     - map: [ "egg" ]

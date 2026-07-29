@@ -24,7 +24,7 @@
       0: Alive
       165: Dead # TODO RMC14 gib on death
   - type: Sprite
-    sprite: _CMU14\Mobs\Xenonids\Pathogen\popper.rsi
+    sprite: _CMU14/Mobs/Xenonids/Pathogen/popper.rsi
   - type: Xeno
     role: CCMXenoPathogenPopper
     actionIds:
@@ -51,7 +51,7 @@
   - type: XenoLeap
     delay: 1
     range: 4
-    moveDelayTime: 59
+    moveDelayTime: 1
     knockdownTime: 1
     leapSound: /Audio/Weapons/Xeno/alien_claw_flesh3.ogg
     hitEffect: CCMEffectXenoTelegraphInvisiblePahtogenKamikaze
@@ -64,8 +64,8 @@
     gibChance: 1.0
   - type: RMCSpawnEntitiesOnGib
     entities:
-    - CCMDecalGibPathogenSmallCorpse # TODO one for every caste
     - CMU14GibEffectPathogenPopper # TODO larger gib effect for larger xenos
+    - CCMDecalGibPathogenSmallCorpse
   - type: XenoLight
   - type: DamageOffWeeds
     damage:
@@ -89,7 +89,7 @@
     baseSprintSpeed: 5
   - type: TacticalMapIcon
     icon:
-      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
+      sprite: /Textures/_CMU14/Interface/neo_blips.rsi
       state: popper
   - type: RMCActionOrder
     id: CCMXenoPathogenPopper
@@ -154,17 +154,17 @@
   id: CCMJobXenoPathogenPopper
   isXeno: true
 
-#  BloodBuster
+#  BloodBurster
 
 - type: entity
   parent: 
   - CCMXenoPathogenBase
-  id: CCMXenoPathogenBloodBuster
-  name: BloodBuster
+  id: CCMXenoPathogenBloodBurster
+  name: BloodBurster
   description: A small white one strange alien with sharp claws.
   components:
   - type: Sprite
-    sprite: _CMU14\Mobs\Xenonids\Pathogen\bloodbuster.rsi
+    sprite: _CMU14/Mobs/Xenonids/Pathogen/bloodburster.rsi
   - type: MobState
     allowedStates:
     - Alive
@@ -176,12 +176,12 @@
       100: Critical
       200: Dead
   - type: Xeno
-    role: CCMXenoPathogenBloodBuster
+    role: CCMXenoPathogenBloodBurster
     actionIds:
     - CCMActionXenoRestPahtogen
     - CCMActionXenoWatchPathogen
     - CCMActionXenoHidePathogen
-    - CCMActionXenoPathogenBloodBusterLeap
+    - CCMActionXenoPathogenBloodBursterLeap
     hudOffset: -0.1,0.25
     tier: 0
     unlockAt: 0
@@ -216,8 +216,8 @@
   - type: RestrictEvolveOffWeeds
   - type: TacticalMapIcon
     icon:
-      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
-      state: bloodbuster
+      sprite: /Textures/_CMU14/Interface/neo_blips.rsi
+      state: bloodburster
   - type: VentCrawler
     ventCrawlIcon: larva
   - type: Tag
@@ -240,8 +240,8 @@
     range: 6
     moveDelayTime: 1.25
     knockdownTime: 1.75
-    leapSound: Audio\_CMU14\Xeno\Pathogen/aberration_hiss1.ogg
-    hitEffect: CCMEffectXenoBloodBusterRipoff
+    leapSound: /Audio/_CMU14/Xeno/Pathogen/aberration_hiss1.ogg
+    hitEffect: CCMEffectXenoBloodBursterRipoff
     targetJitterTime: 1.5
     targetCameraShakeStrength: 3
   - type: XenoEvolution
@@ -251,13 +251,13 @@
     evolvesTo:
     - CCMXenoPathogenNeomorph
   - type: RMCActionOrder
-    id: CCMXenoPathogenBloodBuster
+    id: CCMXenoPathogenBloodBurster
   - type: FixedIdentity
     name: ccm-job-name-xeno-pathogen-bloodburster
 
 - type: entity
   parent: RMCEffectExtraSlash
-  id: CCMEffectXenoBloodBusterRipoff
+  id: CCMEffectXenoBloodBursterRipoff
   categories: [ HideSpawnMenu ]
   components:
   - type: TimedDespawn
@@ -304,12 +304,12 @@
 
 - type: job
   parent: CMJobXenoBase
-  id: CCMXenoPathogenBloodBuster
-  name: ccm-job-name-xeno-pathogen-bloodbuster
-  playTimeTracker: CCMJobXenoPathogenbloodbuster
+  id: CCMXenoPathogenBloodBurster
+  name: ccm-job-name-xeno-pathogen-bloodburster
+  playTimeTracker: CCMJobXenoPathogenbloodburster
 
 - type: playTimeTracker
-  id: CCMJobXenoPathogenbloodbuster
+  id: CCMJobXenoPathogenbloodburster
   isXeno: true
 
 # Neomorph
@@ -325,7 +325,7 @@
     guides:
     - RMCGuideRoleDrone
   - type: Sprite
-    sprite: _RMC14/Mobs/Xenonids/Drone/drone.rsi
+    sprite: _CMU14/Mobs/Xenonids/Pathogen/neomorph.rsi
   - type: Xeno
     actionIds:
     - CCMActionXenoRestPahtogen
@@ -349,6 +349,10 @@
     cost: 70
     spray: XenoAcidSprayTrapWeak
   - type: XenoConstruction
+    buildDelay: 2
+    canOrderConstruction:
+    - CCMHiveCoreXenoPathogenConstructionNode
+    - CCMXenoPathogenCocoonConstructionNode
     canBuild:
     - CCMDoorXenoPathogen
     - CCMWallXenoPathogen
@@ -379,7 +383,7 @@
   - type: XenoLight
   - type: XenoDevolve
     devolvesTo:
-    - CCMXenoPathogenBloodBuster
+    - CCMXenoPathogenBloodBurster
     canBeDevolvedByOther: false
   - type: XenoDevour
   - type: XenoPheromones
@@ -392,14 +396,9 @@
     max: 4
     stunMin: 3
     stunMax: 4
-  - type: XenoConstruction
-    buildDelay: 2
-    canOrderConstruction:
-    - CCMHiveCoreXenoPathogenConstructionNode
-    - CCMXenoPathogenCocoonConstructionNode
   - type: TacticalMapIcon
     icon:
-      sprite: /Textures/_CMU14\Interface\neo_blips.rsi
+      sprite: /Textures/_CMU14/Interface/neo_blips.rsi
       state: neomorph
   - type: WhitelistPickup
     whitelist:

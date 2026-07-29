@@ -55,32 +55,6 @@
     checkStructureSelected: true
     checkWeeds: true
     canUpgrade: true
-  - type: XenoHiveInstantBuildAction
-  - type: RMCDazeableAction
-
-- type: entity
-  id: CCMActionXenoPathogenCoerceResin
-  parent: ActionXenoBase
-  name: Coerce Resin
-  description: "Builds the structure chosen with the 'Choose Resin Structure' action. You may also build within line of sight if you are on weeds."
-  components:
-  - type: Action
-    itemIconStyle: NoItem
-    icon:
-      sprite: _CMU14/Actions/actions_pathogen.rsi
-      state: secrete_resin
-  - type: TargetAction
-    deselectOnMiss: false
-    range: 0
-    repeat: true
-    checkCanAccess: false
-  - type: WorldTargetAction
-    event: !type:XenoSecreteStructureActionEvent
-  - type: XenoConstructionAction
-    checkStructureSelected: true
-    checkWeeds: true
-    canUpgrade: false
-  - type: XenoHiveInstantBuildAction
   - type: RMCDazeableAction
 
 - type: entity
@@ -202,10 +176,10 @@
       state: prae_acid_ball
     useDelay: 10
 
-# BloodBuster
+# BloodBurster
 
 - type: entity
-  id: CCMActionXenoPathogenBloodBusterLeap
+  id: CCMActionXenoPathogenBloodBursterLeap
   parent: ActionXenoLeap
   name: Rip off guts
   description: Jump towards a given location and stun them for 1.5 seconds and stagger yourself for 1.5, and start do deal attacks to knocked.

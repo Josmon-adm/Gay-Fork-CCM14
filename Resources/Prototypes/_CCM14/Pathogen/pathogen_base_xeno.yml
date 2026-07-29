@@ -52,32 +52,31 @@
     speechSounds: Pathogen
   - type: RMCSpawnEntitiesOnGib
     entities:
-    - CCMDecalGibPathogenSmallCorpse # TODO one for every caste
-    - CMU14GibEffectPathogenBloodburster # TODO larger gib effect for larger xenos
+    - CMU14GibEffectPathogenBloodburster
+    - CCMDecalGibPathogenSmallCorpse
 
 - type: entity
   abstract: true
   parent:
-  - CMU14XenoPathogenBase
+  - CCMXenoPathogenBase
   - RMCXenoMobCollision
   id: CCMXenoPathogenMatureBase
   components:
   - type: RMCSpawnEntitiesOnGib
     entities:
-    - CCMDecalGibPathogenBigCorpse # TODO one for every caste
-    - CMU14GibEffectPathogenNeomorph # TODO larger gib effect for larger xenos
-
+    - CMU14GibEffectPathogenNeomorph
+    - CCMDecalGibPathogenBigCorpse
 
 - type: decal
   id: CCMDecalGibPathogenBigCorpse
   parent: RMCDecalBloodBase
   sprite:
-    sprite: _CMU14\Mobs\Xenonids\Pathogen\neomorph.rsi
+    sprite: _CMU14/Mobs/Xenonids/Pathogen/neomorph.rsi
     state: neomorph_corpse
 
 - type: decal
   id: CCMDecalGibPathogenSmallCorpse
   parent: RMCDecalBloodBase
   sprite:
-    sprite: _CMU14\Mobs\Xenonids\Pathogen\aberration_bloodburster.rsi
+    sprite: _CMU14/Mobs/Xenonids/Pathogen/aberration_bloodburster.rsi
     state: aberration_bloodburster_corpse

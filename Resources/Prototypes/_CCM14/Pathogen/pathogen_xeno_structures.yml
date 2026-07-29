@@ -5,9 +5,9 @@
   description: Weird strange white slime solidified into a thick wall.
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_wall.rsi
+    sprite: _CCM14/Pathogen/xeno_wall.rsi
   - type: Icon
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_wall.rsi
+    sprite: _CCM14/Pathogen/xeno_wall.rsi
     state: strangerwall
   - type: IconSmooth
     key: walls
@@ -39,7 +39,7 @@
   description: A strange white resin door, which is more durable.
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_door.rsi
+    sprite: _CCM14/Pathogen/xeno_door.rsi
     layers:
     - state: door_closed
       map: ["enum.DoorVisualLayers.Base"]
@@ -104,7 +104,7 @@
         hard: false
   - type: Clickable
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    sprite: _CCM14/Pathogen/xeno_weed.rsi
     drawdepth: Objects
 #    layers:
 #    - state: weedwall
@@ -148,7 +148,7 @@
     spawns: CCMXenoWeedsPathogen
     level: 1
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    sprite: _CCM14/Pathogen/xeno_weeds.rsi
     drawdepth: FloorTiles
     layers:
     - state: weed0
@@ -160,7 +160,7 @@
   description: A weird white one, pulsating node
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    sprite: _CCM14/Pathogen/xeno_weeds.rsi
     drawdepth: FloorTiles
     layers:
     - state: weed0
@@ -184,7 +184,7 @@
     blockOtherWeeds: true
     spreadsOnSemiWeedable: true
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    sprite: _CCM14/Pathogen/xeno_weeds.rsi
     drawdepth: FloorTiles
     layers:
     - state: hive_weed0
@@ -220,7 +220,7 @@
   - type: Physics
     bodyType: Static
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
+    sprite: _CCM14/Pathogen/xeno_weeds.rsi
     state: human_2
     drawdepth: OverMobs
 
@@ -233,7 +233,7 @@
   description: A giant pulsating white mound of mass. It looks very much alive.
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/hive_structures.rsi
+    sprite: _CCM14/Pathogen/hive_structures.rsi
     layers:
      - sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
        state: hive_weed0
@@ -281,7 +281,7 @@
   components:
   - type: Sprite
     color: '#FFFFFFAA'
-    sprite: _CCM14/Pathogen/Structures/Xenos/hive_structures.rsi
+    sprite: _CCM14/Pathogen/hive_structures.rsi
     layers:
     - state: blight_core
     - sprite: _RMC14/Interface/xeno_hud.rsi
@@ -308,7 +308,7 @@
   name: strange white egg
   components:
   - type: Sprite
-    sprite: _CCM14/Pathogen/Structures/Xenos/egg.rsi
+    sprite: _CCM14/Pathogen/egg.rsi
     drawdepth: SmallMobs
     layers:
     - state: egg_item
