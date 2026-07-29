@@ -3,10 +3,8 @@ using Robust.Client.GameObjects;
 
 namespace Content.Client._RMC14.Xenonids.Infected;
 
-public sealed partial class VictimBurstVisualizerSystem : VisualizerSystem<VictimBurstComponent>
+public sealed class VictimBurstVisualizerSystem : VisualizerSystem<VictimBurstComponent>
 {
-    [Dependency] private SpriteSystem _sprite = default!;
-
     protected override void OnAppearanceChange(EntityUid uid, VictimBurstComponent component, ref AppearanceChangeEvent args)
     {
         base.OnAppearanceChange(uid, component, ref args);
@@ -14,27 +12,27 @@ public sealed partial class VictimBurstVisualizerSystem : VisualizerSystem<Victi
         if (!AppearanceSystem.TryGetData(uid, BurstVisuals.Visuals, out VictimBurstState state, args.Component))
             return;
 
-        if (args.Sprite is not { } sprite)
+        if (args.Sprite == null)
             return;
 
-        var rsiPath = component.BurstsFromBack ? component.BackRsiPath : component.RsiPath;
+        var rsiPath = component.RsiPath;
 
-        string? spriteState = state switch
+        var spriteState = state switch
         {
-            VictimBurstState.Bursting => component.BurstsFromBack ? component.BackBurstingState : component.BurstingState,
-            VictimBurstState.Burst => component.BurstsFromBack ? component.BackBurstState : component.BurstState,
+            VictimBurstState.Bursting => component.BurstingState,
+            VictimBurstState.Burst => component.BurstState,
             _ => null
         };
 
         if (string.IsNullOrWhiteSpace(spriteState))
             return;
 
-        if (!_sprite.LayerMapTryGet((uid, sprite), BurstLayer.Base, out var layer, false))
+        if (!args.Sprite.LayerMapTryGet(BurstLayer.Base, out var layer))
         {
-            layer = _sprite.LayerMapReserve((uid, sprite), BurstLayer.Base);
-            _sprite.LayerSetRsi((uid, sprite), layer, rsiPath);
+            layer = args.Sprite.LayerMapReserveBlank(BurstLayer.Base);
+            args.Sprite.LayerSetRSI(layer, rsiPath);
         }
 
-        _sprite.LayerSetRsiState((uid, sprite), layer, spriteState);
+        args.Sprite.LayerSetState(layer, spriteState);
     }
 }

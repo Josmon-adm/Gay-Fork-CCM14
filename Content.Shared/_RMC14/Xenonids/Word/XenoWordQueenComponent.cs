@@ -13,10 +13,4 @@ public sealed partial class XenoWordQueenComponent : Component
 
     [DataField, AutoNetworkedField]
     public SoundSpecifier Sound = new SoundCollectionSpecifier("XenoQueenCommand", AudioParams.Default.WithVolume(-6));
-
-    [DataField, AutoNetworkedField]
-    public string Header = "rmc-xeno-words-of-the-queen-header";
-
-    [DataField, AutoNetworkedField]
-    public Color MessageColor = Color.Red;
 }

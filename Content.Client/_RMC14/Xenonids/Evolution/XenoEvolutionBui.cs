@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Content.Client._RMC14.Xenonids.UI;
 using Content.Client.Message;
 using Content.Shared._RMC14.Xenonids.Evolution;
@@ -14,10 +14,10 @@ using Robust.Shared.Prototypes;
 namespace Content.Client._RMC14.Xenonids.Evolution;
 
 [UsedImplicitly]
-public sealed partial class XenoEvolutionBui : BoundUserInterface
+public sealed class XenoEvolutionBui : BoundUserInterface
 {
-    [Dependency] private IComponentFactory _compFactory = default!;
-    [Dependency] private IPrototypeManager _prototype = default!;
+    [Dependency] private readonly IComponentFactory _compFactory = default!;
+    [Dependency] private readonly IPrototypeManager _prototype = default!;
 
     private readonly SpriteSystem _sprite;
     private readonly MobStateSystem _mobState;
@@ -39,7 +39,6 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
         base.Open();
         _window = this.CreateWindow<XenoEvolutionWindow>();
         _window.OvipositorNeededLabel.Visible = false;
-        _window.OvermindNeededLabel.Visible = false;
 
         if (EntMan.TryGetComponent(Owner, out XenoEvolutionComponent? xeno))
         {
@@ -98,7 +97,7 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
             var name = strain.Name;
             string? description = null;
 
-            if (strain.TryComp(out XenoStrainComponent? strainComp, _compFactory))
+            if (strain.TryGetComponent(out XenoStrainComponent? strainComp))
             {
                 name = $"{Loc.GetString(strainComp.Name)} {name}";
                 description = strainComp.Description;
@@ -139,9 +138,6 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
             return;
 
         _window.PointsLabel.Visible = xeno.Max > FixedPoint2.Zero;
-        _window.PointsLabel.Text = Loc.GetString("rmc-xeno-ui-evolution-points",
-            ("points", (int)Math.Floor(((FixedPoint2)xeno.Points).Double())),
-            ("maxPoints", xeno.Max));
 
         foreach (var control in _evolutionControls.Values)
             control.Visible = false;
@@ -151,7 +147,7 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
         {
             if (hasQueenAlive &&
                 _prototype.TryIndex(evolutionId, out var proto) &&
-                proto.TryComp(out XenoEvolutionGranterComponent? _, _compFactory))
+                proto.TryGetComponent(out XenoEvolutionGranterComponent? _, _compFactory))
             {
                 continue;
             }
@@ -175,21 +171,13 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
                                     _window.StrainsContainer.Children.Any(child => child.Visible);
 
         var lackingOvipositor = State is XenoEvolveBuiState { LackingOvipositor: true };
+        var points = xeno.Points;
 
-        // Determine which "lacking" label to show
-        bool showOviLabel = false;
-        bool showOvermindLabel = false;
+        _window.PointsLabel.Text = Loc.GetString("rmc-xeno-ui-evolution-points",
+            ("points", (int)Math.Floor(points.Double())),
+            ("maxPoints", xeno.Max));
 
-        if (lackingOvipositor)
-        {
-            if (IsPathogenHive())
-                showOvermindLabel = true;
-            else
-                showOviLabel = true;
-        }
-
-        // OvipositorNeededLabel
-        if (showOviLabel)
+        if (lackingOvipositor && xeno.Max > FixedPoint2.Zero)
         {
             if (!_window.OvipositorNeededLabel.Visible)
             {
@@ -197,23 +185,9 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
                 _window.OvipositorNeededLabel.Visible = true;
             }
         }
-        else
+        else if (_window.OvipositorNeededLabel.Visible)
         {
             _window.OvipositorNeededLabel.Visible = false;
-        }
-
-        // OvermindNeededLabel - add this RichTextLabel to XenoEvolutionWindow.xaml alongside OvipositorNeededLabel
-        if (showOvermindLabel)
-        {
-            if (!_window.OvermindNeededLabel.Visible)
-            {
-                _window.OvermindNeededLabel.SetMarkupPermissive(Loc.GetString("cmu-pathogen-ui-overmind-needed-label"));
-                _window.OvermindNeededLabel.Visible = true;
-            }
-        }
-        else
-        {
-            _window.OvermindNeededLabel.Visible = false;
         }
     }
 
@@ -228,39 +202,5 @@ public sealed partial class XenoEvolutionBui : BoundUserInterface
         }
 
         return !_mobState.IsDead(queen);
-    }
-
-    private bool IsPathogenHive()
-    {
-        if (!EntMan.TryGetComponent(Owner, out HiveMemberComponent? member) ||
-            member.Hive is not { } hive ||
-            !EntMan.TryGetComponent(hive, out HiveComponent? hiveComp))
-        {
-            return false;
-        }
-
-        // Check hive prototype ID
-        return EntMan.GetComponent<MetaDataComponent>(hive).EntityPrototype?.ID == "CMUPathogenHive";
-    }
-
-    private bool PathogenHiveHasLivingOvermind()
-    {
-        if (!EntMan.TryGetComponent(Owner, out HiveMemberComponent? member) ||
-            member.Hive is not { } hive)
-        {
-            return false;
-        }
-
-        var query = EntMan.AllEntityQueryEnumerator<HiveMemberComponent, MetaDataComponent>();
-        while (query.MoveNext(out var uid, out var hiveMember, out var meta))
-        {
-            if (hiveMember.Hive != hive)
-                continue;
-
-            if (meta.EntityPrototype?.ID == "CMU14XenoOvermind" && !_mobState.IsDead(uid))
-                return true;
-        }
-
-        return false;
     }
 }
