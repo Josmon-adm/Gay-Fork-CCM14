@@ -6,13 +6,13 @@
   components:
   - type: Sprite
     sprite: _CCM14/Pathogen/xeno_wall.rsi
-    state: strangerwall
+    state: resin
   - type: Icon
     sprite: _CCM14/Pathogen/xeno_wall.rsi
-    state: strangerwall
+    state: resin
   - type: IconSmooth
     key: walls
-    base: strangerwall
+    base: resin
   - type: Destructible
     thresholds:
     - trigger:
@@ -272,6 +272,7 @@
   - type: QueenEyeAction
   - type: RMCTrackable
   - type: TimedSpawner
+    intervalSeconds: 10
     prototypes:
     - CCMXenoHiveEggPathogen
     maximumEntitiesSpawned: 3

@@ -8,39 +8,38 @@
   },
   "states": [
     {
-      "name": "strangerwall",
+      "name": "resin"
+    },
+    {
+      "name": "resin0",
       "directions": 4
     },
     {
-      "name": "strangerwall0",
+      "name": "resin1",
       "directions": 4
     },
     {
-      "name": "strangerwall1",
+      "name": "resin2",
       "directions": 4
     },
     {
-      "name": "strangerwall2",
+      "name": "resin3",
       "directions": 4
     },
     {
-      "name": "strangerwall3",
+      "name": "resin4",
       "directions": 4
     },
     {
-      "name": "strangerwall4",
+      "name": "resin5",
       "directions": 4
     },
     {
-      "name": "strangerwall5",
+      "name": "resin6",
       "directions": 4
     },
     {
-      "name": "strangerwall6",
-      "directions": 4
-    },
-    {
-      "name": "strangerwall7",
+      "name": "resin7",
       "directions": 4
     }
   ]

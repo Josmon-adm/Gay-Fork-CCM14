@@ -106,7 +106,7 @@
   - type: RMCActionOrder
     id: CMXenoParasite
   - type: XenoParasite
-    paralyzeTime: 0
+    paralyzeTime: 1.55
     infectRange: 4
   - type: SpawnOnTrigger
     proto: CCMPathogenInfestSmoke
@@ -122,6 +122,7 @@
     layers:
       - state: alive
         visible: false
+  - type: XenoHidden
 
 - type: entity
   parent: MCSmoke

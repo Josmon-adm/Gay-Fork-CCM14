@@ -87,7 +87,6 @@
   - type: RMCSpawnEntitiesOnGib
     entities:
     - CMU14GibEffectPathogenBloodburster
-    - CCMDecalGibPathogenSmallCorpse
 
 - type: entity
   abstract: true
@@ -99,18 +98,3 @@
   - type: RMCSpawnEntitiesOnGib
     entities:
     - CMU14GibEffectPathogenNeomorph
-    - CCMDecalGibPathogenBigCorpse
-
-- type: decal
-  id: CCMDecalGibPathogenBigCorpse
-  parent: RMCDecalBloodBase
-  sprite:
-    sprite: _CMU14/Mobs/Xenonids/Pathogen/neomorph.rsi
-    state: neomorph_corpse
-
-- type: decal
-  id: CCMDecalGibPathogenSmallCorpse
-  parent: RMCDecalBloodBase
-  sprite:
-    sprite: _CMU14/Mobs/Xenonids/Pathogen/aberration_bloodburster.rsi
-    state: aberration_bloodburster_corpse

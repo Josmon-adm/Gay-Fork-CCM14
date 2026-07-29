@@ -65,7 +65,6 @@
   - type: RMCSpawnEntitiesOnGib
     entities:
     - CMU14GibEffectPathogenPopper # TODO larger gib effect for larger xenos
-    - CCMDecalGibPathogenSmallCorpse
   - type: XenoLight
   - type: DamageOffWeeds
     damage:
