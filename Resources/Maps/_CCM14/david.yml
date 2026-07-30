@@ -16761,18 +16761,6 @@ entities:
     - type: Transform
       pos: -6.5,118.5
       parent: 1
-  - uid: 12139
-    components:
-    - type: Transform
-      rot: 1.5707963267948966 rad
-      pos: -58.494495,3.9396849
-      parent: 1
-  - uid: 12286
-    components:
-    - type: Transform
-      rot: -1.5707963267948966 rad
-      pos: -5.512062,90.827896
-      parent: 1
 - proto: CCMDoubleDoorCargoSolidLocked
   entities:
   - uid: 321

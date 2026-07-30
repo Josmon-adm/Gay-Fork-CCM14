@@ -95,8 +95,6 @@
   - type: WarpPoint
     follow: true
     location: nuclear bomb
-  - type: Corrodible
-    isCorrodible: false
   - type: InteractedBlacklist
     blacklist:
       components:
@@ -115,5 +113,5 @@
     whitelist:
       components:
       - XenoTunnel
-  - type: SpawnOnTerminate
-    spawn: RMCOrbitalCannonExplosionAegis
+  - type: Corrodible
+    timeToApply: 20

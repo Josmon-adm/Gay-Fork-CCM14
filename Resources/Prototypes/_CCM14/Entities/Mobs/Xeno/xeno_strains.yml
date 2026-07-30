@@ -34,11 +34,11 @@
     max: 6
     min: 3
   - type: XenoRage
-    rageDecayTime: 4
-    maxRage: 999
+    rageDecayTime: 1.25
+    maxRage: 20
     armorPerRage: 0
-    speedBuffPerRage: 0.05
-    attackSpeedPerRage: 0.165
+    speedBuffPerRage: 0.025
+    attackSpeedPerRage: 0.115
     healAmount: 0
   - type: XenoEvolution
     max: 500
@@ -591,7 +591,7 @@
   - type: XenoEvolution
     max: 500
     evolvesTo:
-    - CMXenoBoiler
+    - RMCXenoBoiler
     - CMXenoPraetorian
     strains: []
   - type: RMCActionOrder
@@ -699,7 +699,7 @@
         hard: false
         shape:
           !type:PhysShapeAabb
-          bounds: "-0.1,-0.1,0.1,0.1"
+          bounds: "-5,-5,5,5"
         mask:
         - FullTileLayer
         layer:
@@ -743,7 +743,7 @@
   - type: XenoEvolution
     max: 500
     evolvesTo:
-    - CMXenoBoiler
+    - RMCXenoBoiler
     - CMXenoPraetorian
     strains: []
   - type: Xeno
