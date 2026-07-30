@@ -223,12 +223,13 @@
   - type: MeleeWeapon
     damage:
       types:
-        Slash: 15 # Forge-Change : 5->15
+        Slash: 25 # CCM Change : 5 > 25
   - type: LandAtCursor
   - type: DamageOtherOnHit
     damage:
       types:
-        Slash: 75 # Forge-Change : 50->75
+        Slash: 35 # CCM Change : 50 > 35
+        Structural: 35
   - type: UsableWhileDevoured
   - type: Item
     size: Small

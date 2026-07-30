@@ -66,7 +66,7 @@ ccm-xeno-bodyguarddef-description =
     Сами вы, увеличиваете себе здоровье, усиляете крит состояние, и кол-во плазмы.
     У вас появиться энергия, она восстанавливается автоматически но теряется при ударах по живым врагам
 ccm-xeno-bodyguarddef-popup = КСЕНОПРЕЗИДЕНТ ГЕТ ДОВН
-ccm-xeno-scattershotspitter-name = Рассеяный Плеватель
+ccm-xeno-scattershotspitter-name = Рассеяный
 ccm-xeno-scattershotspitter-description =
     Вы теряете обычный плевок, дальность плевка
     Вы получаете следующие способности:
