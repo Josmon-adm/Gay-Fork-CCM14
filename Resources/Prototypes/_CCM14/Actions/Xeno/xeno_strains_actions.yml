@@ -57,12 +57,6 @@
     cooldown: 30
 
 - type: entity
-  id: CCMActionXenoBasherCrushingDaBones
-  parent: ActionXenoTailJab
-  name: Crushing Da' Bones
-  description: Punch enemy in chest, delaing low damage with high knockback & stun. Add "Breaked bones" effect, that deals high brute damage.
-
-- type: entity
   id: CCMActionXenoBasherHighFlyHead
   parent: ActionXenoPunch
   name: High fly head
