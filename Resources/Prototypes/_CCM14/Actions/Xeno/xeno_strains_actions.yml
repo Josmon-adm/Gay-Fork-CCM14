@@ -48,8 +48,6 @@
       sprite: _RMC14/Actions/xeno_actions.rsi
       state: abduct
     useDelay: 20
-      state: abduct
-    useDelay: 20
   - type: TargetAction
     range: 2.5
     deselectOnMiss: false
