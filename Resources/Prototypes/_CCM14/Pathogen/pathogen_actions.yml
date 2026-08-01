@@ -19,7 +19,7 @@
 
 - type: entity
   id: CCMActionXenoPathogenChooseStructure
-  parent: ActionXenoBase
+  parent: ActionXenoChooseStructure
   name: Choose Resin Structure
   description: "Choose a structure to secrete with the 'Secrete Resin' action."
   components:
@@ -28,14 +28,10 @@
     icon:
       sprite: _CMU14/Actions/actions_pathogen.rsi
       state: TEMPLATE  # no place_resin in pathogen RSI
-  - type: InstantAction
-    event: !type:XenoChooseStructureActionEvent
-  - type: XenoChooseConstructionAction
-  - type: RMCDazeableAction
 
 - type: entity
   id: CCMActionXenoPathogenSecreteStructure
-  parent: ActionXenoBase
+  parent: ActionXenoSecreteStructure
   name: Secrete Resin
   description: "Builds the structure chosen with the 'Choose Resin Structure' action."
   components:
@@ -44,22 +40,10 @@
     icon:
       sprite: _CMU14/Actions/actions_pathogen.rsi
       state: secrete_resin
-  - type: TargetAction
-    deselectOnMiss: false
-    range: 0
-    repeat: true
-    checkCanAccess: false
-  - type: WorldTargetAction
-    event: !type:XenoSecreteStructureActionEvent
-  - type: XenoConstructionAction
-    checkStructureSelected: true
-    checkWeeds: true
-    canUpgrade: true
-  - type: RMCDazeableAction
 
 - type: entity
   id: CCMActionXenoPathogenOrderConstruction
-  parent: ActionXenoBase
+  parent: ActionXenoOrderConstruction
   name: Order Construction
   description: Starts construction of an important hive structure.
   components:
@@ -68,9 +52,6 @@
     icon:
       sprite: _CMU14/Actions/actions_pathogen.rsi
       state: morph_resin
-  - type: InstantAction
-    event: !type:XenoOrderConstructionActionEvent
-  - type: RMCDazeableAction
 
 - type: entity
   id: CCMActionXenoPathogenResinHole

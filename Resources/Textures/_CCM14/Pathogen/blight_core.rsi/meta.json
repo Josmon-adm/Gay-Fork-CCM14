@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "Sprites from cm13 https://github.com/realforest2001/forest-cm13/blob/8624d4b3e3e7339c6a9928ad1af33edb830452f8/icons/mob/pathogen/popper.dmi",
+  "size": {
+    "x": 64,
+    "y": 64
+  },
+  "states": [
+    {
+      "name": "alive",
+      "delays": [
+        [
+          2,
+          0.1,
+          0.2,
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "running",
+      "delays": [
+        [
+          2,
+          0.1,
+          0.2,
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "dead",
+      "delays": [
+        [
+          2,
+          0.1,
+          0.2,
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "crit",
+      "delays": [
+        [
+          2,
+          0.1,
+          0.2,
+          0.1
+        ]
+      ]
+	},
+    {
+      "name": "sleeping",
+      "delays": [
+        [
+          2,
+          0.1,
+          0.2,
+          0.1
+        ]
+      ]
+    }
+  ]
+}

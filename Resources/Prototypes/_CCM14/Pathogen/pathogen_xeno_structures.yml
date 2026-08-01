@@ -228,83 +228,6 @@
     state: human_2
     drawdepth: OverMobs
 
-# Hive Structures
-
-- type: entity
-  parent: HiveCoreXeno
-  id: CCMHiveCoreXenoPathogen
-  name: blight core
-  description: A giant pulsating white mound of mass. It looks very much alive.
-  components:
-  - type: Sprite
-    sprite: _CCM14/Pathogen/hive_structures.rsi
-    layers:
-     - sprite: _CCM14/Pathogen/Structures/Xenos/xeno_weed.rsi
-       state: hive_weed0
-     - state: blight_core
-  - type: XenoWeeds
-    range: 7
-    spawns: CCMXenoHiveWeedsCorePathogen
-    level: 3
-    blockOtherWeeds: true
-    spreadsOnSemiWeedable: true
-  - type: GhostRole
-    name: Popper
-    description: Pop it
-    raffle:
-      settings: short
-  - type: GhostRoleMobSpawner
-    availableTakeovers: 2
-    deleteOnSpawn: false
-    prototype: CCMXenoPathogenPopper
-  - type: ManageHive
-  - type: HiveLeaderGranter
-  - type: XenoEvolutionGranter
-  - type: XenoOvipositorCapable
-  - type: XenoWordQueen
-  - type: XenoPsychicCommunication
-  - type: InnateCommandSpeech
-  - type: RMCInnateRadioTextIncrease
-    radioTextIncrease: 3
-    instrinsic: true
-  - type: CommendationGiver
-  - type: XenoOmitNumber
-  - type: QueenEyeAction
-  - type: RMCTrackable
-  - type: TimedSpawner
-    intervalSeconds: 10
-    prototypes:
-    - CCMXenoHiveEggPathogen
-    maximumEntitiesSpawned: 3
-
-- type: entity
-  id: CCMHiveCoreXenoPathogenConstructionNode
-  parent: HiveCoreXenoConstructionNode
-  name: blight core
-  description: A giant pulsating white mound of mass. It looks very much alive. Looks like a marker for something.
-  suffix: Construction
-  components:
-  - type: Sprite
-    color: '#FFFFFFAA'
-    sprite: _CCM14/Pathogen/hive_structures.rsi
-    layers:
-    - state: blight_core
-    - sprite: _RMC14/Interface/xeno_hud.rsi
-      state: xeno_structure_node_indicator
-      scale: 0.8, 0.8
-  - type: Destructible
-    thresholds:
-    - trigger:
-        !type:DamageTrigger
-        damage: 300 # TODO RMC14
-      behaviors:
-      - !type:DoActsBehavior
-        acts: ["Destruction"]
-  - type: HiveConstructionNode
-    initialPlasmaCost: 400
-    plasmaCost: 1000
-    spawn: CCMHiveCoreXenoPathogen
-
 # Hive egg
 
 - type: entity
@@ -344,3 +267,137 @@
     tickCount: 5      # 240 plasma over 15 seconds
     tickPeriod: 3
     regenPerTick: 48
+
+# Hive core
+
+- type: entity
+  parent: 
+  - HiveCoreXeno
+  - RMCXenoQueenBase
+  id: CCMHiveCoreXenoPathogen
+  name: blight core
+  description: A giant pulsating white mound of mass. It looks very much alive.
+  components:
+  - type: Sprite
+    sprite: _CCM14/Pathogen/blight_core.rsi
+    state: alive
+  - type: XenoWeeds
+    range: 7
+    spawns: CCMXenoHiveWeedsCorePathogen
+    level: 3
+    blockOtherWeeds: true
+    spreadsOnSemiWeedable: true
+  - type: GhostRole
+    name: Popper
+    description: Pop it
+    raffle:
+      settings: short
+  - type: Xeno
+    actionIds:
+    - CCMActionXenoWatchPathogen
+    - CCMActionXenoPheromonesPathogen
+    - CCMActionXenoPathogenChooseStructure
+    - CCMActionXenoPathogenOrderConstruction
+    - CCMActionXenoPathogenSecreteStructure
+    - ActionXenoManageHive
+    - ActionXenoWordQueen
+    - ActionXenoPsychicWhisper
+    - ActionXenoPsychicRadiance
+    - ActionXenoGiveOrder
+    - ActionXenoQueenEye
+    - ActionXenoTransferPlasmaQueen
+    - ActionXenoHeal
+    role: CCMXenoPathogenOverMind
+    hudOffset: -99,99
+    tier: 0
+    bypassTierCount: true
+    unlockAt: 0 # 1 minute
+  - type: GhostRoleMobSpawner
+    availableTakeovers: 2
+    deleteOnSpawn: false
+    prototype: CCMXenoPathogenPopper
+  - type: TimedSpawner
+    intervalSeconds: 10
+    prototypes:
+    - CCMXenoHiveEggPathogen
+    maximumEntitiesSpawned: 3
+  - type: XenoAnnounceDeath
+    message: blight core has been destroyed!
+    color: "#FFFFFF"
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      1200: Critical
+      1300: Dead
+  - type: MeleeWeapon
+    attackRate: 0
+    range: 0
+    damage:
+      groups:
+        Brute: 0
+  - type: RemoveComponents
+    components:
+    - type: Gibbable
+    - type: CanBeLarvaQueued
+    - type: GuideHelp
+      guides:
+      - RMCGuideRoleQueen
+    - type: GhostRole
+      name: cm-job-name-xeno-queen
+      makeSentient: true
+      allowSpeech: true
+      allowMovement: true
+      description: cm-xeno-description
+      raffle:
+        settings: short
+      rules: cm-xeno-rules
+    - type: RMCXenoDamageVisuals
+      prefix: queen
+    - type: XenoMaturing
+      critThreshold: 1000
+      deadThreshold: 1100
+      addComponents:
+      - type: XenoScreech
+      - type: XenoToggleSpit
+      addActions:
+      - ActionXenoScreech
+      - ActionXenoSpitQueen
+      - ActionXenoToggleSpitType
+  
+- type: entity
+  id: CCMHiveCoreXenoPathogenConstructionNode
+  parent: HiveCoreXenoConstructionNode
+  name: blight core
+  description: A giant pulsating white mound of mass. It looks very much alive. Looks like a marker for something.
+  suffix: Construction
+  components:
+  - type: Sprite
+    color: '#FFFFFFAA'
+    sprite: _CCM14/Pathogen/blight_core.rsi
+    layers:
+    - state: blight_core
+    - sprite: _RMC14/Interface/xeno_hud.rsi
+      state: xeno_structure_node_indicator
+      scale: 0.8, 0.8
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 300 # TODO RMC14
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+  - type: HiveConstructionNode
+    initialPlasmaCost: 400
+    plasmaCost: 1000
+    spawn: CCMHiveCoreXenoPathogen
+
+- type: job
+  parent: CMJobXenoBase
+  id: CCMXenoPathogenOverMind
+  name: ccm-job-name-xeno-pathogen-overmind
+  playTimeTracker: CCMJobXenoPathogenOverMind
+
+- type: playTimeTracker
+  id: CCMJobXenoPathogenOverMind
+  isXeno: true

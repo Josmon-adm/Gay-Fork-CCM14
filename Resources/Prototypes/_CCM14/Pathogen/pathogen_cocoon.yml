@@ -15,9 +15,7 @@
     - state: egg_item
       map: [ "enum.XenoEggLayers.Base" ]
   - type: XenoEgg
-    state: growing
-    eggOpenTime: 0.6
-    knockdownTime: 0
+    state: grown
     currentSprite: _CCM14/Pathogen/xeno_egg.rsi
     normalSprite: _CCM14/Pathogen/xeno_egg.rsi
     eggDestroyed: CCMXenoPathogenCocoonDestroyed
@@ -96,18 +94,17 @@
     spawn: CCMXenoPathogenCocoon
 
 - type: entity
-  parent: CMXenoParasiteBase
+  parent: CMXenoParasite
   id: CCMXenoPathogenInvisParasite
+  categories: [ HideSpawnMenu ]
   description: YepYap
   components:
   - type: SleepNPC
   - type: ParasiteAI
-    maxInfectRange: 5
   - type: RMCActionOrder
     id: CMXenoParasite
   - type: XenoParasite
     paralyzeTime: 1.55
-    infectRange: 4
   - type: SpawnOnTrigger
     proto: CCMPathogenInfestSmoke
   - type: TriggerOnSpawn
@@ -123,6 +120,9 @@
       - state: alive
         visible: false
   - type: XenoHidden
+  - type: Tag
+    tags:
+    - HideContextMenu
 
 - type: entity
   parent: MCSmoke

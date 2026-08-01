@@ -329,7 +329,6 @@
     actionIds:
     - CCMActionXenoRestPahtogen
     - CCMActionXenoWatchPathogen
-    - CCMActionXenoHidePathogen
     - CCMActionXenoTailStabPathogen
     - CCMActionXenoRegurgitatePathogen
     - CCMActionXenoPheromonesPathogen
