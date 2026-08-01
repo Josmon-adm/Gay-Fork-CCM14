@@ -82,26 +82,6 @@
   description: Punch enemy in chest, delaing low damage with high knockback & stun. Add "Breaked bones" effect, that deals high brute damage.
 
 - type: entity
-  parent: ActionXenoBase
-  id: CCMActionXenoBoxerComeToMe
-  name: Come to ME!
-  description: Hook enemy to you up for 4 tiles, for 2.5 range.
-  components:
-  - type: Action
-    itemIconStyle: NoItem
-    icon:
-      sprite: _RMC14/Actions/xeno_actions.rsi
-      state: abduct
-    useDelay: 20
-  - type: TargetAction
-    range: 2.5
-    deselectOnMiss: false
-  - type: EntityTargetAction
-    event: !type:XenoCleaveActionEvent
-      flings: true
-  - type: ActionBlockIfResting
-
-- type: entity
   id: CCMActionXenoBasherLegsOff
   parent: ActionXenoFling
   name: Legs off
