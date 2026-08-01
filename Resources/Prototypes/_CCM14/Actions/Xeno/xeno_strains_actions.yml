@@ -218,7 +218,6 @@
   name: Scattered acidic Spit (20) # TODO RMC14 proper plasma costs
   description: Launches multiple damageless projectiles that will deal serious damage at point blank distance
 
-
 - type: entity
   parent: BaseActionPolymorph
   id: CCMActionJauntBurrow
@@ -226,7 +225,6 @@
   description: Dig in ground and them rush your enemies with your back spikes
   components:
   - type: Action
-    useDelay: 27
     useDelay: 27
     icon:
       sprite: _RMC14/Actions/xeno_actions.rsi
