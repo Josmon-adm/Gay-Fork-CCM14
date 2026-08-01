@@ -932,6 +932,7 @@
     - type: XenoEvolution
       strains: # CCM Change
       - CCMXenoBurrowerImpaler
+    - type: CanBeLarvaQueued
 # Polymorph
 - type: polymorph
   id: CCMJauntBurrow
