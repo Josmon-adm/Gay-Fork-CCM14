@@ -101,6 +101,50 @@
   parent: ActionXenoTailJab
   name: Crushing Da' Bones
   description: Punch enemy in chest, delaing low damage with high knockback & stun. Add "Breaked bones" effect, that deals high brute damage.
+
+- type: entity
+  id: CCMActionXenoBasherLegsOff
+  parent: ActionXenoFling
+  name: Legs off
+  description: Fling in legs an enemy, dealing a medium damage with medium knockback. Add "Breaked bones" effect, that slows and stuns every 2 seconds.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _RMC14/Actions/xeno_actions.rsi
+      state: mark_attack
+    useDelay: 30
+  - type: ActionSharedCooldown
+    id: CCMActionXenoBasherLegsOff
+    ids:
+    - CCMActionXenoBasherCrushingDaBones
+    - CCMActionXenoBasherHighFlyHead
+    cooldown: 30
+
+- type: entity
+  id: CCMActionXenoBasherHighFlyHead
+  parent: ActionXenoPunch
+  name: High fly head
+  description: Punch an enemy in head, dealing a high damage with slight knockback. Add "Stars in eyes" effect, that deals asphyxiation damage and stuns every 4 seconds.
+  components:
+  - type: Action
+    itemIconStyle: NoItem
+    icon:
+      sprite: _RMC14/Actions/xeno_actions.rsi
+      state: prae_crush
+    useDelay: 30
+  - type: ActionSharedCooldown
+    id: CCMActionXenoBasherHighFlyHead
+    ids:
+    - CCMActionXenoBasherLegsOff
+    - CCMActionXenoBasherCrushingDaBones
+    cooldown: 30
+
+- type: entity
+  id: CCMActionXenoBasherCrushingDaBones
+  parent: ActionXenoTailJab
+  name: Crushing Da' Bones
+  description: Punch enemy in chest, delaing low damage with high knockback & stun. Add "Breaked bones" effect, that deals high brute damage.
   components:
   - type: Action
     itemIconStyle: NoItem
