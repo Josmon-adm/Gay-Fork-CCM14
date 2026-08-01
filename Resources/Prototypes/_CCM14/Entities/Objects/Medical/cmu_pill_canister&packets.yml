@@ -87,11 +87,13 @@
   description: This packet contains tramadol pills. Moderate supresses pain. Once you take them out, they don't go back in. Don't take more than 2 pills in a short period.
   components:
   - type: Sprite
-    state: tramadol_packet
-  - type: StorageFill
-    contents:
-    - id: CCMPillTramadol
-      amount: 4
+    layers:
+    - state: pill_packet
+    - state: pill_packet_4
+      map: [ "enum.CMItemSlotsLayers.Fill" ]
+      color: "#9347c9"
+  - type: CMItemSlots
+    startingItem: CCMPillTramadol
   - type: IconLabel
     labelTextLocId: pill-tramadol
 

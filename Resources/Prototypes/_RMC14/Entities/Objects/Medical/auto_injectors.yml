@@ -85,6 +85,8 @@
           Quantity: 29
 #        - ReagentId: CMOxycodone # TODO RMC14 oxycodone
 #          Quantity: 19
+        - ReagentId: CMUOxycodone # CMU-CCM Add
+          Quantity: 19 # CMU-CCM Add
   - type: SolutionContainerVisuals
     maxFillLevels: 1
     changeColor: false
@@ -129,9 +131,11 @@
   - type: SolutionContainerManager
     solutions:
       pen:
-        maxVol: 15
+        maxVol: 30
         reagents:
         - ReagentId: CMTricordrazine
+          Quantity: 15
+        - ReagentId: CMUParacetamol # CMU-CCM Add
           Quantity: 15
   - type: SolutionContainerVisuals
     maxFillLevels: 1
@@ -141,6 +145,7 @@
   - type: CMRefillableSolution
     reagents:
       CMTricordrazine: 15
+      CMUParacetamol: 15 # CMU-CCM Add
   - type: IconLabel
     labelTextLocId: rmc-first-aid-container-label-text
 
