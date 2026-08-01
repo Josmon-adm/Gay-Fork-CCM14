@@ -948,8 +948,6 @@
     exitPolymorphSound: /Audio/_RMC14/Xeno/burrowoff.ogg
     duration: 5
 # // CCM Xeno Strain - Burrower Impaler
-<<<<<<< HEAD
-=======
 
 - type: entity
   parent:
@@ -1031,4 +1029,4 @@
   id: XenoEnergyScorpion
   name: Яд
   description: Твой яд, используемый для других способностей.
->>>>>>> 112d590e4a (Scorpion)
+
