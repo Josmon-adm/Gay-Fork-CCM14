@@ -287,7 +287,7 @@
       losesEffectWithRange: true
       stunTime: 0
       superSlowTime: 0
-      slowTime: 2
+      slowTime: 0.95
       dazeTime: 0.25
 
 # Tags
