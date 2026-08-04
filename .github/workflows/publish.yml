@@ -11,7 +11,7 @@ on:
 #      - master
 #      - patogen-master
 
-#  ДОБАВЛЕНО: Переменная для принудительного использования Node.js 24
+#  Оставляею переменную для дополнительной гарантии
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -33,16 +33,16 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install -y python3-paramiko python3-lxml
 
-    #  ОБНОВЛЕНО: actions/checkout с v4.2.2 до v5.0.0
+    # ОБНОВЛЕНО ДО v5!
     - uses: actions/checkout@v5.0.0
       with:
         submodules: 'recursive'
         fetch-depth: 0
         fetch-tags: true
 
-    #  ОБНОВЛЕНО: actions/setup-dotnet с v4.1.0 до v4.3.0
+    #  ОБНОВЛЕНО ДО v5!
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4.3.0
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: 9.0.x
       env:
