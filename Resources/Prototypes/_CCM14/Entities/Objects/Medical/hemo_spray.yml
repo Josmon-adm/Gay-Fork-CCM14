@@ -1,0 +1,99 @@
+- type: entity
+  name: hemo spray bottle
+  id: CCMMedicalSprayBottle
+  parent: BaseItem
+  suffix: Empty
+  description: A spray bottle with an unscrewable top.
+  components:
+  - type: Drink
+    forceFeedDelay: 0
+    solution: spray
+    ignoreEmpty: true
+    useSound:
+      path: /Audio/Effects/spray3.ogg
+    transferAmount: 10
+  - type: Tag
+    tags:
+    - Spray
+  - type: Sprite
+    sprite: _CCM14/Objects/Medical/hemo_spray.rsi
+    state: icon
+  - type: Item
+    sprite: _CCM14/Objects/Medical/hemo_spray.rsi
+  - type: SolutionContainerManager
+    solutions:
+      spray:
+        maxVol: 200
+        reagents:
+        - ReagentId: SpaceCleaner
+          Quantity: 200
+  - type: RefillableSolution
+    solution: spray
+  - type: DrainableSolution
+    solution: spray
+  - type: SolutionTransfer
+    canChangeTransferAmount: true
+  - type: SolutionItemStatus
+    solution: spray
+  - type: UseDelay
+  - type: Spray
+    sprayedPrototype: CCMMedicalVaporSpray
+    transferAmount: 10
+    sprayVelocity: 2
+    spraySound:
+      path: /Audio/Effects/spray2.ogg
+  - type: TrashOnSolutionEmpty
+    solution: spray
+  - type: ExaminableSolution
+    solution: spray
+
+- type: entity
+  id: CCMMedicalVaporSpray
+  parent: Vapor
+  name: "vapor"
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: SolutionInjectOnProjectileHit
+  - type: Physics
+    bodyType: Dynamic
+    linearDamping: 0
+    angularDamping: 0
+  - type: Fixtures
+    fixtures:
+      projectile:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.1,-0.1,0.1,0.1"
+        hard: false
+        mask:
+        - Impassable
+        - BulletImpassable
+  - type: Projectile
+    deleteOnCollide: false
+    damage:
+      types:
+        Bloodloss: -10
+
+- type: reagent
+  parent: [ CMReagentMedicine, TranexamicAcid ]
+  id: CCMHemotracliary
+  name: reagent-name-ccmhemotracliary
+  desc: reagent-desc-ccmhemotracliary
+  color: "#ba7d7d"
+  overdose: 11
+  criticalOverdose: 21
+  metabolisms:
+    Medicine:
+      metabolismRate: 1
+      effects:
+      - !type:ModifyBloodLevel
+        amount: 6
+      - !type:ModifyBleedAmount
+        amount: -3
+      - !type:HealthChange
+        conditions:
+        - !type:ReagentThreshold
+          min: 11
+        damage:
+          types:
+            Bloodloss: 30
