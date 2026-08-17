@@ -12,7 +12,6 @@
     Medicine:
       metabolismRate: 0.05
       effects:
-      - !type:Allergenic
       - !type:CMUApplyPainSuppressionEffect
         accumulationSuppression: 0.25
         tierSuppression: 1
@@ -55,7 +54,6 @@
     Medicine:
       metabolismRate: 0.05
       effects:
-      - !type:Allergenic
       - !type:CMUApplyPainSuppressionEffect
         accumulationSuppression: 0.5
         tierSuppression: 2
@@ -103,7 +101,6 @@
     Medicine:
       metabolismRate: 0.1
       effects:
-      - !type:Allergenic
       - !type:CMUApplyPainSuppressionEffect
         accumulationSuppression: 0.75
         tierSuppression: 4
@@ -175,7 +172,6 @@
     Medicine:
       metabolismRate: 0.15
       effects:
-      - !type:Allergenic
       - !type:CMUApplyPainSuppressionEffect
         accumulationSuppression: 0.9
         tierSuppression: 5
@@ -322,7 +318,7 @@
 - type: entity
   parent: MobStatusEffectBase
   id: StatusEffectCMUOxycodoneHaze
-  name: opioid haze
+  name: опиодное помешательство
   categories: [ HideSpawnMenu ]
   components:
   - type: RMCDazed
@@ -336,7 +332,7 @@
 - type: entity
   parent: MobStatusEffectBase
   id: StatusEffectCMUFentanylHaze
-  name: opioid haze
+  name: опиодное помешательство
   categories: [ HideSpawnMenu ]
   components:
   - type: RMCDazed
