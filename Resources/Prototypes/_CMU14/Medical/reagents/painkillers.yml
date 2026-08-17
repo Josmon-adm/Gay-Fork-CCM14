@@ -106,9 +106,6 @@
         tierSuppression: 4
         decayBonus: 1.25
         durationPerUnit: 90
-      - !type:TemporaryBlurryVision
-        blur: 0.15
-        time: 4
       - !type:ModifyStatusEffect
         effectProto: StatusEffectCMUOxycodoneHaze
         time: 4
@@ -177,9 +174,6 @@
         tierSuppression: 5
         decayBonus: 1.5
         durationPerUnit: 120
-      - !type:TemporaryBlurryVision
-        blur: 0.6
-        time: 4
       - !type:ModifyStatusEffect
         effectProto: StatusEffectCMUFentanylHaze
         time: 4
