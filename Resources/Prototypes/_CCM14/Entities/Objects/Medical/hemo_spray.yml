@@ -58,15 +58,15 @@
     Acidic:
       methods: [ Touch ]
       effects:
-      - !type:HealthChange
-        ignoreResistances: false
-        damage:
-          groups:
-            Brute: -2
+        - !type:HealthChange
+          ignoreResistances: false
+          damage:
+            groups:
+              Brute: -3
         - !type:ModifyBloodLevel
-          amount: 3
+          amount: 1
         - !type:ModifyBleedAmount
-          amount: -3
+          amount: -2
   metabolisms:
     Medicine:
       metabolismRate: 1
