@@ -36,12 +36,6 @@
   - type: SolutionItemStatus
     solution: spray
   - type: UseDelay
-  - type: Spray
-    sprayedPrototype: CCMMedicalVaporSpray
-    transferAmount: 10
-    sprayVelocity: 2
-    spraySound:
-      path: /Audio/Effects/spray2.ogg
   - type: TrashOnSolutionEmpty
     solution: spray
   - type: ExaminableSolution
