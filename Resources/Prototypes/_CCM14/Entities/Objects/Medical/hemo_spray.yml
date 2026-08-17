@@ -45,6 +45,9 @@
     solution: spray
   - type: ExaminableSolution
     solution: spray
+  - type: RequiresSkill
+    skills:
+      RMCSkillMedical: 2
 
 - type: reagent
   parent: [ CMReagentMedicine, TranexamicAcid ]
