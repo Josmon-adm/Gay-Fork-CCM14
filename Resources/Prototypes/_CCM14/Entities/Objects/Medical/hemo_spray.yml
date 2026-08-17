@@ -25,7 +25,7 @@
       spray:
         maxVol: 200
         reagents:
-        - ReagentId: SpaceCleaner
+        - ReagentId: CCMHemotracliary
           Quantity: 200
   - type: RefillableSolution
     solution: spray
