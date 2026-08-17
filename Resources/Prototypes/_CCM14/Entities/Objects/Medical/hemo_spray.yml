@@ -35,38 +35,16 @@
     canChangeTransferAmount: true
   - type: SolutionItemStatus
     solution: spray
+  - type: Spray
+    transferAmount: 10
+    sprayVelocity: 2
+    spraySound:
+      path: /Audio/Effects/spray2.ogg
   - type: UseDelay
   - type: TrashOnSolutionEmpty
     solution: spray
   - type: ExaminableSolution
     solution: spray
-
-- type: entity
-  id: CCMMedicalVaporSpray
-  parent: Vapor
-  name: "vapor"
-  categories: [ HideSpawnMenu ]
-  components:
-  - type: SolutionInjectOnProjectileHit
-  - type: Physics
-    bodyType: Dynamic
-    linearDamping: 0
-    angularDamping: 0
-  - type: Fixtures
-    fixtures:
-      projectile:
-        shape:
-          !type:PhysShapeAabb
-          bounds: "-0.1,-0.1,0.1,0.1"
-        hard: false
-        mask:
-        - Impassable
-        - BulletImpassable
-  - type: Projectile
-    deleteOnCollide: false
-    damage:
-      types:
-        Bloodloss: -10
 
 - type: reagent
   parent: [ CMReagentMedicine, TranexamicAcid ]
@@ -76,12 +54,25 @@
   color: "#ba7d7d"
   overdose: 11
   criticalOverdose: 21
+  reactiveEffects:
+    Acidic:
+      methods: [ Touch ]
+      effects:
+      - !type:HealthChange
+        ignoreResistances: false
+        damage:
+          groups:
+            Brute: -2
+        - !type:ModifyBloodLevel
+          amount: 3
+        - !type:ModifyBleedAmount
+          amount: -3
   metabolisms:
     Medicine:
       metabolismRate: 1
       effects:
       - !type:ModifyBloodLevel
-        amount: 6
+        amount: 3
       - !type:ModifyBleedAmount
         amount: -3
       - !type:HealthChange
