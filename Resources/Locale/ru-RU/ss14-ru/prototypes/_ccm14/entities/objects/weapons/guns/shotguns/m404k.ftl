@@ -22,5 +22,5 @@ ent-CCMShotgunSpecEquipmentCase = кейс снаряжения тяжёлого
 
 ent-CCMCrateM404KSpecFullAmmo = ящик полных ружейных дробовых патронов M404-K (5х1)
     .desc = Содержит все горсти ружейных патрон кроме Чёрной Ракеты.
-ent-CCMShellM404KBlackRocket = ящик ружейного патрона Чёрная Ракета M404-K (х1)
+ent-CCMCrateM404KSpecBlackRocket = ящик ружейного патрона Чёрная Ракета M404-K (х1)
     .desc = { ent-RMCCrateAmmo.desc }

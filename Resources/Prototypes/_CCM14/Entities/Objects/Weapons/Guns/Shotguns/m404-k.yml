@@ -99,10 +99,14 @@
   - type: AttachableVisuals
   - type: AttachableWeaponRangedMods
     modifiers:
-    - projectileSpeedFlat: -10
+    - conditions:
+        wieldedOnly: false
       accuracyAddMult: -0.2
+    - projectileSpeedFlat: -10
   - type: AttachableSpeedMods
     modifiers:
+    - conditions:
+        wieldedOnly: false
       walk: 0.059
       sprint: 0.101
   - type: AttachableWieldDelayMods
@@ -124,8 +128,10 @@
   - type: AttachableVisuals
   - type: AttachableWeaponRangedMods
     modifiers:
-    - projectileSpeedFlat: 15
+    - conditions:
+        wieldedOnly: false
       accuracyAddMult: 0.3
+    - projectileSpeedFlat: 15
   - type: AttachableWieldDelayMods
     modifiers:
     - delay: 0.4
@@ -164,6 +170,8 @@
     - delay: 0.8
   - type: AttachableSpeedMods
     modifiers:
+    - conditions:
+        wieldedOnly: false
       walk: -0.059
       sprint: -0.101
 
@@ -578,7 +586,7 @@
       dazeTime: 3.4
 
 - type: entity
-  parent: RMCBaseBullet
+  parent: RMCBaseProjectileRocket84mm
   id: CCMPelletM404KBlackRocket
   name: black rocket
   components:
@@ -607,15 +615,24 @@
       falloff: 1
   - type: ProjectileMaxRange
     max: 0.5
+  - type: TriggerOnCollide
+    # TODO RMC14 Make TriggerOnCollide spawn the explosion on the OtherEntity tile more consistently, so the explosion is centered properly
+    fixtureID: projectile # no parent entity from BaseBulletTrigger because it has Clickable
+  - type: ExplodeOnTrigger
   - type: Explosive
-    # TODO RMC14 Very inconsistent because explosions spawn at epicenter of the rocket, not the hit entity. Proper values are around (50, 40, 90)
     explosionType: RMC
-    maxIntensity: 20
-    intensitySlope: 8
+    maxIntensity: 15
+    intensitySlope: 10
     totalIntensity: 150
     maxTileBreak: 0
-  - type: TriggerOnCollide
-  - type: ExplodeOnTrigger
+  - type: CMExplosionEffect
+  - type: RMCScorchEffect
+  - type: PointLight
+    radius: 3.5
+    color: orange
+    energy: 0.5
+  - type: VehicleDamageMultiplier
+    multiplier: 5
 
 #
 
@@ -658,6 +675,9 @@
       amount: 1
     - id: RMCExplosiveBreachingCharge
       amount: 2
+    - id: CCMAttachmentExtendedM404Barrel
+    - id: CCMAttachmentLightM404Barrel
+    - id: CCMAttachmentLongM404Barrel
   - type: CMChangeUserOnVend
     addComponents:
     - type: DemoSpecWhitelist
