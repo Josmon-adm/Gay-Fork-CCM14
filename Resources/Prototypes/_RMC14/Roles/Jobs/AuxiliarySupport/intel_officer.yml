@@ -47,7 +47,7 @@
         RMCSkillOverwatch: 1
         RMCSkillResearch: 1
 # CCM14 ADD
-        RMCSkillVehicles: 3
+        RMCSkillVehicles: 1
 # CCM14 ADD
     - type: CMVendorUser
       id: CMIntelOfficer
