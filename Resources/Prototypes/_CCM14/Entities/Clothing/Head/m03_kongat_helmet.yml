@@ -5,9 +5,9 @@
   description: A special maded specialist helmet for breaching, and destroying. Have integrated night vision visor.
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Clothing/Head/Helmets/m11/co.rsi
+    sprite: _CCM14/Objects/Clothing/Head/Helmets/m03_kongat.rsi
   - type: Clothing
-    sprite: _RMC14/Objects/Clothing/Head/Helmets/m11/co.rsi
+    sprite: _CCM14/Objects/Clothing/Head/Helmets/m03_kongat.rsi
   - type: CMArmor
     melee: 25
     bullet: 30
@@ -15,11 +15,8 @@
     #todo RMC: energy armor: 15
   - type: ItemCamouflage
     camouflageVariations:
-     Jungle: _RMC14/Objects/Clothing/Head/Helmets/m11/co/jungle.rsi
-     Desert: _RMC14/Objects/Clothing/Head/Helmets/m11/co/desert.rsi
-     Snow: _RMC14/Objects/Clothing/Head/Helmets/m11/co/snow.rsi
-     Classic: _RMC14/Objects/Clothing/Head/Helmets/m11/co/classic.rsi
-     Urban: _RMC14/Objects/Clothing/Head/Helmets/m11/co/urban.rsi
+     Classic: _CCM14/Objects/Clothing/Head/Helmets/m03_kongat.rsi
+     Urban: _CCM14/Objects/Clothing/Head/Helmets/m03_kongat.rsi
   - type: CycleableVisor # TODO 4 visor slots but integrated security visor
     containers:
     - rmc_visor_one

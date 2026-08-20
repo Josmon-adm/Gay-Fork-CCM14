@@ -5,7 +5,7 @@
   description: A heavy specialist armor desgined for blocking melee attack from enemy.
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/jungle.rsi
+    sprite: Textures/_CCM14/Objects/Clothing/OuterClothing/Armor/m04_kongat.rsi
   - type: CMArmor
     melee: 30
     bullet: 35
@@ -22,10 +22,4 @@
     - 0,0,3,1 # 2 slots
   - type: ItemCamouflage
     camouflageVariations:
-      Jungle: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/jungle.rsi
-      Desert: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/desert.rsi
-      Snow: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/snow.rsi
-      Classic: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/classic.rsi
-      Urban: _RMC14/Objects/Clothing/OuterClothing/Armor/m3/eod/padded/urban.rsi
-  - type: RMCLoreExaminable
-    content: rmc-lore-examinable-m3-eod-pattern-heavy-armor
+      Classic: Textures/_CCM14/Objects/Clothing/OuterClothing/Armor/m04_kongat.rsi

@@ -5,9 +5,9 @@
   description: A limited breech shotgun like gun, that used for heavy shotgun handfuls. It full name is MODEL 404 KONGAT
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Shotguns/mou53/jungle.rsi
+    sprite: _CCM14/Objects/Weapons/Guns/Shotguns/m404k.rsi
   - type: Clothing
-    sprite: _RMC14/Objects/Weapons/Guns/Shotguns/mou53/jungle.rsi
+    sprite: _CCM14/Objects/Weapons/Guns/Shotguns/m404k.rsi
   - type: Tag
     tags:
     - CCMWeaponM404K
@@ -62,6 +62,10 @@
     closeSound:
       path: /Audio/_RMC14/Weapons/Guns/Breech/pkd_close_chamber.ogg
     toggleDelay: 1.1
+  - type: GunUserWhitelist
+    whitelist:
+      components:
+      - DemoSpecWhitelist
   - type: AttachableHolder
     slots:
       rmc-aslot-barrel:
@@ -183,9 +187,9 @@
   name: handful of M404K shock shells
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: buckshot_shell_1
+    - state: shock_1
       map: [ "base" ]
   - type: CartridgeAmmo
     proto: CCMPelletM404KShock
@@ -194,12 +198,12 @@
     stackType: CCMShellM404KShock
     baseLayer: base
     layerStates:
-    - buckshot_shell_1
-    - buckshot_shell_1
-    - buckshot_shell_2
-    - buckshot_shell_3
-    - buckshot_shell_4
-    - buckshot_shell_5
+    - shock_1
+    - shock_1
+    - shock_2
+    - shock_3
+    - shock_4
+    - shock_5
   - type: Tag
     tags:
     - RMCHandful
@@ -210,7 +214,7 @@
 - type: stack
   id: CCMShellM404KShock
   name: handful of M404K shock shells
-  icon: { sprite: /Textures/_RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi, state: buckshot_shell_1 }
+  icon: { sprite: /Textures/_CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi, state: shock_1 }
   spawn: CCMShellM404KShock
   maxCount: 5
 #
@@ -220,9 +224,9 @@
   name: handful of M404K dragon flame shells
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: buckshot_shell_1
+    - state: dragon_flame_1
       map: [ "base" ]
   - type: CartridgeAmmo
     proto: CCMPelletM404KDragonFlame
@@ -231,10 +235,10 @@
     stackType: CCMShellM404KDragonFlame
     baseLayer: base
     layerStates:
-    - buckshot_shell_1
-    - buckshot_shell_1
-    - buckshot_shell_2
-    - buckshot_shell_3
+    - dragon_flame_1
+    - dragon_flame_1
+    - dragon_flame_2
+    - dragon_flame_3
   - type: Tag
     tags:
     - RMCHandful
@@ -245,7 +249,7 @@
 - type: stack
   id: CCMShellM404KDragonFlame
   name: handful of M404K dragon flame shells
-  icon: { sprite: /Textures/_RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi, state: buckshot_shell_1 }
+  icon: { sprite: /Textures/_CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi, state: dragon_flame_1 }
   spawn: CCMShellM404KDragonFlame
   maxCount: 3
 #
@@ -255,9 +259,9 @@
   name: handful of M404K fragmentary shells
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: buckshot_shell_1
+    - state: frag_1
       map: [ "base" ]
   - type: CartridgeAmmo
     proto: CCMPelletM404KFrag
@@ -266,11 +270,11 @@
     stackType: CCMShellM404KFrag
     baseLayer: base
     layerStates:
-    - buckshot_shell_1
-    - buckshot_shell_1
-    - buckshot_shell_2
-    - buckshot_shell_3
-    - buckshot_shell_4
+    - frag_1
+    - frag_1
+    - frag_2
+    - frag_3
+    - frag_4
   - type: Tag
     tags:
     - RMCHandful
@@ -281,7 +285,7 @@
 - type: stack
   id: CCMShellM404KFrag
   name: handful of M404K fragmentary shells
-  icon: { sprite: /Textures/_RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi, state: buckshot_shell_1 }
+  icon: { sprite: /Textures/_CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi, state: frag_1 }
   spawn: CCMShellM404KFrag
   maxCount: 4
 #
@@ -291,9 +295,9 @@
   name: handful of M404K dragon eye shells
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: buckshot_shell_1
+    - state: dragon_eye_1
       map: [ "base" ]
   - type: CartridgeAmmo
     proto: CMPelletShotgunBuckshot
@@ -302,14 +306,14 @@
     stackType: CCMShellM404KDragonEye
     baseLayer: base
     layerStates:
-    - buckshot_shell_1
-    - buckshot_shell_1
-    - buckshot_shell_2
-    - buckshot_shell_3
-    - buckshot_shell_4
-    - buckshot_shell_5
-    - buckshot_shell_6
-    - buckshot_shell_7
+    - dragon_eye_1
+    - dragon_eye_1
+    - dragon_eye_2
+    - dragon_eye_3
+    - dragon_eye_4
+    - dragon_eye_5
+    - dragon_eye_6
+    - dragon_eye_7
   - type: Tag
     tags:
     - RMCHandful
@@ -320,7 +324,7 @@
 - type: stack
   id: CCMShellM404KDragonEye
   name: handful of M404K dragon eye shells
-  icon: { sprite: /Textures/_RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi, state: buckshot_shell_1 }
+  icon: { sprite: /Textures/_CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi, state: dragon_eye_1 }
   spawn: CCMShellM404KDragonEye
   maxCount: 7
 #
@@ -330,9 +334,9 @@
   name: handful of M404K dragon claw shells
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: buckshot_shell_1
+    - state: dragon_claw_1
       map: [ "base" ]
   - type: CartridgeAmmo
     proto: CCMPelletM404KDragonClaw
@@ -341,14 +345,11 @@
     stackType: CCMShellM404KDragonClaw
     baseLayer: base
     layerStates:
-    - buckshot_shell_1
-    - buckshot_shell_1
-    - buckshot_shell_2
-    - buckshot_shell_3
-    - buckshot_shell_4
-    - buckshot_shell_5
-    - buckshot_shell_6
-    - buckshot_shell_7
+    - dragon_claw_1
+    - dragon_claw_1
+    - dragon_claw_2
+    - dragon_claw_3
+    - dragon_claw_4
   - type: Tag
     tags:
     - RMCHandful
@@ -359,7 +360,7 @@
 - type: stack
   id: CCMShellM404KDragonClaw
   name: handful of M404K dragon claw shells
-  icon: { sprite: /Textures/_RMC14/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_handfuls.rsi, state: buckshot_shell_1 }
+  icon: { sprite: /Textures/_CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi, state: dragon_claw_1 }
   spawn: CCMShellM404KDragonClaw
   maxCount: 4
 #
@@ -376,9 +377,9 @@
   - type: CartridgeAmmo
     proto: CCMPelletM404KBlackRocket
   - type: Sprite
-    sprite: Objects/Weapons/Guns/Ammunition/Casings/ammo_casing.rsi
+    sprite: _CCM14/Objects/Weapons/Ammunition/Handfuls/m404k_handfuls.rsi
     layers:
-    - state: base
+    - state: black_rocket
       map: ["enum.AmmoVisualLayers.Base"]
 
 # Bullets
@@ -640,13 +641,14 @@
   parent: RMCBaseEquipmentCase
   id: CCMShotgunSpecEquipmentCase
   name: heavy shotgunner equipment case
-  description: "A large case containing a heavy caliber breech shotgun, a heavy armor, and additional pieces of equipment.\n\nNOTE: You cannot put items back inside this case."
+  description: "A large case containing a heavy caliber breech shotgun, a heavy armor, and additional pieces of equipment./n/nNOTE: You cannot put items back inside this case."
   components:
   - type: Sprite
+    sprite: Textures/_CCM14/Objects/Misc/shotgun_case_spec.rsi
     layers:
     - state: closed
       map: [ base ]
-    - state: demo
+    - state: shotgun
       map: [ label ]
   - type: Storage
     maxItemSize: Huge
