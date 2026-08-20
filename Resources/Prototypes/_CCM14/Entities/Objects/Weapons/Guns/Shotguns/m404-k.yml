@@ -10,7 +10,7 @@
     sprite: _RMC14/Objects/Weapons/Guns/Shotguns/mou53/jungle.rsi
   - type: Tag
     tags:
-    - RMCWeaponShotgunMOU53
+    - CCMWeaponM404K
     - RMCWeaponShotgun
   - type: Gun
     soundGunshot:
@@ -18,6 +18,14 @@
     shotsPerBurst: 1
   - type: Appearance
   - type: ShootUseDelay
+  - type: GunRequiresWield
+  - type: GunRequireEquipped
+    whitelist:
+      components:
+      - SmartGunArmor # Im lazy as f
+  - type: RMCMagneticItem
+  - type: GunDamageModifier
+    multiplier: 1.35
   - type: RMCSelectiveFire
     baseFireModes:
     - SemiAuto
@@ -38,6 +46,7 @@
       - RMCShellShotgunIncendiary
       - RMCShellShotgunBeanbag
       - RMCShellShotgunFlechette
+      - CCMM404KShell
     proto: CMShellShotgunFlechette
     capacity: 1
     soundInsert:
@@ -61,18 +70,6 @@
           - CCMAttachmentExtendedM404Barrel
           - CCMAttachmentLightM404Barrel
           - CCMAttachmentLongM404Barrel
-      rmc-aslot-rail:
-        whitelist:
-          tags:
-          - RMCAttachmentRailFlashlight
-          - RMCAttachmentMagneticHarness
-          - RMCAttachmentS5RedDotSight
-          - RMCAttachmentS6ReflexSight
-          - RMCAttachmentS42xTelescopicMiniscope
-      rmc-aslot-stock:
-        whitelist:
-          tags:
-          - RMCAttachmentMOU53Stock
       rmc-aslot-underbarrel:
         whitelist:
           tags:
@@ -83,9 +80,6 @@
           - RMCAttachmentLaserSight
   - type: AttachableHolderVisuals
     offsets:
-      rmc-aslot-barrel: 0, 0
-      rmc-aslot-rail: -0.02, 0.15
-      rmc-aslot-stock: -0.65, -0.18
       rmc-aslot-underbarrel: 0.5, -0.25
 
 # Barrels
@@ -394,7 +388,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 60
+        Piercing: 44
   - type: CMArmorPiercing
     amount: 20
   - type: ProjectileSpread
@@ -435,7 +429,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 20
+        Piercing: 14
   - type: CMArmorPiercing
     amount: 0
   - type: ProjectileSpread
@@ -473,7 +467,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 45
+        Piercing: 29
   - type: CMArmorPiercing
     amount: 10
   - type: ProjectileSpread
@@ -513,7 +507,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 50
+        Piercing: 37
   - type: CMArmorPiercing
     amount: 20
   - type: ProjectileSpread
@@ -555,7 +549,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 70
+        Piercing: 48
   - type: CMArmorPiercing
     amount: 20
   - type: RMCProjectileDamageFalloff
@@ -574,7 +568,7 @@
     - whitelist:
         minMobSize: VerySmallXeno
       maxRange: 10
-      stunTime: 1.6
+      stunTime: 1
       slowTime: 4
       knockBackPowerMin: 1
       knockBackPowerMax: 3
@@ -597,11 +591,11 @@
     impactEffect: BulletImpactEffect
     damage:
       types:
-        Blunt: 160
-        Heat: 150
+        Blunt: 75
+        Heat: 75
         # 10 brute damage + 150 brute and 150 burn to simulate direct explosive damage.
         # Temporary mechanic to make it consistent with intended main target damage.
-    maxFixedRange: 1 # 6 tiles
+    maxFixedRange: 0.5 # 6 tiles
   - type: CMArmorPiercing
     amount: 20
   - type: RMCProjectileDamageFalloff
@@ -612,7 +606,7 @@
     - range: 4
       falloff: 1
   - type: ProjectileMaxRange
-    max: 1
+    max: 0.5
   - type: Explosive
     # TODO RMC14 Very inconsistent because explosions spawn at epicenter of the rocket, not the hit entity. Proper values are around (50, 40, 90)
     explosionType: RMC
@@ -622,6 +616,79 @@
     maxTileBreak: 0
   - type: TriggerOnCollide
   - type: ExplodeOnTrigger
+
+#
+
+- type: entity
+  parent: RMCBaseEquipmentCase
+  id: CCMShotgunSpecEquipmentCase
+  name: heavy shotgunner equipment case
+  description: "A large case containing a heavy caliber breech shotgun, a heavy armor, and additional pieces of equipment.\n\nNOTE: You cannot put items back inside this case."
+  components:
+  - type: Sprite
+    layers:
+    - state: closed
+      map: [ base ]
+    - state: demo
+      map: [ label ]
+  - type: Storage
+    maxItemSize: Huge
+    grid:
+    - 0,0,15,3
+  - type: StorageFill
+    contents:
+    - id: CCArmorM04KSpec
+    - id: CCMArmorHelmetM03K # TODO RMC14 Give hearing protection component if ear damage is added. Hearing protection should prevent backblast stun, damage, and deafness effects.
+    - id: CCMM44KSatchel
+    - id: CCMWeaponM404K
+    - id: CCMShellM404KShock
+      amount: 1
+    - id: CCMShellM404KFrag
+      amount: 2
+    - id: CCMShellM404KDragonFlame
+      amount: 1
+    - id: CCMShellM404KDragonEye
+      amount: 1
+    - id: CCMShellM404KDragonClaw
+      amount: 1
+    - id: CCMShellM404KBlackRocket
+      amount: 1
+    - id: RMCMK80
+    - id: CMMagazinePistolMK80
+      amount: 1
+    - id: RMCExplosiveBreachingCharge
+      amount: 2
+  - type: CMChangeUserOnVend
+    addComponents:
+    - type: DemoSpecWhitelist
+  - type: IgnoreContentsSize
+    items:
+      tags:
+      - CCMWeaponM404K
+
+#
+
+- type: entity
+  parent: RMCCrateAmmo
+  id: CCMCrateM404KSpecFullAmmo
+  name: M404-KONGAT full handful ammunition Crate (5x1)
+  components:
+  - type: StorageFill
+    contents:
+    - id: CCMShellM404KShock
+    - id: CCMShellM404KFrag
+    - id: CCMShellM404KDragonFlame
+    - id: CCMShellM404KDragonEye
+    - id: CCMShellM404KDragonClaw
+
+- type: entity
+  parent: RMCCrateAmmo
+  id: CCMCrateM404KSpecBlackRocket
+  name: M404-KONGAT black rocket Crate (x1)
+  components:
+  - type: StorageFill
+    contents:
+    - id: CCMShellM404KBlackRocket
 
 #
 

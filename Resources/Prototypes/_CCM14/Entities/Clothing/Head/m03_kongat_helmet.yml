@@ -1,0 +1,31 @@
+- type: entity
+  parent: ArmorHelmetM10
+  id: CCMArmorHelmetM03K
+  name: M03-KONGAT specialist helmet
+  description: A special maded specialist helmet for breaching, and destroying. Have integrated night vision visor.
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Clothing/Head/Helmets/m11/co.rsi
+  - type: Clothing
+    sprite: _RMC14/Objects/Clothing/Head/Helmets/m11/co.rsi
+  - type: CMArmor
+    melee: 25
+    bullet: 30
+    bio: 25
+    #todo RMC: energy armor: 15
+  - type: ItemCamouflage
+    camouflageVariations:
+     Jungle: _RMC14/Objects/Clothing/Head/Helmets/m11/co/jungle.rsi
+     Desert: _RMC14/Objects/Clothing/Head/Helmets/m11/co/desert.rsi
+     Snow: _RMC14/Objects/Clothing/Head/Helmets/m11/co/snow.rsi
+     Classic: _RMC14/Objects/Clothing/Head/Helmets/m11/co/classic.rsi
+     Urban: _RMC14/Objects/Clothing/Head/Helmets/m11/co/urban.rsi
+  - type: CycleableVisor # TODO 4 visor slots but integrated security visor
+    containers:
+    - rmc_visor_one
+    - rmc_visor_two
+    - rmc_visor_three
+  - type: IntegratedVisors
+    visorsToAdd:
+    - RMCVisorSquadIntegrated
+    - RMCVisorNightVision
