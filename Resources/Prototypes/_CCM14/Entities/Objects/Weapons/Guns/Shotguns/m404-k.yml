@@ -82,6 +82,19 @@
           - RMCAttachmentAngledGrip
           - RMCAttachmentVerticalGrip
           - RMCAttachmentLaserSight
+      rmc-aslot-stock:
+        locked: true
+        startingAttachable: RMCAttachmentM42A2CollapsibleStock
+        whitelist:
+          tags:
+          - RMCAttachmentM42A2CollapsibleStock
+  - type: ItemCamouflage
+    camouflageVariations:
+      Jungle: _CCM14/Objects/Weapons/Guns/Shotguns/m404k_camo/m404k_jungle.rsi
+      Desert: _CCM14/Objects/Weapons/Guns/Shotguns/m404k_camo/m404k_desert.rsi
+      Snow: _CCM14/Objects/Weapons/Guns/Shotguns/m404k_camo/m404k_snow.rsi
+      Classic: _CCM14/Objects/Weapons/Guns/Shotguns/m404k.rsi
+      Urban: _CCM14/Objects/Weapons/Guns/Shotguns/m404k_camo/m404k_urban.rsi
   - type: AttachableHolderVisuals
     offsets:
       rmc-aslot-underbarrel: 0.5, -0.25
@@ -95,7 +108,7 @@
   description: The lighter barrel gives more handling speed and movement speed, decreases accuracy and bullet velocity.
   components:
   - type: Sprite
-    state: ebarrel
+    state: u_m10_overcomp
   - type: Tag
     tags:
     - RMCAttachmentBarrel
@@ -124,7 +137,7 @@
   description: Extended M404-K barrel gives more accuracy and bullet velocity, however, it decreases handling.
   components:
   - type: Sprite
-    state: ebarrel
+    state: suppressor_sleek
   - type: Tag
     tags:
     - RMCAttachmentBarrel
@@ -152,7 +165,7 @@
   description: A long version barrel that gives more damage and decreases fallof, also giving more accuracy. However, long barrel reduces movement speed and handling.
   components:
   - type: Sprite
-    state: ebarrel
+    state: u_ebarrel_vented
   - type: Tag
     tags:
     - RMCAttachmentBarrel
