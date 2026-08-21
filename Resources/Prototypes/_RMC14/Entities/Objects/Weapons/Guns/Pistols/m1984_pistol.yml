@@ -125,7 +125,7 @@
       types:
         Piercing: 45 # CCM Rework | Base is 40
   - type: CMArmorPiercing
-    amount: 15 # CCM Rework | Base is 10
+    amount: 10
 
 - type: entity
   id: CMCartridgePistol9mm
@@ -220,7 +220,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 62.5 # TODO RMC14 30 shrapneltPistol9mmHP | CCM Rework | Base is 55
+        Piercing: 60 # TODO RMC14 30 shrapneltPistol9mmHP | CCM Rework | Base is 55
 
 - type: Tag
   id: RMCCartridgePistol9mmHP
