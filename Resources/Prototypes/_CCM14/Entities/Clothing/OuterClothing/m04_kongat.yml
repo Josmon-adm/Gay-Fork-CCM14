@@ -6,24 +6,6 @@
   components:
   - type: Sprite
     sprite: Textures/_CCM14/Objects/Clothing/OuterClothing/Armor/m04_kongat.rsi
-    layers:
-    - state: icon
-    - map: [ "enum.WebbingVisualLayers.Base" ]
-    - sprite: _RMC14/Objects/Clothing/OuterClothing/Armor/armor_overlays.rsi
-      state: lamp-off
-    - sprite: _RMC14/Objects/Clothing/OuterClothing/Armor/armor_overlays.rsi
-      state: lamp-on
-      visible: false
-      map: [ "light" ]
-  - type: Clothing
-    equipDelay: 2
-    unequipDelay: 2
-    equippedPrefix: off
-    clothingVisuals:
-      outerClothing:
-      - state: equipped-OUTERCLOTHING
-      - sprite: _RMC14/Objects/Clothing/OuterClothing/Armor/armor_overlays.rsi
-        state: lamp-off
   - type: CMArmor
     melee: 30
     bullet: 35
@@ -40,4 +22,4 @@
     - 0,0,3,1 # 2 slots
   - type: ItemCamouflage
     camouflageVariations:
-      Urban: Textures/_CCM14/Objects/Clothing/OuterClothing/Armor/m04_kongat.rsi
+      Classic: Textures/_CCM14/Objects/Clothing/OuterClothing/Armor/m04_kongat.rsi
