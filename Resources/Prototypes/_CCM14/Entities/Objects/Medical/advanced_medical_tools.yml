@@ -84,3 +84,36 @@
   - type: MedicallyUnskilledDoAfter
     min: 3
     doAfter: 3
+
+- type: entity
+  parent: BaseItem
+  id: CCMAdvancedAutoRepairSynthTool
+  name: auto repair synthetic nano craft tool
+  description: A tool that can heal synthetic entites, with high cooldown
+  suffix: CCM - Synth
+  components:
+  - type: Sprite
+    sprite: _CCM14/Objects/Medical/synth_tool.rsi
+    state: healing_gun
+  - type: Item
+    size: Normal
+    sprite: _CCM14/Objects/Medical/synth_tool.rsi
+  - type: YautjaHealingGun
+    repairsFractures: false
+    damageContainers:
+    - Biological
+    damage:
+      groups:
+        Brute: -20
+        Burn: -20
+      types:
+        Bloodloss: 100
+        Asphyxiation: 99
+    bloodlossModifier: 30
+    healSound:
+      path: "/Audio/Items/welder2.ogg
+      params:
+        volume: 5
+        variation: 0.125
+  - type: UseDelay
+    delay: 60
