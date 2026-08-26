@@ -25,9 +25,9 @@
       components:
         - Synth
 # CCM14 CHANGE
-    - type: StunOnHit
-      duration: 1
-      whitelist:
-        components:
-        - XenoLight
+  - type: StunOnHit
+     duration: 1
+    whitelist:
+      components:
+      - XenoLight
 # TODO RMC14: This hammer needs to be ONLY picked up by Synths, It should be impossible for a regular person to pick it up. Ideally there should be an error message saying "This is too heavy for you to pick up!" or something like that.
