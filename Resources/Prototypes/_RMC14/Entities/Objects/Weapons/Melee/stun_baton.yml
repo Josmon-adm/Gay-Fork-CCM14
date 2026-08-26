@@ -96,7 +96,6 @@
   parent: CMStunbaton
   id: RMCTelescopicBaton
   name: telescopic baton
-  suffix: CCM-Changed-SyntOnly
   description: A compact yet rebalanced personal defense weapon. Can be concealed when folded.
   components:
   - type: Item
