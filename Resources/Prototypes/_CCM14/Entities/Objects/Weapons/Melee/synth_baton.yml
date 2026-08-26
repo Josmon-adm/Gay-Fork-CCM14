@@ -1,7 +1,7 @@
 - type: entity
-  parent: RMCStunBatonDamaged
+  parent: BaseItem
   id: CCMSynthBaton
-  name: магнитно-электростатическая дубинка синтетика 
+  name: energy synth baton
   suffix: CCM
   components:
   - type: Sprite
@@ -9,16 +9,30 @@
     layers:
     - state: stunbaton_off
       map: [ "enum.ToggleableVisuals.Layer" ]
-  - type: Clothing
-    sprite: _CCM14/Objects/Weapons/Melee/synth_baton.rsi
-    slots:
-    - Belt
-    - Suitstorage
   - type: Stunbaton
-    energyPerUse: 50
+    energyPerUse: 100
   - type: MeleeRequiresSkill
     skills:
       RMCSkillPolice: 1
+  - type: Item
+    heldPrefix: off
+    size: Small
+  - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+     enum.ToggleableVisuals.Enabled:
+        enum.ToggleableVisuals.Layer:
+          True: {state: stunbaton_on}
+          False: {state: stunbaton_off}
+  - type: ToggleableVisuals # Add support for multiple layers
+    spriteLayer: blade
+    inhandVisuals:
+      left:
+      - state: on-inhand-left
+        shader: unshaded
+      right:
+      - state: on-inhand-right
+        shader: unshaded
   - type: ItemToggle
     predictable: false
     soundActivate:
@@ -63,27 +77,35 @@
     whitelist:
       components:
         - Synth
+  - type: MeleeWeapon
+    attackRate: 0.4
+    wideAnimationRotation: -135
+    damage:
+      types:
+        Blunt: 2
+    bluntStaminaDamageFactor: 2.0
+    angle: 60
+    animation: WeaponArcThrust
   - type: ComponentToggler
     components:
+    - type: PointLight
+      enabled: true
+      radius: 2
+      energy: 2
+      color: orange
     - type: MCXenoPlasmaDamageOnHit
       multiplier: 0.5
       missingMultiplier: 1
     - type: RMCStaminaDamageOnHit
       damage: 100
       jitterDuration: 2
-    - type: PointLight
-      enabled: false
-      radius: 2
-      energy: 2
-      color: orange
-      netsync: false
     - type: RMCStaminaDamageOnCollide
       damage: 35
     - type: XenoMeleeSlow
       slowTime: 10
       higherOnXenos: True
     - type: StunOnHit
-      duration: 4
+      duration: 2
       whitelist:
         components:
         - XenoLight

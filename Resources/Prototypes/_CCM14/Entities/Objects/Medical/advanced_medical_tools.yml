@@ -94,7 +94,7 @@
   components:
   - type: Sprite
     sprite: _CCM14/Objects/Medical/synth_tool.rsi
-    state: healing_gun
+    state: icon
   - type: Item
     size: Normal
     sprite: _CCM14/Objects/Medical/synth_tool.rsi
@@ -106,14 +106,14 @@
       groups:
         Brute: -20
         Burn: -20
-      types:
-        Bloodloss: 100
-        Asphyxiation: 99
-    bloodlossModifier: 30
+    bloodlossModifier: 100
     healSound:
-      path: "/Audio/Items/welder2.ogg
+      path: "/Audio/Items/welder2.ogg"
       params:
         volume: 5
         variation: 0.125
   - type: UseDelay
     delay: 60
+  - type: RequiresSkill
+    skills:
+      RMCSkillEngineer: 2
