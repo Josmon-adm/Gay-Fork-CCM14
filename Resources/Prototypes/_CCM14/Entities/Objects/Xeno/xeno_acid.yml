@@ -108,7 +108,7 @@
     armorPenetration: 25
     damage:
       types:
-        Piercing: 25
+        Piercing: 15
         Structural: 100
     whitelist:
       components:
