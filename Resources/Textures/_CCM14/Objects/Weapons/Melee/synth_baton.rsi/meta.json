@@ -40,6 +40,10 @@
       "directions": 4
     },
     {
+      "name": "equipped-BACK",
+      "directions": 4
+    },
+    {
       "name": "off-inhand-left",
       "directions": 4
     },

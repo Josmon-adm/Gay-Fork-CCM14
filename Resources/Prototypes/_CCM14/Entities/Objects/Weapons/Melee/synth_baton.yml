@@ -9,14 +9,21 @@
     layers:
     - state: stunbaton_off
       map: [ "enum.ToggleableVisuals.Layer" ]
+  - type: Clothing
+    quickEquip: false
+    sprite: _CCM14/Objects/Weapons/Melee/synth_baton.rsi
+    slots:
+    - Belt
+    - Suitstorage
+    - Back
   - type: Stunbaton
-    energyPerUse: 100
+    energyPerUse: 1000000
   - type: MeleeRequiresSkill
     skills:
       RMCSkillPolice: 1
   - type: Item
     heldPrefix: off
-    size: Small
+    size: Normal
   - type: Appearance
   - type: GenericVisualizer
     visuals:
@@ -63,8 +70,8 @@
     activatedSize: Huge
   - type: LandAtCursor # it deals stamina damage when thrown
   - type: Battery
-    maxCharge: 1000
-    startingCharge: 1000
+    maxCharge: 10000000
+    startingCharge: 10000000
   - type: UseDelay
   - type: MeleeDamageMultiplier
     multiplier: 5
@@ -89,8 +96,9 @@
   - type: ComponentToggler
     components:
     - type: PointLight
+      netsync: false
       enabled: true
-      radius: 2
+      radius: 3.5
       energy: 2
       color: orange
     - type: MCXenoPlasmaDamageOnHit
